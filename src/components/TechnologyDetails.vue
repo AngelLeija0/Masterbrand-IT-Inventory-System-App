@@ -65,7 +65,7 @@
         Selecciona una imagen
       </q-card-section>
       <q-card-section class="flex justify-between items-center" style="max-height: 400px; overflow-y: auto;">
-        <div v-for="(image, i) in inputInfo.images?.all" :key="i" style="cursor: pointer; position: relative;"
+        <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
           @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
           @click="setNewDefaultImge(image)">
           <q-img class="q-pa-md q-ma-sm" :src="image" spinner-color="white" style="height: 120px; width: 140px" />
@@ -150,7 +150,10 @@ export default defineComponent({
           .patch(`./assets/update/${asset._id}`, asset)
           .then((res) => {
             const data = res.data
-            console.log(data)
+            if (data) {
+              this.inputInfo = data
+              this.isEditingImage = false
+            }
           })
           .catch((err) => {
             console.log(err)

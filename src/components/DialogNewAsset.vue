@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="dialogState" persistent>
-    <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; height: 80vh; max-height: 80vh;">
+    <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh;">
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="negative" flat round @click="closeDialog" class="q-py-none" />
       </q-card-actions>
@@ -13,20 +13,21 @@
             puede dejar el campo
             en blanco.</q-title>
         </div>
-        <div>
+        <div class="q-pa-md bg-grey-12 rounded-borders">
+          <div class="q-pb-xs">Selecciona una cateogoria para comenzar</div>
           <q-select
           clearable
           dense
-          v-model="inputCategory"
+          v-model="inputInfo.category"
           :options="categories"
           label="Categoria"
           class="q-mb-md"
-          hint="requerido"
-          :rules="[val => !!val || 'requerido']"
           />
+        </div>
+        <div class="q-pa-md" v-if="inputInfo.category === 'Computadora' || inputInfo.category === 'Laptop'">
           <q-file
           dense
-          v-model="inputImages"
+          v-model="inputInfo.images"
           label="Imagenes"
           use-chips
           multiple
@@ -37,18 +38,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
-          class="q-mb-md"
-          hint="requerido"
-          :rules="[val => !!val || 'requerido']"
-          />
-          <!-- De aqui en adelante falta -->
-          <q-input
-          clearable
-          dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.description"
+          label="Descripción"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -56,8 +47,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.manufacturer"
+          label="Fabricante"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -65,8 +56,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.model"
+          label="Modelo"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -74,8 +65,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.serial_number"
+          label="Serial"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -83,8 +74,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.operating_system"
+          label="S/O"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -92,8 +83,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.ram"
+          label="RAM"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -101,8 +92,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.cost"
+          label="Costo"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -110,8 +101,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.purchase_from"
+          label="Lugar de compra"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -119,8 +110,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.purchase_date"
+          label="Fecha de compra"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -128,8 +119,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.warranty_info"
+          label="Costo"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -137,8 +128,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.warranty_expiration_date"
+          label="Vencimiento de garantia"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -146,8 +137,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.location"
+          label="Ubicación"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -155,8 +146,8 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.location_extra_info"
+          label="Ubicacion (información extra)"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
@@ -164,33 +155,15 @@
           <q-input
           clearable
           dense
-          v-model="text"
-          label="Descripcion"
-          class="q-mb-md"
-          hint="requerido"
-          :rules="[val => !!val || 'requerido']"
-          />
-          <q-input
-          clearable
-          dense
-          v-model="text"
-          label="Descripcion"
-          class="q-mb-md"
-          hint="requerido"
-          :rules="[val => !!val || 'requerido']"
-          />
-          <q-input
-          clearable
-          dense
-          v-model="text"
-          label="Descripcion"
+          v-model="inputInfo.current_employee"
+          label="Empleado"
           class="q-mb-md"
           hint="requerido"
           :rules="[val => !!val || 'requerido']"
           />
         </div>
       </q-card-section>
-      <q-card-actions align="right">
+      <q-card-actions align="right" v-if="inputCategory">
         <q-btn label="Agregar" size="0.95rem" color="primary" dense padding="xs md" style="text-transform: capitalize;" />
         <q-btn label="Cancelar" size="0.95rem" flat dense @click="closeDialog" padding="xs md" style="text-transform: capitalize;" />
       </q-card-actions>
@@ -211,17 +184,15 @@ export default defineComponent({
   setup() {
     const dialogState = ref(false)
     const categories = ref([
-      "Computer", "Laptop", "Celulares", "Impresoras"
+      "Computadora", "Laptop", "Celular", "Impresora", "Consumibles"
     ])
 
-    const inputCategory = ref()
-    const inputImages = ref()
+    const inputInfo = ref({})
 
     return {
       dialogState,
       categories,
-      inputCategory,
-      inputImages,
+      inputInfo,
     }
   },
   methods: {

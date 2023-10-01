@@ -12,7 +12,7 @@
       <FilterBar></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable class="q-py-lg" :columns="assetColumns" :rows="assetRows"></DetailsTable>
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows"></AssetDetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -25,7 +25,7 @@ import { useDataApiStore } from "src/stores/data-api-store";
 import PageTitle from 'src/components/PageTitle.vue'
 import PrimaryButton from 'src/components/PrimaryButton.vue'
 import FilterBar from 'src/components/FilterBar.vue'
-import DetailsTable from 'src/components/DetailsTable.vue'
+import AssetDetailsTable from 'src/components/AssetDetailsTable.vue'
 import DialogNewAsset from 'src/components/DialogNewAsset.vue'
 
 export default defineComponent({
@@ -34,22 +34,17 @@ export default defineComponent({
     PageTitle,
     PrimaryButton,
     FilterBar,
-    DetailsTable,
+    AssetDetailsTable,
     DialogNewAsset
   },
   setup() {
     const stateDialogNewAsset = ref(false)
 
-    let assetIdx = 0;
-
     const assetColumns = [
       {
-        name: 'number',
-        label: 'No.',
-        format: (x, index) => {
-          if (index) assetIdx++
-          return assetIdx
-        },
+        name: 'index',
+        label: '#',
+        field: 'index'
       },
       { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
       { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
@@ -90,7 +85,6 @@ export default defineComponent({
         console.log(error)
       }
     }
-
 
     return {
       assetColumns,

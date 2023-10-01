@@ -18,6 +18,11 @@ const routes = [
         name: 'asset-details-page',
         component: () => import('pages/AssetDetailsPage.vue')
       },
+      {
+        path: 'categorias',
+        name: 'categories-page',
+        component: () => import('pages/CategoriesPage.vue')
+      },
     ]
   },
 

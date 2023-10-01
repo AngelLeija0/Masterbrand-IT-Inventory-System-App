@@ -75,9 +75,9 @@
 
       <q-card-actions align="right">
         <q-file v-model="inputNewImage" label="Subir nueva imagen" outlined rounded dense clearable accept=".jpg, image/*"
-          class="q-mx-md" style="text-transform: none; width: 225px; font-size: 12px; height: fit-content;">
+          class="q-mx-md" label-color="primary" color="primary" style="text-transform: none; font-size: 12px; height: fit-content;">
           <template v-slot:prepend>
-            <q-icon name="cloud_upload" />
+            <q-icon name="cloud_upload" color="primary" />
           </template>
         </q-file>
         <q-btn label="Cancelar" color="black" flat rounded size="0.85rem" padding="sm md" v-close-popup

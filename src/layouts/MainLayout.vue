@@ -7,22 +7,10 @@
 
       <q-toolbar inset class="justify-center">
         <q-btn-group>
-          <NavbarButton
-          label="Inicio"
-          toPage="home-page"
-          />
-          <NavbarButton
-          label="Inventario"
-          toPage="assets-page"
-          />
-          <NavbarButton
-          label="Ubicaciones"
-          toPage="locations-page"
-          />
-          <NavbarButton
-          label="Categorias"
-          toPage="categories-page"
-          />
+          <NavbarButton label="Inicio" toPage="home-page" />
+          <NavbarButton label="Inventario" toPage="assets-page" />
+          <NavbarButton label="Ubicaciones" toPage="locations-page" />
+          <NavbarButton label="Categorias" toPage="categories-page" />
         </q-btn-group>
       </q-toolbar>
 
@@ -48,5 +36,9 @@ export default defineComponent({
 <style>
 body {
   overflow: hidden;
+}
+
+.q-dialog__backdrop {
+  backdrop-filter: blur(1px);
 }
 </style>

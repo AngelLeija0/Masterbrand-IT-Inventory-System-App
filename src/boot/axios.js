@@ -9,6 +9,9 @@ import axios from 'axios'
 // for each client)
 const api = axios.create({ baseURL: 'http://localhost:3000' })
 
+// Local: http://localhost:3000
+// Render: https://api-masterbrand-it-inventory-system.onrender.com
+
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
 

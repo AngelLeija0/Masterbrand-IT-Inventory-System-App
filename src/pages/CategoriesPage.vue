@@ -9,7 +9,7 @@
       </q-btn-group>
     </q-section>
     <q-section>
-      <FilterBar></FilterBar>
+      <FilterBar @getAllData="getAllCategories" @realodData="setCategories"></FilterBar>
     </q-section>
     <q-section>
       <DetailsTable label="Categorias" :columns="assetColumns" :rows="categoryRows"
@@ -22,7 +22,7 @@
 import { defineComponent, ref } from 'vue'
 import { date } from 'quasar'
 import { api } from "src/boot/axios"
-import { useDataApiStore } from "src/stores/data-api-store";
+import { useDataApiStore } from "src/stores/data-api-store"
 
 import PageTitle from 'src/components/PageTitle.vue'
 import PrimaryButton from 'src/components/PrimaryButton.vue'
@@ -101,8 +101,8 @@ export default defineComponent({
           .then((res) => {
             const data = res.data
             if (data.length > 0) {
-              dataApiStore.setDataApi(data)
-              categoryRows.value = dataApiStore.getDataApi
+              console.log(data)
+              setCategories(data)
             }
           })
           .catch((err) => {
@@ -111,6 +111,14 @@ export default defineComponent({
       } catch (error) {
         console.log(error)
       }
+    }
+
+    function setCategories(data = null) {
+      if (data !== null) {
+        console.log("data == null")
+        dataApiStore.setDataApi(data)
+      }
+      categoryRows.value = dataApiStore.getDataApi
     }
 
     function formatDate(dateToFormat) {
@@ -126,6 +134,7 @@ export default defineComponent({
       dataApiStore,
       getAllCategories,
       formatDate,
+      setCategories,
     }
   },
   methods: {

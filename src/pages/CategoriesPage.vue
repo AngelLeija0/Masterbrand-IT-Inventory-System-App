@@ -115,7 +115,6 @@ export default defineComponent({
 
     function setCategories(data = null) {
       if (data !== null) {
-        console.log("data == null")
         dataApiStore.setDataApi(data)
       }
       categoryRows.value = dataApiStore.getDataApi

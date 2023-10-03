@@ -320,7 +320,7 @@ export default defineComponent({
             console.log(res.data)
             if (res.status === 200) {
               this.$q.notify({
-                type: 'positive',
+                type: 'warning',
                 message: 'Borrado correctamente.',
                 timeout: 2000,
               })

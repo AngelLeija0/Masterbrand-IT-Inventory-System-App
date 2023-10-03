@@ -23,6 +23,11 @@ const routes = [
         name: 'categories-page',
         component: () => import('pages/CategoriesPage.vue')
       },
+      {
+        path: 'tarjetas',
+        name: 'cards-page',
+        component: () => import('pages/CardsPage.vue')
+      },
     ]
   },
 

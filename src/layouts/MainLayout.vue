@@ -11,6 +11,7 @@
           <NavbarButton label="Inventario" toPage="assets-page" />
           <NavbarButton label="Ubicaciones" toPage="locations-page" />
           <NavbarButton label="Categorias" toPage="categories-page" />
+          <NavbarButtonDropdown label="Herramientas"/>
         </q-btn-group>
       </q-toolbar>
 
@@ -23,12 +24,15 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
+
 import NavbarButton from 'src/components/NavbarButton.vue'
+import NavbarButtonDropdown from 'src/components/NavbarButtonDropdown.vue';
 
 export default defineComponent({
   name: 'MainLayout',
   components: {
-    NavbarButton
+    NavbarButton,
+    NavbarButtonDropdown,
   },
 })
 </script>

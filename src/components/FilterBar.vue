@@ -13,7 +13,13 @@
           <q-icon name="search" color="black" />
         </template>
       </q-input>
-      <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner" />
+      <q-btn
+        v-if="actualRoute === 'assets-page'"
+        class="q-mx-sm"
+        flat
+        size="14px"
+        icon="qr_code_scanner"
+      />
     </div>
     <q-btn-group flat>
       <q-btn-dropdown
@@ -82,7 +88,11 @@
 
               <div class="q-pt-md q-pb-xs">Estado</div>
               <q-checkbox v-model="filterDictionary" size="xs" label="Activo" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Inactivo" />
+              <q-checkbox
+                v-model="filterDictionary"
+                size="xs"
+                label="Inactivo"
+              />
               <q-checkbox v-model="filterDictionary" size="xs" label="Roto" />
             </div>
             <div v-if="actualRoute === 'categories-page'" class="column">
@@ -100,15 +110,19 @@
                   indeterminate-icon="horizontal_rule"
                   :color="checkbox.boxModel ? 'primary' : 'black'"
                   @click="
-                    (checkbox.boxModel === true ? checkbox.boxModel = true : checkbox.boxModel = false),
+                    checkbox.boxModel === true
+                      ? (checkbox.boxModel = true)
+                      : (checkbox.boxModel = false),
                       updateFiltering('category')
                   "
                 />
                 <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
-                  <q-input
+                  <q-select
                     v-model="checkbox.inputModel"
+                    :options="checkbox.inputOptions"
                     dense
                     outlined
+                    multiple
                     class="q-px-md"
                     input-style="font-weight: 500;"
                     @keyup="updateFiltering('category')"
@@ -158,6 +172,9 @@ export default defineComponent({
     const route = useRoute();
     const actualRoute = ref(route.name);
 
+    const dataApiStore = useDataApiStore();
+    const dataApi = dataApiStore.getDataApi;
+
     const isFiltering = ref(false);
 
     const filterDictionary = ref({
@@ -167,12 +184,14 @@ export default defineComponent({
           label: "Nombre",
           key: "name",
           inputModel: "",
+          inputOptions: defineFilterOptions("name"),
           boxModel: false,
         },
         {
           label: "Propiedades",
           key: "properties",
           inputModel: "",
+          inputOptions: defineFilterOptions("properties"),
           boxModel: false,
         },
       ],
@@ -180,8 +199,26 @@ export default defineComponent({
 
     const inputSearchBar = ref(null);
 
-    const dataApiStore = useDataApiStore();
-    const dataApi = dataApiStore.getDataApi;
+    // Error porque esta funcion se ejecuta antes de que
+    // allData pueda obtener los datos del dataApiStore
+    function defineFilterOptions(filter) {
+      const allData = dataApiStore.getDataApi;
+      const options = allData.map((data) => data[filter]);
+
+      if (typeof options[0] === "object") {
+        const propertiesOptions = [];
+        options.map((option) => {
+          option.map((properties) => {
+            if(properties.name) propertiesOptions.push(properties.name);
+          });
+        });
+        const propertiesOptionsFiltered = [...new Set(propertiesOptions)];
+        console.log(propertiesOptionsFiltered);
+        return propertiesOptionsFiltered;
+      }
+      console.log(options);
+      return options;
+    }
 
     return {
       route,
@@ -197,23 +234,14 @@ export default defineComponent({
     updateFiltering(actualPage) {
       const filters = this.filterDictionary[actualPage];
 
-      const filtersState = filters.map((filter) => {
-        if (filter.boxModel == true) {
-          return true;
-        }
-      });
-      this.isFiltering = filtersState.includes(true);
+      this.isFiltering = filters.some((filter) => filter.boxModel);
 
       filters.map((filter) => {
-        console.log(filter)
         const filteredData = this.dataApiStore.getDataApi.filter((data) => {
-          return data[filter.key] === filter.inputModel
-        })
-    
-        console.log(filteredData)
-      })
-
-      
+          return data[filter.key] === filter.inputModel;
+        });
+        console.log(filteredData);
+      });
     },
     getDataBySearchBar() {
       if (this.inputSearchBar == null || this.inputSearchBar == "") {

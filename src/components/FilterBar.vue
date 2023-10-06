@@ -1,37 +1,17 @@
 <template>
   <div class="bg-grey-2 flex justify-between q-pa-sm">
     <div class="flex">
-      <q-input
-        v-model="inputSearchBar"
-        dense
-        outlined
-        label="Buscador"
-        style="width: 25vw"
-        @keyup="getDataBySearchBar()"
-      >
+      <q-input v-model="inputSearchBar" dense outlined label="Buscador" style="width: 25vw" @keyup="getDataBySearchBar()">
         <template v-slot:append>
           <q-icon name="search" color="black" />
         </template>
       </q-input>
-      <q-btn
-        v-if="actualRoute === 'assets-page'"
-        class="q-mx-sm"
-        flat
-        size="14px"
-        icon="qr_code_scanner"
-      />
+      <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner" />
     </div>
     <q-btn-group flat>
-      <q-btn-dropdown
-        size="14px"
-        label="Filtros"
-        :text-color="isFiltering ? 'primary' : ''"
-        :icon="isFiltering ? 'filter_alt' : 'filter_list'"
-        flat
-        rounded
-        style="text-transform: capitalize"
-        content-style="height: 400px;"
-      >
+      <q-btn-dropdown size="14px" label="Filtros" :text-color="isFiltering ? 'primary' : ''"
+        :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat rounded style="text-transform: capitalize"
+        content-style="height: 400px;">
         <div class="row no-wrap q-pa-md">
           <div class="column">
             <div class="text-h6 q-mb-md">Filtros</div>
@@ -42,105 +22,43 @@
             </q-input>
             <div v-if="actualRoute === 'assets-page'" class="column">
               <div class="q-pb-xs">Caracteristicas</div>
-              <q-checkbox
-                v-model="filterDictionary"
-                @click="updateFiltering"
-                size="xs"
-                label="Categoria"
-              />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Descripcion"
-              />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Fabricante"
-              />
+              <q-checkbox v-model="filterDictionary" @click="updateFiltering" size="xs" label="Categoria" />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Descripcion" />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Fabricante" />
               <q-checkbox v-model="filterDictionary" size="xs" label="Modelo" />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Numero serial"
-              />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Lugar de compra"
-              />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Fecha de compra"
-              />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Numero serial" />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Lugar de compra" />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Fecha de compra" />
               <q-checkbox v-model="filterDictionary" size="xs" label="Costo" />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="IP address"
-              />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Ubicacion"
-              />
+              <q-checkbox v-model="filterDictionary" size="xs" label="IP address" />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Ubicacion" />
 
               <div class="q-pt-md q-pb-xs">Estado</div>
               <q-checkbox v-model="filterDictionary" size="xs" label="Activo" />
-              <q-checkbox
-                v-model="filterDictionary"
-                size="xs"
-                label="Inactivo"
-              />
+              <q-checkbox v-model="filterDictionary" size="xs" label="Inactivo" />
               <q-checkbox v-model="filterDictionary" size="xs" label="Roto" />
             </div>
             <div v-if="actualRoute === 'categories-page'" class="column">
-              <div
-                v-for="(checkbox, i) in filterDictionary.category"
-                :key="i + 1"
-                class="column"
-              >
-                <q-checkbox
-                  v-model="checkbox.boxModel"
-                  size="xs"
-                  :label="checkbox.label"
-                  checked-icon="add"
-                  unchecked-icon="horizontal_rule"
-                  indeterminate-icon="horizontal_rule"
-                  :color="checkbox.boxModel ? 'primary' : 'black'"
-                  @click="
+              <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
+                <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
+                  unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
+                  :color="checkbox.boxModel ? 'primary' : 'black'" @click="
                     checkbox.boxModel === true
                       ? (checkbox.boxModel = true)
                       : (checkbox.boxModel = false),
-                      updateFiltering('category')
-                  "
-                />
+                    updateFiltering()
+                    " />
                 <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
-                  <q-select
-                    v-model="checkbox.inputModel"
-                    :options="checkbox.inputOptions"
-                    dense
-                    outlined
-                    multiple
-                    class="q-px-md"
-                    input-style="font-weight: 500;"
-                    @keyup="updateFiltering('category')"
-                  />
+                  <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense outlined
+                    clearable class="q-px-md" input-style="font-weight: 500;"
+                    @update:modelValue="() => updateFiltering(i, checkbox.key)" />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </q-btn-dropdown>
-      <q-btn-dropdown
-        size="14px"
-        label="Vista"
-        icon="tune"
-        flat
-        rounded
-        style="text-transform: capitalize"
-      >
+      <q-btn-dropdown size="14px" label="Vista" icon="tune" flat rounded style="text-transform: capitalize">
         <div class="row no-wrap q-pa-md">
           <div class="column">
             <div class="text-h6 q-mb-md">Vista</div>
@@ -162,7 +80,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDataApiStore } from "src/stores/data-api-store";
 
@@ -173,52 +91,42 @@ export default defineComponent({
     const actualRoute = ref(route.name);
 
     const dataApiStore = useDataApiStore();
-    const dataApi = dataApiStore.getDataApi;
+    const dataApi = ref(null)
 
     const isFiltering = ref(false);
 
     const filterDictionary = ref({
-      asset: [{}],
-      category: [
+      'assets-page': [
         {
           label: "Nombre",
           key: "name",
           inputModel: "",
-          inputOptions: defineFilterOptions("name"),
+          inputOptions: "",
           boxModel: false,
+          isActive: false,
+        },
+      ],
+      'categories-page': [
+        {
+          label: "Nombre",
+          key: "name",
+          inputModel: "",
+          inputOptions: "",
+          boxModel: false,
+          isActive: false,
         },
         {
           label: "Propiedades",
           key: "properties",
           inputModel: "",
-          inputOptions: defineFilterOptions("properties"),
+          inputOptions: "",
           boxModel: false,
+          isActive: false,
         },
       ],
     });
 
     const inputSearchBar = ref(null);
-
-    // Error porque esta funcion se ejecuta antes de que
-    // allData pueda obtener los datos del dataApiStore
-    function defineFilterOptions(filter) {
-      const allData = dataApiStore.getDataApi;
-      const options = allData.map((data) => data[filter]);
-
-      if (typeof options[0] === "object") {
-        const propertiesOptions = [];
-        options.map((option) => {
-          option.map((properties) => {
-            if(properties.name) propertiesOptions.push(properties.name);
-          });
-        });
-        const propertiesOptionsFiltered = [...new Set(propertiesOptions)];
-        console.log(propertiesOptionsFiltered);
-        return propertiesOptionsFiltered;
-      }
-      console.log(options);
-      return options;
-    }
 
     return {
       route,
@@ -231,23 +139,77 @@ export default defineComponent({
     };
   },
   methods: {
-    updateFiltering(actualPage) {
-      const filters = this.filterDictionary[actualPage];
+    defineFilterOptions(filter) {
+      if (this.dataApi != null) {
+        const allData = this.dataApi
+        const options = allData.map((data) => data[filter]);
 
+        if (filter === "properties") {
+          const depuredOptions = options.flatMap((value) => {
+            return value.flatMap((value2) => {
+              return Object.keys(value2).map((key) => {
+                if (key === "name") {
+                  return value2[key];
+                }
+              }).filter((element) => element !== undefined);
+            });
+          });
+
+          const depuredAllOptions = [...new Set(depuredOptions)];
+          return depuredAllOptions;
+        }
+
+        return options;
+      }
+      this.dataApi = this.dataApiStore.getDataApi
+      this.defineFilterOptions(filter)
+    },
+    updateFiltering(filterDictionaryKey = null, filterKey = null) {
+      const filters = this.filterDictionary[this.actualRoute];
       this.isFiltering = filters.some((filter) => filter.boxModel);
 
-      filters.map((filter) => {
-        const filteredData = this.dataApiStore.getDataApi.filter((data) => {
-          return data[filter.key] === filter.inputModel;
-        });
-        console.log(filteredData);
-      });
+      if (filterDictionaryKey != null && filterKey != null) {
+        if (filterKey === "properties") {
+          return this.updatePropertiesFilters(filterDictionaryKey)
+        }
+        const filteredData = this.dataApi.filter((data) => data[filterKey] === filters[filterDictionaryKey].inputModel)
+        console.log(filteredData)
+        if (filteredData.length > 0) {
+          this.dataApiStore.setDataApi(filteredData)
+          return this.$emit("realodData")
+        }
+        return this.$emit("getAllData")
+      }
     },
+    updatePropertiesFilters(filterDictionaryKey) {
+      const filters = this.filterDictionary[this.actualRoute]
+      const selectedProperty = filters[filterDictionaryKey].inputModel
+
+      if (!selectedProperty) {
+        this.$emit("getAllData")
+        return
+      }
+
+      const filteredData = this.dataApi.filter((data) => {
+        return data.properties.some((property) => {
+          return property.name === selectedProperty;
+        });
+      });
+      console.log(filteredData)
+
+      if (filteredData.length > 0) {
+        this.dataApiStore.setDataApi(filteredData);
+        this.$emit("realodData");
+      } else {
+        this.$emit("getAllData");
+      }
+    },
+
     getDataBySearchBar() {
       if (this.inputSearchBar == null || this.inputSearchBar == "") {
         return this.$emit("getAllData");
       }
-      const resultsFilter = this.dataApiStore.getDataApi.filter((data) => {
+      const resultsFilter = this.dataApi.filter((data) => {
         return Object.values(data).some((value) => {
           return String(value).includes(this.inputSearchBar);
         });

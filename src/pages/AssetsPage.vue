@@ -9,7 +9,7 @@
       </q-btn-group>
     </q-section>
     <q-section>
-      <FilterBar></FilterBar>
+      <FilterBar @getAllData="getAllAssets" @realodData="setAssets"></FilterBar>
     </q-section>
     <q-section>
       <AssetDetailsTable :columns="assetColumns" :rows="assetRows"></AssetDetailsTable>
@@ -73,9 +73,7 @@ export default defineComponent({
           .then((res) => {
             const data = res.data
             if (data.length > 0) {
-              dataApiStore.setDataApi(data)
-              assetRows.value = dataApiStore.getDataApi
-              console.log(dataApiStore.getDataApi)
+              setAssets(data)
             }
           })
           .catch((err) => {
@@ -86,12 +84,20 @@ export default defineComponent({
       }
     }
 
+    function setAssets(data = null) {
+      if (data !== null) {
+        dataApiStore.setDataApi(data)
+      }
+      assetRows.value = dataApiStore.getDataApi
+    }
+
     return {
       assetColumns,
       assetRows,
       stateDialogNewAsset,
       dataApiStore,
-      getAllAssets
+      getAllAssets,
+      setAssets,
     }
   },
   methods: {

@@ -20,39 +20,19 @@
                 <q-icon name="search" color="black" />
               </template>
             </q-input>
-            <div v-if="actualRoute === 'assets-page'" class="column">
-              <div class="q-pb-xs">Caracteristicas</div>
-              <q-checkbox v-model="filterDictionary" @click="updateFiltering" size="xs" label="Categoria" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Descripcion" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Fabricante" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Modelo" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Numero serial" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Lugar de compra" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Fecha de compra" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Costo" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="IP address" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Ubicacion" />
-
-              <div class="q-pt-md q-pb-xs">Estado</div>
-              <q-checkbox v-model="filterDictionary" size="xs" label="Activo" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Inactivo" />
-              <q-checkbox v-model="filterDictionary" size="xs" label="Roto" />
-            </div>
-            <div v-if="actualRoute === 'categories-page'" class="column">
-              <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
-                <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
-                  unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
-                  :color="checkbox.boxModel ? 'primary' : 'black'" @click="
-                    checkbox.boxModel === true
-                      ? (checkbox.boxModel = true)
-                      : (checkbox.boxModel = false),
-                    updateFiltering()
-                    " />
-                <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
-                  <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense outlined
-                    clearable class="q-px-md" input-style="font-weight: 500;"
-                    @update:modelValue="() => updateFiltering(i, checkbox.key)" />
-                </div>
+            <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
+              <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
+                unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
+                :color="checkbox.boxModel ? 'primary' : 'black'" @click="
+                  checkbox.boxModel === true
+                    ? (checkbox.boxModel = true)
+                    : (checkbox.boxModel = false),
+                  updateFiltering()
+                  " />
+              <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
+                <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense outlined
+                  clearable class="q-px-md" input-style="font-weight: 500;"
+                  @update:modelValue="() => updateFiltering(i, checkbox.key)" />
               </div>
             </div>
           </div>
@@ -98,8 +78,40 @@ export default defineComponent({
     const filterDictionary = ref({
       'assets-page': [
         {
-          label: "Nombre",
-          key: "name",
+          label: "Categoria",
+          key: "category",
+          inputModel: "",
+          inputOptions: "",
+          boxModel: false,
+          isActive: false,
+        },
+        {
+          label: "Fabricante",
+          key: "manufacturer",
+          inputModel: "",
+          inputOptions: "",
+          boxModel: false,
+          isActive: false,
+        },
+        {
+          label: "Modelo",
+          key: "model",
+          inputModel: "",
+          inputOptions: "",
+          boxModel: false,
+          isActive: false,
+        },
+        {
+          label: "Ubicacion",
+          key: "location",
+          inputModel: "",
+          inputOptions: "",
+          boxModel: false,
+          isActive: false,
+        },
+        {
+          label: "Estado",
+          key: "status",
           inputModel: "",
           inputOptions: "",
           boxModel: false,
@@ -159,7 +171,8 @@ export default defineComponent({
           return depuredAllOptions;
         }
 
-        return options;
+        const depuredAllOptions = [...new Set(options)];
+        return depuredAllOptions;
       }
       this.dataApi = this.dataApiStore.getDataApi
       this.defineFilterOptions(filter)
@@ -173,12 +186,12 @@ export default defineComponent({
           return this.updatePropertiesFilters(filterDictionaryKey)
         }
         const filteredData = this.dataApi.filter((data) => data[filterKey] === filters[filterDictionaryKey].inputModel)
-        console.log(filteredData)
         if (filteredData.length > 0) {
           this.dataApiStore.setDataApi(filteredData)
           return this.$emit("realodData")
         }
-        return this.$emit("getAllData")
+        this.dataApiStore.setDataApi(this.dataApi)
+        return this.$emit("realodData")
       }
     },
     updatePropertiesFilters(filterDictionaryKey) {
@@ -186,8 +199,8 @@ export default defineComponent({
       const selectedProperty = filters[filterDictionaryKey].inputModel
 
       if (!selectedProperty) {
-        this.$emit("getAllData")
-        return
+        this.dataApiStore.setDataApi(this.dataApi)
+        return this.$emit("realodData")
       }
 
       const filteredData = this.dataApi.filter((data) => {
@@ -201,13 +214,15 @@ export default defineComponent({
         this.dataApiStore.setDataApi(filteredData);
         this.$emit("realodData");
       } else {
-        this.$emit("getAllData");
+        this.dataApiStore.setDataApi(this.dataApi)
+        return this.$emit("realodData")
       }
     },
 
     getDataBySearchBar() {
       if (this.inputSearchBar == null || this.inputSearchBar == "") {
-        return this.$emit("getAllData");
+        this.dataApiStore.setDataApi(this.dataApi)
+        return this.$emit("realodData")
       }
       const resultsFilter = this.dataApi.filter((data) => {
         return Object.values(data).some((value) => {

@@ -3,9 +3,9 @@
     no-data-label="No se encontraron datos" style="height: 66vh; max-height: 66vh;">
     <template v-slot:body-cell-status="props">
       <q-td>
-        <div v-if="props.row.status === 'Active'" class=""><q-icon name="circle" color="green"></q-icon> Activo</div>
-        <div v-else-if="props.row.status === 'Inactive'" class=""><q-icon name="circle" color="orange"></q-icon> Inactivo</div>
-        <div v-else-if="props.row.status === 'Broken'" class=""><q-icon name="circle" color="red"></q-icon> Roto</div>
+        <div v-if="props.row.status === 'Activo'" class=""><q-icon name="circle" color="green"></q-icon> Activo</div>
+        <div v-else-if="props.row.status === 'Inactivo'" class=""><q-icon name="circle" color="orange"></q-icon> Inactivo</div>
+        <div v-else-if="props.row.status === 'Roto'" class=""><q-icon name="circle" color="red"></q-icon> Roto</div>
         <div v-else class=""><q-icon name="circle" color="black"></q-icon> Sin definir</div>
       </q-td>
     </template>

@@ -101,7 +101,6 @@ export default defineComponent({
           .then((res) => {
             const data = res.data
             if (data.length > 0) {
-              console.log(data)
               setCategories(data)
             }
           })

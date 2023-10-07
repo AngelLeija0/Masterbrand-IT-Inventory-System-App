@@ -67,9 +67,7 @@ export default defineComponent({
     function setTableView() {
       if(viewConfig.value.value) {
         console.log(viewConfig.value.value)
-        $emit("reloadData")
         const newColumn = { name: 'image', label: 'Imagen', field: 'image' }
-        props.columns.splice(1, 0, newColumn)
       }
     }
 

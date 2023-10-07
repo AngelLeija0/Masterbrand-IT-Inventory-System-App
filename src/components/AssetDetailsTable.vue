@@ -1,5 +1,5 @@
 <template>
-  <q-table flat bordered :rows="rows" :columns="columns" row-key="name" table-header-style="font-weight: 100;" class="q-pt-md"
+  <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" row-key="name" table-header-style="font-weight: 100;" class="q-pt-md"
     no-data-label="No se encontraron datos" style="height: 66vh; max-height: 66vh;">
     <template v-slot:body-cell-status="props">
       <q-td>
@@ -36,7 +36,10 @@ export default defineComponent({
       type: Array,
     },
     columns: {
-      type: Array
+      type: Array,
+    },
+    loading: {
+      type: Boolean,
     }
   },
   setup(props) {

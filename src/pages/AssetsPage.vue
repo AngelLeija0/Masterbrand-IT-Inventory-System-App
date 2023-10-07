@@ -12,7 +12,7 @@
       <FilterBar @getAllData="getAllAssets" @realodData="setAssets"></FilterBar>
     </q-section>
     <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows"></AssetDetailsTable>
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState"></AssetDetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -62,11 +62,14 @@ export default defineComponent({
 
     const assetRows = ref([])
 
+    const loadingState = ref(false)
+
     const dataApiStore = useDataApiStore()
 
     getAllAssets()
 
     function getAllAssets() {
+      loadingState.value = true
       try {
         api
           .get("./assets")
@@ -89,11 +92,13 @@ export default defineComponent({
         dataApiStore.setDataApi(data)
       }
       assetRows.value = dataApiStore.getDataApi
+      loadingState.value = false
     }
 
     return {
       assetColumns,
       assetRows,
+      loadingState,
       stateDialogNewAsset,
       dataApiStore,
       getAllAssets,

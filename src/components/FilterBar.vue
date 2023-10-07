@@ -178,8 +178,8 @@ export default defineComponent({
       this.defineFilterOptions(filter)
     },
     updateFiltering(filterDictionaryKey = null, filterKey = null) {
-      const filters = this.filterDictionary[this.actualRoute];
-      this.isFiltering = filters.some((filter) => filter.boxModel);
+      const filters = this.filterDictionary[this.actualRoute]
+      this.isFiltering = filters.some((filter) => filter.inputModel)
 
       if (filterDictionaryKey != null && filterKey != null) {
         if (filterKey === "properties") {
@@ -208,8 +208,6 @@ export default defineComponent({
           return property.name === selectedProperty;
         });
       });
-      console.log(filteredData)
-
       if (filteredData.length > 0) {
         this.dataApiStore.setDataApi(filteredData);
         this.$emit("realodData");
@@ -218,19 +216,23 @@ export default defineComponent({
         return this.$emit("realodData")
       }
     },
-
     getDataBySearchBar() {
-      if (this.inputSearchBar == null || this.inputSearchBar == "") {
-        this.dataApiStore.setDataApi(this.dataApi)
-        return this.$emit("realodData")
-      }
-      const resultsFilter = this.dataApi.filter((data) => {
-        return Object.values(data).some((value) => {
-          return String(value).includes(this.inputSearchBar);
+      if (this.dataApi != null) {
+        if (this.inputSearchBar == null || this.inputSearchBar == "") {
+          this.dataApiStore.setDataApi(this.dataApi)
+          return this.$emit("realodData")
+        }
+        const resultsFilter = this.dataApi.filter((data) => {
+          return Object.values(data).some((value) => {
+            return String(value).includes(this.inputSearchBar);
+          });
         });
-      });
-      this.dataApiStore.setDataApi(resultsFilter);
-      this.$emit("realodData");
+        this.dataApiStore.setDataApi(resultsFilter);
+        this.$emit("realodData");
+      } else {
+        this.dataApi = this.dataApiStore.getDataApi
+        this.getDataBySearchBar()
+      }
     },
   },
 });

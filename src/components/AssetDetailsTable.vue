@@ -28,6 +28,7 @@
 <script>
 import { defineComponent, ref, watch } from "vue"
 import { useRoute } from 'vue-router'
+import { useViewStore } from "src/stores/view-store"
 
 export default defineComponent({
   name: "AssetDetailsTable",
@@ -54,8 +55,29 @@ export default defineComponent({
       })
     })
 
+    const viewStore = useViewStore()
+    const viewConfig = ref(viewStore.getView)
+
+    watch(() => viewStore.getView, (newValue) => {
+      console.log(newValue)
+      viewConfig.value = newValue
+      setTableView()
+    })
+
+    function setTableView() {
+      if(viewConfig.value.value) {
+        console.log(viewConfig.value.value)
+        $emit("reloadData")
+        const newColumn = { name: 'image', label: 'Imagen', field: 'image' }
+        props.columns.splice(1, 0, newColumn)
+      }
+    }
+
     return {
       route,
+      viewStore,
+      viewConfig,
+      setTableView,
       pagination: ref({
         rowsPerPage: 0
       })

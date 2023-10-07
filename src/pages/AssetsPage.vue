@@ -1,18 +1,27 @@
 <template>
   <q-page>
-    <q-section class="flex justify-between q-pa-md">
+    <q-section class="flex justify-between q-pa-md" >
       <PageTitle label="Inventario" />
-      <q-btn-group flat>
-        <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
-        <DialogNewAsset ref="dialogNewAssetRef" />
-        <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
-      </q-btn-group>
+      <div v-if="isMobile">
+        <q-btn-group flat>
+          <PrimaryButton flat icon="add" @click="activateDialogNewAsset" />
+          <DialogNewAsset ref="dialogNewAssetRef" />
+          <PrimaryButton flat icon="more_vert" />
+        </q-btn-group>
+      </div>
+      <div v-else>
+        <q-btn-group flat>
+          <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
+          <DialogNewAsset ref="dialogNewAssetRef" />
+          <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
+        </q-btn-group>
+      </div>
     </q-section>
     <q-section>
       <FilterBar @getAllData="getAllAssets" @realodData="setAssets"></FilterBar>
     </q-section>
     <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState"></AssetDetailsTable>
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" @reloadData="setAssets"></AssetDetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -38,6 +47,19 @@ export default defineComponent({
     DialogNewAsset
   },
   setup() {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const stateDialogNewAsset = ref(false)
 
     const assetColumns = [
@@ -96,6 +118,7 @@ export default defineComponent({
     }
 
     return {
+      isMobile,
       assetColumns,
       assetRows,
       loadingState,

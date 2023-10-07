@@ -1,61 +1,135 @@
 <template>
-  <div class="bg-grey-2 flex justify-between q-pa-sm">
-    <div class="flex">
-      <q-input v-model="inputSearchBar" dense outlined label="Buscador" style="width: 25vw" @keyup="getDataBySearchBar()">
-        <template v-slot:append>
-          <q-icon name="search" color="black" />
-        </template>
-      </q-input>
-      <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner" />
+  <div class="bg-grey-2 q-pa-sm">
+    <div v-if="isMobile">
+      <div class="flex justify-between">
+        <q-input v-model="inputSearchBar" dense outlined label="Buscador" style="width: 70%;"
+          @keyup="getDataBySearchBar()">
+          <template v-slot:append>
+            <q-icon name="search" color="black" />
+          </template>
+        </q-input>
+        <q-btn size="13px" icon="menu" flat hide-dropdown-icon>
+          <q-menu class="justify-center q-py-sm">
+            <q-list v-if="actualRoute === 'assets-page'">
+              <q-btn-dropdown flat size="0.8rem" label="Buscar por QR" icon="qr_code_scanner" class="q-ma-xs"
+                style="text-transform: none;" />
+            </q-list>
+            <q-list>
+              <q-btn-dropdown label="Filtrar" size="0.8rem" :text-color="isFiltering ? 'primary' : ''"
+                :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat class="q-ma-xs" content-style="height: 400px;"
+                style="text-transform: none;">
+                <div class="row no-wrap q-pa-md">
+                  <div class="column">
+                    <div class="text-h6 q-mb-md">Filtros</div>
+                    <q-input class="q-pb-md" dense borderless label="Buscar filtros">
+                      <template v-slot:append>
+                        <q-icon name="search" color="black" />
+                      </template>
+                    </q-input>
+                    <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
+                      <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
+                        unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
+                        :color="checkbox.boxModel ? 'primary' : 'black'" @click="
+                          checkbox.boxModel === true
+                            ? (checkbox.boxModel = true)
+                            : (checkbox.boxModel = false),
+                          updateFiltering()
+                          " />
+                      <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
+                        <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense
+                          outlined clearable class="q-px-md" input-style="font-weight: 500;"
+                          @update:modelValue="() => updateFiltering(i, checkbox.key)" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </q-btn-dropdown>
+            </q-list>
+            <q-list>
+              <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs" style="text-transform: none;">
+                <div class="row no-wrap q-pa-md">
+                  <div class="column">
+                    <div class="text-h6 q-mb-md">Vista</div>
+                    <div class="flex">
+                      <div class="full-width q-pb-sm">Detalles</div>
+                      <q-checkbox v-model="viewDictionary.details" @click="updateView('details')" size="xs" />
+                      <q-icon name="density_small" size="50px" />
+                    </div>
+                    <div class="flex q-pt-md">
+                      <div class="full-width">Contenido</div>
+                      <q-checkbox v-model="viewDictionary.content" @click="updateView('content')" size="xs" />
+                      <q-icon name="view_list" size="50px" />
+                    </div>
+                  </div>
+                </div>
+              </q-btn-dropdown>
+            </q-list>
+          </q-menu>
+        </q-btn>
+      </div>
     </div>
-    <q-btn-group flat>
-      <q-btn-dropdown size="14px" label="Filtros" :text-color="isFiltering ? 'primary' : ''"
-        :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat rounded style="text-transform: capitalize"
-        content-style="height: 400px;">
-        <div class="row no-wrap q-pa-md">
-          <div class="column">
-            <div class="text-h6 q-mb-md">Filtros</div>
-            <q-input class="q-pb-md" dense borderless label="Buscar filtros">
-              <template v-slot:append>
-                <q-icon name="search" color="black" />
-              </template>
-            </q-input>
-            <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
-              <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
-                unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
-                :color="checkbox.boxModel ? 'primary' : 'black'" @click="
-                  checkbox.boxModel === true
-                    ? (checkbox.boxModel = true)
-                    : (checkbox.boxModel = false),
-                  updateFiltering()
-                  " />
-              <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
-                <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense outlined
-                  clearable class="q-px-md" input-style="font-weight: 500;"
-                  @update:modelValue="() => updateFiltering(i, checkbox.key)" />
+    <div v-else class="row">
+      <div class="col-12 col-sm-6 col-md-6 flex">
+        <q-input v-model="inputSearchBar" dense outlined label="Buscador" style="width: 70%;"
+          @keyup="getDataBySearchBar()">
+          <template v-slot:append>
+            <q-icon name="search" color="black" />
+          </template>
+        </q-input>
+        <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner" />
+      </div>
+      <div class="col-12 col-sm-6 col-md-6 flex justify-end">
+        <q-btn-group flat>
+          <q-btn-dropdown size="14px" label="Filtros" :text-color="isFiltering ? 'primary' : ''"
+            :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat rounded style="text-transform: capitalize"
+            content-style="height: 400px;">
+            <div class="row no-wrap q-pa-md">
+              <div class="column">
+                <div class="text-h6 q-mb-md">Filtros</div>
+                <q-input class="q-pb-md" dense borderless label="Buscar filtros">
+                  <template v-slot:append>
+                    <q-icon name="search" color="black" />
+                  </template>
+                </q-input>
+                <div v-for="(checkbox, i) in filterDictionary[actualRoute]" :key="i + 1" class="column">
+                  <q-checkbox v-model="checkbox.boxModel" size="xs" :label="checkbox.label" checked-icon="add"
+                    unchecked-icon="horizontal_rule" indeterminate-icon="horizontal_rule"
+                    :color="checkbox.boxModel ? 'primary' : 'black'" @click="
+                      checkbox.boxModel === true
+                        ? (checkbox.boxModel = true)
+                        : (checkbox.boxModel = false),
+                      updateFiltering()
+                      " />
+                  <div v-if="checkbox.boxModel" class="q-pl-sm q-pb-md">
+                    <q-select v-model="checkbox.inputModel" :options="defineFilterOptions(checkbox.key)" dense outlined
+                      clearable class="q-px-md" input-style="font-weight: 500;"
+                      @update:modelValue="() => updateFiltering(i, checkbox.key)" />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </q-btn-dropdown>
-      <q-btn-dropdown size="14px" label="Vista" icon="tune" flat rounded style="text-transform: capitalize">
-        <div class="row no-wrap q-pa-md">
-          <div class="column">
-            <div class="text-h6 q-mb-md">Vista</div>
-            <div class="flex">
-              <div class="full-width q-pb-sm">Detalles</div>
-              <q-checkbox v-model="checkBoxViewDetails" size="xs" />
-              <q-icon name="density_small" size="50px" />
+          </q-btn-dropdown>
+          <q-btn-dropdown size="14px" label="Vista" icon="tune" :color="isViewActive ? 'primary' : 'black'" flat rounded
+            style="text-transform: capitalize">
+            <div class="row no-wrap q-pa-md">
+              <div class="column">
+                <div class="text-h6 q-mb-md">Vista</div>
+                <div class="flex">
+                  <div class="full-width q-pb-sm">Detalles</div>
+                  <q-checkbox v-model="viewDictionary.details" @click="updateView('details')" size="xs" />
+                  <q-icon name="density_small" size="50px" />
+                </div>
+                <div class="flex q-pt-md">
+                  <div class="full-width">Contenido</div>
+                  <q-checkbox v-model="viewDictionary.content" @click="updateView('content')" size="xs" />
+                  <q-icon name="view_list" size="50px" />
+                </div>
+              </div>
             </div>
-            <div class="flex q-pt-md">
-              <div class="full-width">Contenido</div>
-              <q-checkbox v-model="checkBoxViewContent" size="xs" />
-              <q-icon name="view_list" size="50px" />
-            </div>
-          </div>
-        </div>
-      </q-btn-dropdown>
-    </q-btn-group>
+          </q-btn-dropdown>
+        </q-btn-group>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,10 +137,25 @@
 import { defineComponent, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDataApiStore } from "src/stores/data-api-store";
+import { useViewStore } from "src/stores/view-store"
 
 export default defineComponent({
   name: "FilterBar",
   setup() {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+      console.log(isMobile.value)
+    })
+
     const route = useRoute();
     const actualRoute = ref(route.name);
 
@@ -138,9 +227,17 @@ export default defineComponent({
       ],
     });
 
-    const inputSearchBar = ref(null);
+    const inputSearchBar = ref(null)
+
+    const viewStore = useViewStore()
+    const viewDictionary = ref({
+      details: false,
+      content: false,
+    })
+    const isViewActive = ref(false)
 
     return {
+      isMobile,
       route,
       actualRoute,
       isFiltering,
@@ -148,9 +245,29 @@ export default defineComponent({
       inputSearchBar,
       dataApiStore,
       dataApi,
+      viewStore,
+      viewDictionary,
+      isViewActive,
     };
   },
   methods: {
+    updateView(view) {
+      const updatedView = this.viewDictionary[view]
+      if (this.viewStore.getView) {
+        this.viewStore.clearView
+      }
+      if (view === 'details') {
+        this.viewDictionary.content = false
+      }
+      else if (view === 'content') {
+        this.viewDictionary.details = false
+      }
+      this.viewStore.setView({
+        key: view,
+        value: updatedView,
+      })
+      this.isViewActive = true
+    },
     defineFilterOptions(filter) {
       if (this.dataApi != null) {
         const allData = this.dataApi

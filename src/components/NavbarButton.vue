@@ -1,10 +1,13 @@
 <template>
   <q-btn
     :label="label"
+    :icon="icon"
     class="q-mx-xs q-px-lg"
     size="0.9rem"
+    flat
     :style="{
-      borderBottom: active ? '3px solid #1565c0' : '',
+      borderBottom: !isMobile && active ? '3px solid #1565c0' : '',
+      color: isMobile && active ? '#1565c0' : '',
       textTransform: 'capitalize'
     }"
     @click="redirectToPage(toPage)"
@@ -12,16 +15,30 @@
 </template>
 
 <script>
-import { capitalize, defineComponent } from "vue";
+import { capitalize, defineComponent, ref } from "vue";
 import { useRoute } from 'vue-router'
 
 export default defineComponent({
   name: "NavbarButton",
   setup() {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const route = useRoute()
 
     return {
-      route
+      route,
+      isMobile,
     }
   },
   computed: {
@@ -36,6 +53,9 @@ export default defineComponent({
   },
   props: {
     label: {
+      type: String,
+    },
+    icon: {
       type: String,
     },
     toPage: {

@@ -1,5 +1,5 @@
 <template>
-  <q-btn-dropdown :label="label" class="q-mx-xs q-px-lg" size="0.9rem" :style="{
+  <q-btn-dropdown :label="label" :icon="icon" class="q-mx-xs q-px-lg" size="0.9rem" :style="{
     borderBottom: active ? '3px solid #1565c0' : '',
     textTransform: 'capitalize'
   }">
@@ -38,6 +38,9 @@ export default defineComponent({
   },
   props: {
     label: {
+      type: String,
+    },
+    icon: {
       type: String,
     },
   },

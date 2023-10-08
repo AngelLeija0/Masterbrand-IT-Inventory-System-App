@@ -2,17 +2,26 @@
   <q-page>
     <q-section class="flex justify-between q-pa-md">
       <PageTitle label="Categorias" />
-      <q-btn-group flat>
-        <PrimaryButton label="Agregar Nueva" icon="add" class="q-mx-sm" @click="activateDialogNewCategory" />
-        <DialogNewCategory ref="dialogNewCategoryRef" @categoryAdded="getAllCategories()" />
-        <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
-      </q-btn-group>
+      <div v-if="isMobile">
+        <q-btn-group flat>
+          <PrimaryButton flat icon="add" class="q-mx-sm" @click="activateDialogNewCategory" />
+          <DialogNewCategory ref="dialogNewCategoryRef" @categoryAdded="getAllCategories()" />
+          <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
+        </q-btn-group>
+      </div>
+      <div v-else>
+        <q-btn-group flat>
+          <PrimaryButton label="Agregar Nueva" icon="add" class="q-mx-sm" @click="activateDialogNewCategory" />
+          <DialogNewCategory ref="dialogNewCategoryRef" @categoryAdded="getAllCategories()" />
+          <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
+        </q-btn-group>
+      </div>
     </q-section>
     <q-section>
       <FilterBar @getAllData="getAllCategories" @realodData="setCategories"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable label="Categorias" :columns="assetColumns" :rows="categoryRows"
+      <DetailsTable label="Categorias" :columns="assetColumns" :rows="categoryRows" :loading="loadingState"
         @categoryDeleted="getAllCategories()"></DetailsTable>
     </q-section>
   </q-page>
@@ -40,6 +49,19 @@ export default defineComponent({
     DialogNewCategory
   },
   setup() {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const stateDialogNewCategory = ref(false)
 
     const assetColumns = [
@@ -92,9 +114,12 @@ export default defineComponent({
 
     const dataApiStore = useDataApiStore()
 
+    const loadingState = ref(false)
+
     getAllCategories()
 
     function getAllCategories() {
+      loadingState.value = true
       try {
         api
           .get("./categories")
@@ -117,6 +142,7 @@ export default defineComponent({
         dataApiStore.setDataApi(data)
       }
       categoryRows.value = dataApiStore.getDataApi
+      loadingState.value = false
     }
 
     function formatDate(dateToFormat) {
@@ -126,8 +152,10 @@ export default defineComponent({
     }
 
     return {
+      isMobile,
       assetColumns,
       categoryRows,
+      loadingState,
       stateDialogNewCategory,
       dataApiStore,
       getAllCategories,

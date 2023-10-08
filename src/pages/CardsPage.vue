@@ -6,22 +6,15 @@
     <q-section class="flex q-pa-md">
       <div class="flex">
         <div class="q-pb-lg full-width">
-          Generador de excel de tarjeta para gafet.
+          Generador de excel con numeros de tarjeta para gafets.
         </div>
         <div class="flex" style="overflow: auto; max-height: 60vh">
-          <div v-for="(cardBox, i) in boxesCards" :key="i + 1">
-            <q-card dark bordered class="bg-grey-12 text-black q-ma-sm">
+          <div v-for="(cardBox, i) in boxesCards" :key="i + 1" style="max-width: 64vw;">
+            <q-card dark bordered class="bg-grey-12 text-black q-pa-sm">
               <q-card-section>
                 <div class="flex justify-between">
                   <div class="text-h6">Caja {{ i + 1 }}</div>
-                  <q-btn
-                    icon="close"
-                    size="10px"
-                    flat
-                    round
-                    :disable="i < 1"
-                    @click="deleteBox(i)"
-                  />
+                  <q-btn icon="close" size="10px" flat round :disable="i < 1" @click="deleteBox(i)" />
                 </div>
                 <div class="text-subtitle2">
                   Del
@@ -33,93 +26,38 @@
               <q-separator dark inset />
               <q-card-section>
                 <div>No. tarjeta (En caja)</div>
-                <q-input
-                  v-model="cardBox.first_number_box"
-                  label="Numero de inicio de caja"
-                  dense
-                  outlined
-                  color="black"
-                  class="q-py-xs"
-                />
-                <q-input
-                  v-model="cardBox.last_number_box"
-                  label="Numero final de caja"
-                  dense
-                  outlined
-                  color="black"
-                  class="q-py-xs"
-                />
+                <q-input v-model="cardBox.first_number_box" label="Numero de inicio de caja" dense outlined color="black"
+                  class="q-py-xs" />
+                <q-input v-model="cardBox.last_number_box" label="Numero final de caja" dense outlined color="black"
+                  class="q-py-xs" />
                 <div class="flex items-center">
                   <div style="font-size: 12px">¿Hay algun salto?</div>
-                  <q-btn
-                    icon="add"
-                    size="10px"
-                    flat
-                    round
-                    @click="addJumpToBox(i)"
-                  />
+                  <q-btn icon="add" size="10px" flat round @click="addJumpToBox(i)" />
                 </div>
                 <div v-for="(jump, i2) in cardBox.jumps" :key="i2 + 1">
-                  <q-input
-                    v-model="cardBox.jumps[i2]"
-                    :label="'Salto ' + (i2 + 1)"
-                    dense
-                    outlined
-                    color="black"
-                    class="q-py-xs"
-                  >
+                  <q-input v-model="cardBox.jumps[i2]" :label="'Salto ' + (i2 + 1)" dense outlined color="black"
+                    class="q-py-xs">
                     <template v-slot:append>
-                      <q-icon
-                        name="close"
-                        @click="deleteJump(i, i2)"
-                        class="cursor-pointer"
-                      />
+                      <q-icon name="close" @click="deleteJump(i, i2)" class="cursor-pointer" />
                     </template>
                   </q-input>
                 </div>
                 <div class="q-pt-sm">No. tarjeta (En checador)</div>
-                <q-input
-                  v-model="cardBox.first_number_card_box"
-                  label="Numero de incio de caja"
-                  dense
-                  outlined
-                  color="black"
-                  class="q-py-xs"
-                />
-                <q-input
-                  v-model="cardBox.last_number_card_box"
-                  label="Numero final de caja"
-                  dense
-                  outlined
-                  color="black"
-                  class="q-py-xs"
-                />
+                <q-input v-model="cardBox.first_number_card_box" label="Numero de incio de caja" dense outlined
+                  color="black" class="q-py-xs" />
+                <q-input v-model="cardBox.last_number_card_box" label="Numero final de caja" dense outlined color="black"
+                  class="q-py-xs" />
               </q-card-section>
             </q-card>
           </div>
           <div class="flex justify-center items-center">
-            <div
-              style="display: flex; flex-direction: column; align-items: center"
-            >
+            <div style="display: flex; flex-direction: column; align-items: center">
               <q-btn icon="add" size="16px" round flat @click="addNewBox()">
-                <q-tooltip class="bg-black">Agregar</q-tooltip></q-btn
-              >
-              <q-btn
-                icon="download"
-                size="16px"
-                round
-                flat
-                @click="generateExcel()"
-              >
+                <q-tooltip class="bg-black">Agregar</q-tooltip></q-btn>
+              <q-btn icon="download" size="16px" round flat @click="generateExcel()">
                 <q-tooltip class="bg-black">Descargar excel</q-tooltip>
               </q-btn>
-              <q-btn
-                icon="refresh"
-                size="16px"
-                round
-                flat
-                @click="dialogDelete = true"
-              >
+              <q-btn icon="refresh" size="16px" round flat @click="dialogDelete = true">
                 <q-tooltip class="bg-black">Reiniciar</q-tooltip>
               </q-btn>
             </div>
@@ -131,19 +69,9 @@
     <q-dialog v-model="dialogDelete" persistent>
       <q-card class="q-pa-md" style="width: 500px; max-width: 80vw">
         <q-card-actions align="right" class="q-py-none">
-          <q-btn
-            icon="close"
-            color="black"
-            flat
-            round
-            @click="dialogDelete = false"
-            class="q-py-none"
-          />
+          <q-btn icon="close" color="black" flat round @click="dialogDelete = false" class="q-py-none" />
         </q-card-actions>
-        <q-card-section
-          class="q-pt-none q-pb-md"
-          style="border-bottom: 1px solid #e9e9e9"
-        >
+        <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
           <div class="text-h6">Reiniciar cajas</div>
         </q-card-section>
         <q-card-section class="q-pt-md q-pb-sm flex justify-start">
@@ -152,25 +80,10 @@
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn
-            label="Confirmar"
-            size="0.85rem"
-            color="red"
-            dense
-            padding="sm lg"
-            outline
-            style="border-radius: 10px; text-transform: capitalize"
-            @click="deleteAllBoxes()"
-          />
-          <q-btn
-            label="Cancelar"
-            size="0.85rem"
-            flat
-            dense
-            padding="sm lg"
-            style="border-radius: 10px; text-transform: capitalize"
-            @click="dialogDelete = false"
-          />
+          <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
+            style="border-radius: 10px; text-transform: capitalize" @click="deleteAllBoxes()" />
+          <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
+            style="border-radius: 10px; text-transform: capitalize" @click="dialogDelete = false" />
         </q-card-actions>
       </q-card>
     </q-dialog>

@@ -1,19 +1,19 @@
 <template>
   <q-page>
-    <q-section class="flex justify-between q-pa-md" >
+    <q-section class="flex justify-between q-pa-md">
       <PageTitle label="Inventario" />
       <div v-if="isMobile">
         <q-btn-group flat>
-          <PrimaryButton flat icon="add" @click="activateDialogNewAsset" />
+          <PrimaryButton flat icon="add" @click="activateDialogNewAsset" toolTip="Agregar producto" />
           <DialogNewAsset ref="dialogNewAssetRef" />
-          <PrimaryButton flat icon="more_vert" />
+          <PrimaryButton flat icon="more_vert" toolTip="Mas opciones" />
         </q-btn-group>
       </div>
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
           <DialogNewAsset ref="dialogNewAssetRef" />
-          <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
+          <PrimaryButton flat icon="more_vert" class="q-mx-sm" toolTip="Mas opciones" />
         </q-btn-group>
       </div>
     </q-section>
@@ -21,7 +21,8 @@
       <FilterBar @getAllData="getAllAssets" @realodData="setAssets"></FilterBar>
     </q-section>
     <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" @reloadData="setAssets"></AssetDetailsTable>
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" @reloadData="setAssets">
+      </AssetDetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -44,7 +45,7 @@ export default defineComponent({
     PrimaryButton,
     FilterBar,
     AssetDetailsTable,
-    DialogNewAsset
+    DialogNewAsset,
   },
   setup() {
     const isMobile = ref(isUsingMobile());

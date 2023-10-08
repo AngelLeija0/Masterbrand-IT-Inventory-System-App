@@ -12,7 +12,7 @@
           <q-menu class="justify-center q-py-sm">
             <q-list v-if="actualRoute === 'assets-page'">
               <q-btn-dropdown flat size="0.8rem" label="Buscar por QR" icon="qr_code_scanner" class="q-ma-xs"
-                style="text-transform: none;" />
+                style="text-transform: none;" @click="dialogScanQR = true" />
             </q-list>
             <q-list>
               <q-btn-dropdown label="Filtrar" size="0.8rem" :text-color="isFiltering ? 'primary' : ''"
@@ -76,7 +76,10 @@
             <q-icon name="search" color="black" />
           </template>
         </q-input>
-        <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner" />
+        <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner"
+          @click="dialogScanQR = true">
+          <q-tooltip class="bg-black">Buscar por QR</q-tooltip>
+        </q-btn>
       </div>
       <div class="col-12 col-sm-6 col-md-6 flex justify-end">
         <q-btn-group flat>
@@ -130,6 +133,20 @@
         </q-btn-group>
       </div>
     </div>
+    <q-dialog v-model="dialogScanQR" persistent transparent>
+      <q-card class="q-pa-md" style="width: 600px; max-width: 85vw; height: 70vh; max-height: 70vh;">
+        <q-card-actions align="right" class="q-py-none">
+          <q-btn icon="close" color="black" flat round @click="dialogScanQR = false" class="q-py-none" />
+        </q-card-actions>
+        <q-card-section class="q-pt-none q-pb-sm">
+          <div class="text-h5 text-weight-medium">Buscar por codigo QR</div>
+          <div class="text-subtitle2 text-weight-regular">Escanea el codigo QR para encontrar la informacion un producto.
+          </div>
+        </q-card-section>
+        <q-card-section class="q-ma-md" style="border: 1.8px solid black; height: 47vh;">
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -236,6 +253,8 @@ export default defineComponent({
     })
     const isViewActive = ref(false)
 
+    const dialogScanQR = ref(false)
+
     return {
       isMobile,
       route,
@@ -248,6 +267,7 @@ export default defineComponent({
       viewStore,
       viewDictionary,
       isViewActive,
+      dialogScanQR,
     };
   },
   methods: {

@@ -1,6 +1,7 @@
 <template>
-  <q-table flat bordered :rows="rows" :columns="columns" row-key="name" table-header-style="font-weight: 100;" class="q-pt-md"
-    no-data-label="No se encontraron datos" style="height: 66vh; max-height: 66vh;">
+  <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
+    table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
+    :style="{height: isMobile ? '72.5vh' : '66vh' }">
     <template v-slot:body-cell-actions="props">
       <q-td>
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
@@ -46,8 +47,8 @@
         <q-btn icon="close" color="black" flat round @click="closeDeleteDialog(currentData._id)" class="q-py-none" />
       </q-card-actions>
       <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
-          <div class="text-h6">Borrar {{ pageLabel }}</div>
-        </q-card-section>
+        <div class="text-h6">Borrar {{ pageLabel }}</div>
+      </q-card-section>
       <q-card-section class="q-pt-md q-pb-sm flex justify-start">
         <div class="text-center text-subtitle1 text-weight-regular">¿Estas seguro de borrar este registro?
         </div>
@@ -61,7 +62,8 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
-          style="border-radius: 10px; text-transform: capitalize;" :disabled="inputConfirmDelete !== `delete ${currentData.name}`" @click="deleteRecord(currentData._id)" />
+          style="border-radius: 10px; text-transform: capitalize;"
+          :disabled="inputConfirmDelete !== `delete ${currentData.name}`" @click="deleteRecord(currentData._id)" />
         <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
           style="border-radius: 10px; text-transform: capitalize;" @click="closeDeleteDialog(currentData._id)" />
       </q-card-actions>
@@ -86,10 +88,26 @@ export default defineComponent({
     },
     columns: {
       type: Array
-    }
+    },
+    loading: {
+      type: Boolean,
+    },
   },
 
   setup(props) {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const $q = useQuasar()
     const route = useRoute()
 
@@ -220,6 +238,7 @@ export default defineComponent({
     ])
 
     return {
+      isMobile,
       route,
       pageLabel,
       records,

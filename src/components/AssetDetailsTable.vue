@@ -1,6 +1,6 @@
 <template>
-  <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" row-key="name" table-header-style="font-weight: 100;" class="q-pt-md"
-    no-data-label="No se encontraron datos" style="height: 66vh; max-height: 66vh;">
+  <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name" table-header-style="font-weight: 100;" class="q-pt-md"
+    no-data-label="No se encontraron datos" :style="{height: isMobile ? '72.5vh' : '66vh' }">
     <template v-slot:body-cell-status="props">
       <q-td>
         <div v-if="props.row.status === 'Activo'" class=""><q-icon name="circle" color="green"></q-icon> Activo</div>
@@ -44,6 +44,19 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const route = useRoute()
 
     const records = ref(props.rows)
@@ -72,6 +85,7 @@ export default defineComponent({
     }
 
     return {
+      isMobile,
       route,
       viewStore,
       viewConfig,

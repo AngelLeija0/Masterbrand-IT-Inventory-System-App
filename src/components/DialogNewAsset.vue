@@ -55,9 +55,10 @@ export default defineComponent({
     const propertiesOptions = ref([])
 
     watch(() => inputInfo.value.category, (newValue) => {
-      console.log(newValue)
-      const category = categoriesInfo.value.filter((category) => category.name === newValue)
-      propertiesOptions.value = category[0].properties
+      if (newValue != null && newValue != undefined && newValue != {}){
+        const category = categoriesInfo.value.filter((category) => category.name === newValue)
+        propertiesOptions.value = category[0]?.properties
+      }
     })
 
     function getAllCategories() {
@@ -95,11 +96,12 @@ export default defineComponent({
       this.getAllCategories()
     },
     closeDialog() {
-      this.dialogState = false
       this.inputInfo = {}
+      this.dialogState = false
     },
     addAsset() {
       console.log(this.inputInfo)
+      
     }
   },
 });

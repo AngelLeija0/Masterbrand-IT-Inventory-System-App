@@ -238,6 +238,7 @@ export default defineComponent({
     ])
 
     return {
+      $q,
       isMobile,
       route,
       pageLabel,

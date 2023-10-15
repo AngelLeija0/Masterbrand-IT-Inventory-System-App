@@ -2,33 +2,38 @@
   <q-page>
     <q-section class="flex justify-between q-pa-md">
       <GoBackButton />
+      <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section class="flex row q-px-md" style="height: 70vh;">
-      <div class="col-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
+    <q-section class="flex row q-px-md" style="height: 73vh;">
+      <div class="col-12 col-sm-3 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
           <div class="flex justify-between">
             <div class="text-h6 q-pr-md">{{ assetInfo.category }} {{ assetInfo.model }}</div>
-            <div v-if="assetInfo.status?.name == 'Active'"><q-icon name="circle" color="green"></q-icon> Activo</div>
-            <div v-else-if="assetInfo.status?.name == 'Inactive'"><q-icon name="circle" color="orange"></q-icon> Inactivo
+            <div v-if="assetInfo.status?.name">
+              <q-icon name="circle" :color="defineStatusColor(assetInfo.status.name)" />
+              &nbsp;
+              {{ assetInfo.status?.name }}
             </div>
-            <div v-else-if="assetInfo.status?.name == 'Broken'"><q-icon name="circle" color="red"></q-icon> Roto</div>
-            <div v-else><q-icon name="circle" color="black"></q-icon> Sin definir</div>
+            <div v-else>
+              <q-icon name="circle" color="black" />
+              &nbsp;
+              Sin definir
+            </div>
           </div>
-          <div class="text-grey-14">#{{ assetInfo.serial_number }}</div>
+          <div class="text-grey-14" v-if="assetInfo.serial_number">#{{ assetInfo.serial_number }}</div>
         </div>
         <div class="q-py-lg">
           <SecondaryNavbarButton label="Detalles" :active="activeDetails" />
           <SecondaryNavbarButton label="Acciones" :active="activeActions" />
           <SecondaryNavbarButton label="Imagenes y Videos" :active="false" />
         </div>
-        <div class="q-pa-md" style="margin-top: auto;">
-          <q-btn label="Borrar" icon="delete" color="red" outline class="full-width" />
-        </div>
       </div>
-      <div class="col-9 q-px-lg" style="overflow-y: auto;">
-        <TechnologyDetails v-if="detailsLoaded" :modelInfo="assetInfo" />
+      <div class="col-12 col-sm-9 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
+        <AssetInfo v-if="detailsLoaded" :modelInfo="assetInfo" />
       </div>
     </q-section>
+    <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
+      @deleteConfirm="deleteAsset" />
   </q-page>
 </template>
 
@@ -36,23 +41,52 @@
 import { defineComponent, ref, watch } from 'vue'
 import { api } from "src/boot/axios"
 import { useRoute } from 'vue-router'
+import { useQuasar } from 'quasar'
 
+import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import GoBackButton from 'src/components/GoBackButton.vue'
 import SecondaryNavbarButton from 'src/components/SecondaryNavbarButton.vue'
-import TechnologyDetails from 'src/components/TechnologyDetails.vue'
+import AssetInfo from 'src/components/AssetInfo.vue'
+import DialogConfirmDelete from 'src/components/DialogConfirmDelete.vue'
 
 export default defineComponent({
   name: 'AssetDetailsPage',
   components: {
     GoBackButton,
     SecondaryNavbarButton,
-    TechnologyDetails,
+    AssetInfo,
+    MoreOptionsButton,
+    DialogConfirmDelete,
   },
   setup() {
+    const $q = useQuasar()
     const router = useRoute()
+
+    if (!router.params.id) {
+      console.log("a")
+      router.push({ name: 'assets-page' })
+    }
+
     const idAsset = ref(router.params.id)
 
     const actualSection = ref("details")
+
+    const assetMoreOptions = ref([
+      {
+        label: "Agregar accion",
+        icon: "add",
+        color: "black",
+        value: "add-action",
+      },
+      {
+        label: "Borrar",
+        icon: "delete",
+        color: "red",
+        value: "delete-asset"
+      }
+    ])
+
+    const dialogConfirmDeleteState = ref(false)
 
     const activeDetails = ref(true)
     const activeActions = ref(false)
@@ -74,13 +108,16 @@ export default defineComponent({
             if (data) {
               assetInfo.value = data
               detailsLoaded.value = true
-              console.log(data)
+            } else {
+              router.push({ name: 'assets-page' })
             }
           })
           .catch((err) => {
+            router.push({ name: 'assets-page' })
             console.log(err)
           });
       } catch (error) {
+        router.push({ name: 'assets-page' })
         console.log(error)
       }
     }
@@ -88,6 +125,7 @@ export default defineComponent({
     getAssetDetails(idAsset.value)
 
     return {
+      $q,
       router,
       idAsset,
       getAssetDetails,
@@ -96,8 +134,49 @@ export default defineComponent({
       activeActions,
       detailsLoaded,
       actualSection,
+      assetMoreOptions,
+      dialogConfirmDeleteState,
     }
   },
-
-})
+  methods: {
+    handleOptionClick(option) {
+      if (option === 'delete-asset') return this.deleteAsset()
+    },
+    deleteAsset(confirm = false) {
+      if (confirm === false) {
+        return this.$refs.dialogConfirmDeleteRef.openDialog();
+      }
+      api
+        .delete(`./assets/delete/${this.idAsset}`)
+        .then((res) => {
+          if (res.status === 200) {
+            this.$q.notify({
+              type: 'warning',
+              message: 'Borrado correctamente.',
+              timeout: 2500,
+            })
+            this.$router.push({ name: 'assets-page' })
+          } else {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Ha ocurrido un error.',
+              timeout: 2000,
+            })
+          }
+        })
+        .catch((err) => {
+          this.$q.notify({
+            type: 'negative',
+            message: `Ha ocurrido un error. ${err.message}`,
+            timeout: 2000,
+          })
+        })
+    },
+    defineStatusColor(status) {
+      if (status === 'Activo' || status === 'Con stock') return 'green'
+      if (status === 'Inactivo' || status === 'Bajo stock') return 'orange'
+      if (status === 'Roto' || status === 'Sin stock') return 'red'
+    }
+  },
+});
 </script>

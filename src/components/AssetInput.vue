@@ -1,8 +1,12 @@
 <template>
-  <div class="flex justify-between items-center q-py-sm" style="border-bottom: 1px solid rgb(239, 239, 239);">
+  <div class="flex justify-between items-center q-py-sm" style="border-bottom: 1px solid rgb(239, 239, 239); width: 100%;">
     <div class="q-pr-md text-grey-14" style="width: 30%;">{{ label }}</div>
-    <q-input v-model="localValue" dense borderless :readonly="!isEditing" @change="updateValue" input-style="font-weight: 500;" />
-    <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'black'" @click="toggleEditing" />
+    <q-input v-model="localValue" dense borderless :readonly="!isEditing || label === 'Categoría'" @change="updateValue" input-style="font-weight: 500;" />
+    <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'black'" @click="toggleEditing" :disabled="label === 'Categoría'" >
+      <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-if="label === 'Categoría'" >No es posible editar la categoria</q-tooltip>
+      <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-else-if="!isEditing" >Editar</q-tooltip>
+      <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-else >Cerrar editor</q-tooltip>
+    </q-btn>
   </div>
 </template>
 

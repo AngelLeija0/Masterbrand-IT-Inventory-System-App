@@ -53,12 +53,12 @@
           <div class="flex justify-center items-center">
             <div style="display: flex; flex-direction: column; align-items: center">
               <q-btn icon="add" size="16px" round flat @click="addNewBox()">
-                <q-tooltip class="bg-black">Agregar</q-tooltip></q-btn>
+                <q-tooltip class="bg-black" style="font-size: 0.75rem;">Agregar</q-tooltip></q-btn>
               <q-btn icon="download" size="16px" round flat @click="generateExcel()">
-                <q-tooltip class="bg-black">Descargar excel</q-tooltip>
+                <q-tooltip class="bg-black" style="font-size: 0.75rem;">Descargar excel</q-tooltip>
               </q-btn>
               <q-btn icon="refresh" size="16px" round flat @click="dialogDelete = true">
-                <q-tooltip class="bg-black">Reiniciar</q-tooltip>
+                <q-tooltip class="bg-black" style="font-size: 0.75rem;">Reiniciar</q-tooltip>
               </q-btn>
             </div>
           </div>

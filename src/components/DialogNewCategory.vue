@@ -20,7 +20,7 @@
               <div class="col-12 text-subtitle2 text-weight-regular q-py-sm">Selecciona las propiedades que tendrá la
                 categoria</div>
               <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
-                <q-checkbox v-model="property.value" :label="property.label" dense />
+                <q-checkbox v-model="property.value" :label="property.label" dense :disable="property.key === 'description'" />
               </div>
             </div>
           </div>
@@ -51,9 +51,9 @@ export default defineComponent({
 
     const checkBoxProperties = ref([
       {
-        label: 'Descripcion',
+        label: 'Nombre / Descripción',
         key: 'description',
-        value: false
+        value: true
       },
       {
         label: 'Fabricante',

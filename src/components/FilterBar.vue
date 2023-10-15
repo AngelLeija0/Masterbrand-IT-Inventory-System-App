@@ -78,7 +78,7 @@
         </q-input>
         <q-btn v-if="actualRoute === 'assets-page'" class="q-mx-sm" flat size="14px" icon="qr_code_scanner"
           @click="dialogScanQR = true">
-          <q-tooltip class="bg-black">Buscar por QR</q-tooltip>
+          <q-tooltip class="bg-black" style="font-size: 0.75rem;" >Buscar por QR</q-tooltip>
         </q-btn>
       </div>
       <div class="col-12 col-sm-6 col-md-6 flex justify-end">
@@ -325,10 +325,10 @@ export default defineComponent({
         const filteredData = this.dataApi.filter((data) => data[filterKey] === filters[filterDictionaryKey].inputModel)
         if (filteredData.length > 0) {
           this.dataApiStore.setDataApi(filteredData)
-          return this.$emit("realodData")
+          return this.$emit("reloadData")
         }
         this.dataApiStore.setDataApi(this.dataApi)
-        return this.$emit("realodData")
+        return this.$emit("reloadData")
       }
     },
     updatePropertiesFilters(filterDictionaryKey) {
@@ -337,7 +337,7 @@ export default defineComponent({
 
       if (!selectedProperty) {
         this.dataApiStore.setDataApi(this.dataApi)
-        return this.$emit("realodData")
+        return this.$emit("reloadData")
       }
 
       const filteredData = this.dataApi.filter((data) => {
@@ -347,17 +347,17 @@ export default defineComponent({
       });
       if (filteredData.length > 0) {
         this.dataApiStore.setDataApi(filteredData);
-        this.$emit("realodData");
+        this.$emit("reloadData");
       } else {
         this.dataApiStore.setDataApi(this.dataApi)
-        return this.$emit("realodData")
+        return this.$emit("reloadData")
       }
     },
     getDataBySearchBar() {
       if (this.dataApi != null) {
         if (this.inputSearchBar == null || this.inputSearchBar == "") {
           this.dataApiStore.setDataApi(this.dataApi)
-          return this.$emit("realodData")
+          return this.$emit("reloadData")
         }
         const resultsFilter = this.dataApi.filter((data) => {
           return Object.values(data).some((value) => {
@@ -365,7 +365,7 @@ export default defineComponent({
           });
         });
         this.dataApiStore.setDataApi(resultsFilter);
-        this.$emit("realodData");
+        this.$emit("reloadData");
       } else {
         this.dataApi = this.dataApiStore.getDataApi
         this.getDataBySearchBar()

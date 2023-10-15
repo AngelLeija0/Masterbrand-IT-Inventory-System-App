@@ -4,7 +4,7 @@
       <PageTitle label="Inventario" />
       <div v-if="isMobile">
         <q-btn-group flat>
-          <PrimaryButton flat icon="add" @click="activateDialogNewAsset" toolTip="Agregar producto" />
+          <PrimaryButton flat icon="add" toolTip="Agregar producto" @click="activateDialogNewAsset" />
           <DialogNewAsset ref="dialogNewAssetRef" />
           <PrimaryButton flat icon="more_vert" toolTip="Mas opciones" />
         </q-btn-group>
@@ -12,13 +12,13 @@
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
-          <DialogNewAsset ref="dialogNewAssetRef" />
+          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="getAllAssets" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" toolTip="Mas opciones" />
         </q-btn-group>
       </div>
     </q-section>
     <q-section>
-      <FilterBar @getAllData="getAllAssets" @realodData="setAssets"></FilterBar>
+      <FilterBar @getAllData="getAllAssets" @reloadData="setAssets"></FilterBar>
     </q-section>
     <q-section>
       <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" @reloadData="setAssets">
@@ -100,6 +100,10 @@ export default defineComponent({
             const data = res.data
             if (data.length > 0) {
               setAssets(data)
+            }
+            else if(data.length == 0){
+              dataApiStore.clearDataApi()
+              loadingState.value = false
             }
           })
           .catch((err) => {

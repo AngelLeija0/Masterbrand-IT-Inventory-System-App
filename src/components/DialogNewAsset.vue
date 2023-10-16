@@ -1,41 +1,104 @@
 <template>
   <q-dialog v-model="dialogState" persistent>
-    <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
+    <q-card
+      class="q-pa-md"
+      style="width: 700px; max-width: 80vw; max-height: 80vh"
+    >
       <q-card-actions align="right" class="q-py-none">
-        <q-btn icon="close" color="black" flat round @click="closeDialog" class="q-py-none" />
+        <q-btn
+          icon="close"
+          color="black"
+          flat
+          round
+          @click="closeDialog"
+          class="q-py-none"
+        />
       </q-card-actions>
       <q-card-section class="q-pt-none q-pb-sm">
         <div class="text-h5 text-weight-medium">Nuevo Producto</div>
       </q-card-section>
       <q-card-section>
         <div class="q-mb-lg">
-          <q-title class="text-subtitle2 text-weight-regular">Completa los siguientes campos. En caso de que no aplique
-            puede
-            dejar el campo en blanco.</q-title>
+          <q-title class="text-subtitle2 text-weight-regular"
+            >Completa los siguientes campos. En caso de que no aplique puede
+            dejar el campo en blanco.</q-title
+          >
         </div>
         <div class="q-pa-md bg-grey-12 rounded-borders">
           <div class="q-pb-xs">Selecciona una categoria para comenzar</div>
-          <q-select clearable dense v-model="inputInfo.category" :options="categoriesOptions" label="Categoria"
-            class="q-mb-md" />
+          <q-select
+            clearable
+            dense
+            v-model="inputInfo.category"
+            :options="categoriesOptions"
+            label="Categoria"
+            class="q-mb-md"
+          />
         </div>
         <div class="q-pa-md" v-if="inputInfo.category">
-          <q-file dense v-model="inputInfo.images" label="Imagenes" use-chips multiple class="q-mb-md"
-            accept=".jpg, image/*" hint="opcional" />
+          <q-file
+            dense
+            v-model="inputInfo.images"
+            label="Imagenes"
+            use-chips
+            multiple
+            class="q-mb-md"
+            accept=".jpg, image/*"
+            hint="opcional"
+          />
           <div v-for="(property, i) in propertiesOptions" :key="i">
-            <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
-              hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+            <q-input
+              clearable
+              dense
+              v-model="inputInfo[property.key]"
+              :label="property.name"
+              class="q-mb-md"
+              hint="requerido"
+              :rules="[(val) => !!val || 'requerido']"
+            />
           </div>
-          <q-select clearable dense v-model="inputInfo.status.name" :options="statusOptions" label="Estado"
-            class="q-mb-md" hint="requerido" :rules="[(val) => !!val || 'requerido']" />
-          <q-input clearable dense v-model="inputInfo.status.description" label="Descripcion del estado" class="q-mb-md"
-            hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+          <q-select
+            clearable
+            dense
+            v-model="inputInfo.status.name"
+            :options="statusOptions"
+            label="Estado"
+            class="q-mb-md"
+            hint="requerido"
+            :rules="[(val) => !!val || 'requerido']"
+          />
+          <q-input
+            clearable
+            dense
+            v-model="inputInfo.status.description"
+            label="Descripcion del estado"
+            class="q-mb-md"
+            hint="requerido"
+            :rules="[(val) => !!val || 'requerido']"
+          />
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn label="Agregar" size="0.85rem" color="primary" dense outline padding="sm lg" @click="addAsset"
-          style="border-radius: 10px; text-transform: capitalize" />
-        <q-btn label="Cancelar" size="0.85rem" flat dense outline @click="closeDialog" padding="sm lg"
-          style="border-radius: 10px; text-transform: capitalize" />
+        <q-btn
+          label="Agregar"
+          size="0.85rem"
+          color="primary"
+          dense
+          outline
+          padding="sm lg"
+          @click="addAsset"
+          style="border-radius: 10px; text-transform: capitalize"
+        />
+        <q-btn
+          label="Cancelar"
+          size="0.85rem"
+          flat
+          dense
+          outline
+          @click="closeDialog"
+          padding="sm lg"
+          style="border-radius: 10px; text-transform: capitalize"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -53,15 +116,19 @@ export default defineComponent({
     const dialogState = ref(false);
 
     const inputInfo = ref({
-      status: {}
+      status: {},
     });
     const categoriesInfo = ref([]);
     const categoriesOptions = ref([]);
     const propertiesOptions = ref([]);
-    const statusOptions = ref(
-      [
-        'Activo', 'Inactivo', 'Roto', 'Con stock', 'Bajo stock', 'Sin stock'
-      ]);
+    const statusOptions = ref([
+      "Activo",
+      "Inactivo",
+      "Roto",
+      "Con stock",
+      "Bajo stock",
+      "Sin stock",
+    ]);
 
     watch(
       () => inputInfo.value.category,
@@ -116,21 +183,21 @@ export default defineComponent({
       this.dialogState = false;
     },
     addAsset() {
-      const assetData = new FormData()
+      const assetData = new FormData();
 
       Object.keys(this.inputInfo).map((key) => {
         if (key !== "images" && key !== "status") {
-          assetData.append(key, this.inputInfo[key])
+          assetData.append(key, this.inputInfo[key]);
         }
-      })
+      });
 
-      assetData.append("statusName", this.inputInfo.status.name)
-      assetData.append("statusDescription", this.inputInfo.status.description)
+      assetData.append("statusName", this.inputInfo.status.name);
+      assetData.append("statusDescription", this.inputInfo.status.description);
 
       if (this.inputInfo?.images) {
-        const assetImages = this.inputInfo.images
+        const assetImages = this.inputInfo.images;
         assetImages.forEach((image, index) => {
-          assetData.append("images", image)
+          assetData.append("images", image);
         });
       }
 
@@ -142,29 +209,29 @@ export default defineComponent({
         })
         .then((res) => {
           if (res.data) {
-            this.dialogState = false
-            this.$emit("reloadData")
+            this.dialogState = false;
+            this.$emit("reloadData");
             this.$q.notify({
-              type: 'positive',
-              message: 'Agregado correctamente.',
+              type: "positive",
+              message: "Agregado correctamente.",
               timeout: 2000,
-            })
+            });
           } else {
             this.$q.notify({
-              type: 'negative',
-              message: 'Ha ocurrido un error.',
+              type: "negative",
+              message: "Ha ocurrido un error.",
               timeout: 2000,
-            })
+            });
           }
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
           this.$q.notify({
-            type: 'negative',
-            message: 'Ha ocurrido un error.',
+            type: "negative",
+            message: "Ha ocurrido un error.",
             timeout: 2000,
-          })
-        })
+          });
+        });
     },
   },
 });

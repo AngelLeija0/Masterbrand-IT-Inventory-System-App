@@ -1,62 +1,38 @@
 <template>
   <div class="row">
-    <div class="col-md-6 col-12 q-px-sm">
+    <div class="col-12">
       <div class="row">
-        <div class="col-md-12 col-12 flex justify-center text-center q-pb-sm items-start">
+        <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pb-sm items-start">
           <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/images/' + inputInfo.images?.default_image"
             spinner-color="white" style="height: 140px; max-width: 150px" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
         </div>
-        <div class="col-md-12 col-12" v-for="(property, i) in Object.keys(inputInfo)" :key="i + 1">
-          <div v-if="filterProperty(property) && i <= ((Object.keys(inputInfo).length / 2))">
-            <div v-if="property === 'status'">
-              <AssetInput label="Estado" :modelKey="property" :modelValue="inputInfo.status.name" :editing="isEditing"
-                @update-input="updateInputInfo" @update-editing="updateEditing" />
-            </div>
-            <div v-else-if="property === 'created_at' || property === 'updated_at'">
-              <div class="flex justify-between items-center q-py-sm"
-                style="border-bottom: 1px solid rgb(239, 239, 239); width: 100%;">
-                <div class="q-pr-md text-grey-14" style="width: 30%;">{{ defineLabelFromProperty(property) }}</div>
-                <q-input v-model="inputInfo[property]" dense borderless readonly input-style="font-weight: 500;" />
-              </div>
-            </div>
-            <div v-else>
-              <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property"
-                :modelValue="inputInfo[property]" :editing="isEditing" @update-input="updateInputInfo"
-                @update-editing="updateEditing" />
-            </div>
+        <div class="col-md-6 col-sm-6 col-12 bg-grey-2 q-pa-md" style="border-radius: 10px;">
+          <div class="text-h6">Estado</div>
+          <div v-for="(stateProperty, i) in Object.keys(inputInfo.status)" :key="i + 1">
+            <AssetSelectInput :label="defineLabelFromProperty(stateProperty)" :options="statusOptions"
+              :modelKey="stateProperty" :modelValue="inputInfo.status[stateProperty]" :editing="isEditing"
+              @update-input="updateInputInfo" @update-editing="updateEditing" />
           </div>
         </div>
       </div>
     </div>
-    <div class="col-md-6 col-12 q-px-sm">
-      <div v-for="(property, i) in Object.keys(inputInfo)" :key="i + 1">
-        <div v-if="filterProperty(property) && i > ((Object.keys(inputInfo).length / 2))">
-          <div v-if="property === 'status'">
-            <AssetInput label="Estado" :modelKey="property" :modelValue="inputInfo.status.name" :editing="isEditing"
-              @update-input="updateInputInfo" @update-editing="updateEditing" />
-          </div>
-          <div v-else-if="property === 'created_at' || property === 'updated_at'">
-            <div class="flex justify-between items-center q-py-sm"
-              style="border-bottom: 1px solid rgb(239, 239, 239); width: 100%;">
-              <div class="q-pr-md text-grey-14" style="width: 30%;">{{ defineLabelFromProperty(property) }}</div>
-              <q-input v-model="inputInfo[property]" dense borderless readonly input-style="font-weight: 500;" />
-            </div>
-          </div>
-          <div v-else>
-            <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property" :modelValue="inputInfo[property]"
-              :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
-          </div>
+    <div class="col-12 q-pt-sm">
+      <div class="row flex justify-between">
+        <div class="col-md-6 col-12 q-px-md" v-for="(property, i) in filterProperties(Object.keys(inputInfo))"
+          :key="i + 1">
+          <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property" :modelValue="inputInfo[property]"
+            :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
-      </div>
-      <div v-if="isEditing" class="flex justify-end q-pt-lg">
-        <q-btn-group flat>
-          <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" size="0.85rem"
-            style="text-transform: capitalize;" @click="saveAsset()" />
-          <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" size="0.85rem"
-            style="text-transform: capitalize;" />
-        </q-btn-group>
+        <div v-if="isEditing" class="col-12 flex justify-end q-pt-lg q-px-md">
+          <q-btn-group flat>
+            <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" size="0.85rem"
+              style="text-transform: capitalize; border-radius: 5px;" @click="saveAsset()" />
+            <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" size="0.85rem"
+              style="text-transform: capitalize; border-radius: 5px;" />
+          </q-btn-group>
+        </div>
       </div>
     </div>
   </div>
@@ -99,6 +75,7 @@ import { api, serverURL } from "src/boot/axios"
 import { useRoute } from 'vue-router'
 
 import AssetInput from 'src/components/AssetInput.vue'
+import AssetSelectInput from './AssetSelectInput.vue'
 
 export default defineComponent({
   name: "AssetInfo",
@@ -109,6 +86,7 @@ export default defineComponent({
   },
   components: {
     AssetInput,
+    AssetSelectInput,
   },
   data() {
     return {
@@ -129,6 +107,15 @@ export default defineComponent({
 
     const inputNewImage = ref()
 
+    const statusOptions = ref([
+      "Activo",
+      "Inactivo",
+      "Roto",
+      "Con stock",
+      "Bajo stock",
+      "Sin stock",
+    ]);
+
     return {
       router,
       originalInputInfo,
@@ -137,6 +124,7 @@ export default defineComponent({
       isEditingImage,
       inputNewImage,
       imageServer,
+      statusOptions,
     }
   },
   methods: {
@@ -149,6 +137,7 @@ export default defineComponent({
     },
     saveAsset() {
       const asset = this.inputInfo
+      console.log(this.inputInfo)
       api
         .patch(`./assets/update/${asset._id}`, asset)
         .then((res) => {
@@ -212,11 +201,14 @@ export default defineComponent({
         })
       }
     },
-    filterProperty(property) {
-      if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions') {
-        return true
-      }
-      return false
+    filterProperties(arrayProperties) {
+      const formattedArrayProperties = []
+      arrayProperties.map((property) => {
+        if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' && property !== 'updated_at' && property !== 'status') {
+          return formattedArrayProperties.push(property)
+        }
+      })
+      return formattedArrayProperties
     },
     defineLabelFromProperty(property) {
       const translationDictionary = {
@@ -240,13 +232,12 @@ export default defineComponent({
         current_employee: "Empleado actual",
         actions: "Acciones",
         status: "Estado",
+        name: "Nombre",
+        date: "Fecha",
         created_at: "Creado el",
         updated_at: "Actualizado el",
       }
       return translationDictionary[property] || property;
-    },
-    editAsset() {
-
     },
     cancelEdit() {
       this.isEditing = false

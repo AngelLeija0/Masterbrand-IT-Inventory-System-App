@@ -66,8 +66,8 @@ export default defineComponent({
         value: false
       },
       {
-        label: 'Serial',
-        key: 'serial',
+        label: 'Numero serial',
+        key: 'serial_number',
         value: false
       },
       {

@@ -4,8 +4,8 @@
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section class="flex row q-px-md" style="height: 73vh;">
-      <div class="col-12 col-sm-3 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
+    <q-section class="flex row q-px-md" style="height: 75vh;">
+      <div class="col-12 col-sm-12 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
           <div class="flex justify-between">
             <div class="text-h6 q-pr-md">{{ assetInfo.category }} {{ assetInfo.model }}</div>
@@ -28,8 +28,15 @@
           <SecondaryNavbarButton label="Imagenes y Videos" :active="false" />
         </div>
       </div>
-      <div class="col-12 col-sm-9 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
-        <AssetInfo v-if="detailsLoaded" :modelInfo="assetInfo" />
+      <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
+        <div class="row" style="padding: 0; margin: 0;">
+          <div class="col-12">
+            <AssetInfo v-if="detailsLoaded" :modelInfo="assetInfo" />
+          </div>
+          <div class="col-12">
+
+          </div>
+        </div>
       </div>
     </q-section>
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"

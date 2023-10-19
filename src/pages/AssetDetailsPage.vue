@@ -23,20 +23,13 @@
           <div class="text-grey-14" v-if="assetInfo.serial_number">#{{ assetInfo.serial_number }}</div>
         </div>
         <div class="q-py-lg">
-          <SecondaryNavbarButton label="Detalles" :active="activeDetails" />
-          <SecondaryNavbarButton label="Acciones" :active="activeActions" />
-          <SecondaryNavbarButton label="Imagenes y Videos" :active="false" />
+          <div v-for="(section, i) in pageSections" :key="i + 1">
+            <SecondaryNavbarButton :label="section.label" :active="section.state" @click="goToSection(section.label)" />
+          </div>
         </div>
       </div>
       <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
-        <div class="row" style="padding: 0; margin: 0;">
-          <div class="col-12">
-            <AssetInfo v-if="detailsLoaded" :modelInfo="assetInfo" />
-          </div>
-          <div class="col-12">
-
-          </div>
-        </div>
+        <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo" @update-info="getAssetDetails(idAsset)" />
       </div>
     </q-section>
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
@@ -95,8 +88,20 @@ export default defineComponent({
 
     const dialogConfirmDeleteState = ref(false)
 
-    const activeDetails = ref(true)
-    const activeActions = ref(false)
+    const pageSections = ref([
+      {
+        label: "Detalles",
+        state: true
+      },
+      {
+        label: "Acciones",
+        state: false
+      },
+      {
+        label: "Imagenes y videos",
+        state: false
+      }
+    ])
 
     const assetInfo = ref({})
 
@@ -137,17 +142,25 @@ export default defineComponent({
       idAsset,
       getAssetDetails,
       assetInfo,
-      activeDetails,
-      activeActions,
       detailsLoaded,
       actualSection,
       assetMoreOptions,
       dialogConfirmDeleteState,
+      pageSections,
     }
   },
   methods: {
     handleOptionClick(option) {
       if (option === 'delete-asset') return this.deleteAsset()
+    },
+    goToSection(toSection) {
+      this.pageSections.map((section) => {
+        if (section.label === toSection) {
+          section.state = true
+        } else {
+          section.state = false
+        }
+      })
     },
     deleteAsset(confirm = false) {
       if (confirm === false) {

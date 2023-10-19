@@ -3,7 +3,7 @@
     style="border-bottom: 1px solid rgb(239, 239, 239); width: 100%;">
     <div class="q-pr-md text-grey-14" style="width: 30%;">{{ label }}</div>
     <q-select v-model="localValue" :options="options" dense borderless :readonly="!isEditing || label === 'Categoría'"
-      @change="updateValue" hide-dropdown-icon input-style="font-weight: 500;" style="width: 176px;" />
+      @update:model-value="updateValue" hide-dropdown-icon input-style="font-weight: 500;" style="width: 176px;" />
     <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'black'" @click="toggleEditing"
       :disabled="label === 'Categoría'">
       <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-if="label === 'Categoría'">No es posible editar la
@@ -64,7 +64,7 @@ export default defineComponent({
       this.$emit("update-editing", this.isEditing)
     },
     updateValue() {
-      this.$emit("update-input", this.keyValue, this.localValue);
+      this.$emit("update-input", this.keyValue, this.localValue)
     },
   }
 });

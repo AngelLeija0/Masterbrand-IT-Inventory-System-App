@@ -11,9 +11,12 @@
         <div class="col-md-6 col-sm-6 col-12 bg-grey-2 q-pa-md" style="border-radius: 10px;">
           <div class="text-h6">Estado</div>
           <div v-for="(stateProperty, i) in Object.keys(inputInfo.status)" :key="i + 1">
-            <AssetSelectInput :label="defineLabelFromProperty(stateProperty)" :options="statusOptions"
-              :modelKey="stateProperty" :modelValue="inputInfo.status[stateProperty]" :editing="isEditing"
+            <AssetSelectInput v-if="stateProperty === 'name'" label="Estado" :options="statusOptions"
+              :modelKey="'status.name'" :modelValue="inputInfo.status.name" :editing="isEditing"
               @update-input="updateInputInfo" @update-editing="updateEditing" />
+            <AssetInput v-else :label="defineLabelFromProperty(stateProperty)" :modelKey="'status.' + stateProperty"
+              :modelValue="inputInfo.status[stateProperty]" :editing="isEditing" @update-input="updateInputInfo"
+              @update-editing="updateEditing" />
           </div>
         </div>
       </div>
@@ -42,8 +45,8 @@
       <q-card-section>
         <div class="text-h6">Imagenes</div>
       </q-card-section>
-      <q-card-section class="q-pt-none">
-        Selecciona una imagen
+      <q-card-section class="q-pt-none q-pb-sm">
+        Selecciona una imagen para asignarla como imagen principal.
       </q-card-section>
       <q-card-section class="flex justify-around items-around" style="max-height: 400px; overflow-y: auto;">
         <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
@@ -55,15 +58,15 @@
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-file v-model="inputNewImage" label="Subir nueva imagen" outlined rounded dense clearable accept=".jpg, image/*"
+        <q-file v-model="inputNewImage" label="Subir nueva imagen" outlined dense rounded="10px" clearable accept=".jpg, image/*"
           class="q-mx-md" label-color="primary" color="primary"
           style="text-transform: none; font-size: 12px; height: fit-content;">
           <template v-slot:prepend>
             <q-icon name="cloud_upload" color="primary" />
           </template>
         </q-file>
-        <q-btn label="Cancelar" color="black" flat rounded size="0.85rem" padding="sm md" v-close-popup
-          style="text-transform: capitalize;" />
+        <q-btn label="Cancelar" color="black" flat size="0.85rem" padding="sm md" v-close-popup
+          style="text-transform: capitalize; border-radius: 10px;" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -133,11 +136,10 @@ export default defineComponent({
     },
     updateEditing(value) {
       this.isEditing = !value
-      this.inputInfo = { ...this.originalInputInfo };
+      this.inputInfo = { ...this.originalInputInfo }
     },
     saveAsset() {
       const asset = this.inputInfo
-      console.log(this.inputInfo)
       api
         .patch(`./assets/update/${asset._id}`, asset)
         .then((res) => {
@@ -146,6 +148,7 @@ export default defineComponent({
             this.inputInfo = data
             this.originalInputInfo = { ...data };
             this.isEditing = false
+            this.$emit("update-info")
             this.$q.notify({
               type: 'positive',
               message: 'Modificado correctamente.',
@@ -204,7 +207,8 @@ export default defineComponent({
     filterProperties(arrayProperties) {
       const formattedArrayProperties = []
       arrayProperties.map((property) => {
-        if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' && property !== 'updated_at' && property !== 'status') {
+        if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' &&
+          property !== 'updated_at' && property !== 'status' && property !== 'status.name') {
           return formattedArrayProperties.push(property)
         }
       })

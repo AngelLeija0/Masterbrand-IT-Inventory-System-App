@@ -223,6 +223,14 @@
     estree-walker "^2.0.1"
     picomatch "^2.2.2"
 
+"@sec-ant/zxing-wasm@2.1.5":
+  version "2.1.5"
+  resolved "https://registry.npmjs.org/@sec-ant/zxing-wasm/-/zxing-wasm-2.1.5.tgz"
+  integrity sha512-U8/bq15/qytQ2GOfFeyoL9ItnBLLWlILpG3c0F03iZ3SlEZNJtUWd/DONjDAlbQ90TRzzOFFVw9AQhh75XlANQ==
+  dependencies:
+    "@types/emscripten" "^1.39.7"
+    zustand "^4.4.1"
+
 "@types/body-parser@*":
   version "1.19.3"
   resolved "https://registry.npmjs.org/@types/body-parser/-/body-parser-1.19.3.tgz"
@@ -257,6 +265,16 @@
   version "0.0.34"
   resolved "https://registry.npmjs.org/@types/cordova/-/cordova-0.0.34.tgz"
   integrity sha512-rkiiTuf/z2wTd4RxFOb+clE7PF4AEJU0hsczbUdkHHBtkUmpWQpEddynNfJYKYtZFJKbq4F+brfekt1kx85IZA==
+
+"@types/dom-webcodecs@^0.1.8":
+  version "0.1.9"
+  resolved "https://registry.npmjs.org/@types/dom-webcodecs/-/dom-webcodecs-0.1.9.tgz"
+  integrity sha512-lOqlovxh4zB7p59rJwej8XG3uo0kv+hR+59Ky2MftcNS70ULWnWc6I2ZIM0xKcPFyvwU/DpRsTeFm8llayr5bA==
+
+"@types/emscripten@^1.39.7":
+  version "1.39.9"
+  resolved "https://registry.npmjs.org/@types/emscripten/-/emscripten-1.39.9.tgz"
+  integrity sha512-ILdWj4XYtNOqxJaW22NEQx2gJsLfV5ncxYhhGX1a1H1lXl2Ta0gUz7QOnOoF1xQbJwWDjImi8gXN9mKdIf6n9g==
 
 "@types/express-serve-static-core@^4.17.33":
   version "4.17.36"
@@ -617,6 +635,14 @@ balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
+
+barcode-detector@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/barcode-detector/-/barcode-detector-2.0.3.tgz"
+  integrity sha512-4d6KAcnsL5SuXhxtz0Z+7qjKqPi6bqrgE2QdocKKWTA33MMR+s2Dx1+YfGEhQ++/sM/MrXT/hTBzgG8XL4dAgg==
+  dependencies:
+    "@sec-ant/zxing-wasm" "2.1.5"
+    "@types/dom-webcodecs" "^0.1.8"
 
 base64-js@^1.3.1:
   version "1.5.1"
@@ -1842,6 +1868,11 @@ isobject@^3.0.1:
   resolved "https://registry.npmjs.org/isobject/-/isobject-3.0.1.tgz"
   integrity sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==
 
+"js-tokens@^3.0.0 || ^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/js-tokens/-/js-tokens-4.0.0.tgz"
+  integrity sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==
+
 js-yaml@^4.1.0:
   version "4.1.0"
   resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-4.1.0.tgz"
@@ -2037,6 +2068,13 @@ log-symbols@^4.1.0:
   dependencies:
     chalk "^4.1.0"
     is-unicode-supported "^0.1.0"
+
+loose-envify@^1.1.0:
+  version "1.4.0"
+  resolved "https://registry.npmjs.org/loose-envify/-/loose-envify-1.4.0.tgz"
+  integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
+  dependencies:
+    js-tokens "^3.0.0 || ^4.0.0"
 
 lower-case@^1.1.1:
   version "1.1.4"
@@ -2444,6 +2482,13 @@ raw-body@2.5.1:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
+"react@^16.8.0 || ^17.0.0 || ^18.0.0", react@>=16.8:
+  version "18.2.0"
+  resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
+  integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
+  dependencies:
+    loose-envify "^1.1.0"
+
 readable-stream@^2.0.0:
   version "2.3.8"
   resolved "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz"
@@ -2654,6 +2699,11 @@ saxes@^5.0.1:
   integrity sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==
   dependencies:
     xmlchars "^2.2.0"
+
+sdp@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.npmjs.org/sdp/-/sdp-3.2.0.tgz"
+  integrity sha512-d7wDPgDV3DDiqulJjKiV2865wKsJ34YI+NDREbm+FySq6WuKOikwyNQcm+doLAZ1O6ltdO0SeKle2xMpN3Brgw==
 
 semver@^6.3.0:
   version "6.3.1"
@@ -2971,6 +3021,11 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
+use-sync-external-store@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/use-sync-external-store/-/use-sync-external-store-1.2.0.tgz"
+  integrity sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==
+
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz"
@@ -3030,6 +3085,14 @@ vue-i18n@^9.0.0, vue-i18n@^9.1.0:
     "@intlify/shared" "9.4.1"
     "@vue/devtools-api" "^6.5.0"
 
+vue-qrcode-reader@^5.3.9:
+  version "5.3.9"
+  resolved "https://registry.npmjs.org/vue-qrcode-reader/-/vue-qrcode-reader-5.3.9.tgz"
+  integrity sha512-rnfgFCxTsJ7nr8uD1zFGnhUCcFkK0VC4L+N1RV1TZENhewGU5CFvr6NMIkdqOd9cZT2TvPWYpviI2K7z7GK+IA==
+  dependencies:
+    barcode-detector "2.0.3"
+    webrtc-adapter "^8.2.3"
+
 vue-router@^4.0.0, vue-router@^4.0.12:
   version "4.2.4"
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.2.4.tgz"
@@ -3062,6 +3125,13 @@ webpack-merge@^5.8.0:
   dependencies:
     clone-deep "^4.0.1"
     wildcard "^2.0.0"
+
+webrtc-adapter@^8.2.3:
+  version "8.2.3"
+  resolved "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-8.2.3.tgz"
+  integrity sha512-gnmRz++suzmvxtp3ehQts6s2JtAGPuDPjA1F3a9ckNpG1kYdYuHWYpazoAnL9FS5/B21tKlhkorbdCXat0+4xQ==
+  dependencies:
+    sdp "^3.2.0"
 
 which@^2.0.1:
   version "2.0.2"
@@ -3163,3 +3233,10 @@ zip-stream@^4.1.0:
     archiver-utils "^3.0.4"
     compress-commons "^4.1.2"
     readable-stream "^3.6.0"
+
+zustand@^4.4.1:
+  version "4.4.3"
+  resolved "https://registry.npmjs.org/zustand/-/zustand-4.4.3.tgz"
+  integrity sha512-oRy+X3ZazZvLfmv6viIaQmtLOMeij1noakIsK/Y47PWYhT8glfXzQ4j0YcP5i0P0qI1A4rIB//SGROGyZhx91A==
+  dependencies:
+    use-sync-external-store "1.2.0"

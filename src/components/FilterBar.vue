@@ -133,23 +133,36 @@
         </q-btn-group>
       </div>
     </div>
+
     <q-dialog v-model="dialogScanQR" persistent transparent>
-      <q-card class="q-pa-md" style="width: 600px; max-width: 85vw; height: 70vh; max-height: 70vh; overflow: hidden;">
+      <q-card class="q-pa-md" style="width: 600px; max-width: 85vw; max-height: 70vh; overflow: hidden;">
         <q-card-actions align="right" class="q-py-none">
-          <q-btn icon="close" color="black" flat round @click="dialogScanQR = false" class="q-py-none" />
+          <q-btn icon="close" color="black" flat round @click="dialogScanQR = false, camReady = false"
+            class="q-py-none" />
         </q-card-actions>
         <q-card-section class="q-pt-none q-pb-sm">
           <div class="text-h5 text-weight-medium">Buscar por codigo QR</div>
           <div class="text-subtitle2 text-weight-regular">Escanea el codigo QR para encontrar la informacion un producto.
           </div>
         </q-card-section>
-        <q-card-section class="q-ma-md" style="border: 1.8px solid black; height: 47vh;">
+        <q-card-section style="position: relative;">
           <div v-if="labelErrorQR" class="q-pa-lg flex justify-center items-center text-center">
             <q-icon class="q-ma-md" name="error" size="64px" color="red"></q-icon>
             <div class="full-width color-red text-h6" style="font-weight: 500;">Error</div>
             <div class="full-width">{{ labelErrorQR }}</div>
           </div>
-          <QrcodeStream @detect="onDetect" @error="handleError" />
+          <div v-if="!camReady" class="flex justify-center items-center q-ma-md">
+            <div class="q-px-md">Buscando camara</div>
+            <q-spinner-dots color="primary" size="2em" />
+          </div>
+          <QrcodeStream @camera-on="camReady = true" @detect="onDecode" @error="onError" class="qr-video" />
+          <div v-if="Object.keys(assetFounded).length > 0"
+            style="position: absolute; background: white; bottom: 48px; border-radius: 0 10px 10px 0;">
+            <q-btn :label="assetFounded.label" icon-right="navigate_next" size="14px" flat
+              style="text-transform: capitalize; font-weight: normal;" @click="redirectToAsset(assetFounded.id)">
+              <q-tooltip class="bg-black" style="font-size: 0.75rem;" >Ver mas informacion</q-tooltip>
+            </q-btn>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -158,9 +171,12 @@
 
 <script>
 import { defineComponent, ref, onMounted } from "vue";
+import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
 import { useDataApiStore } from "src/stores/data-api-store";
 import { useViewStore } from "src/stores/view-store"
+import { api } from "src/boot/axios"
+
 import { QrcodeStream } from "vue-qrcode-reader";
 
 export default defineComponent({
@@ -180,11 +196,12 @@ export default defineComponent({
 
     window.addEventListener("resize", () => {
       isMobile.value = isUsingMobile()
-      console.log(isMobile.value)
     })
 
-    const route = useRoute();
-    const actualRoute = ref(route.name);
+    const $q = useQuasar();
+
+    const router = useRoute();
+    const actualRoute = ref(router.name);
 
     const dataApiStore = useDataApiStore();
     const dataApi = ref(null)
@@ -264,11 +281,14 @@ export default defineComponent({
     const isViewActive = ref(false)
 
     const dialogScanQR = ref(false)
+    const dialogQrResult = ref(false)
     const labelErrorQR = ref("")
+    const assetFounded = ref({})
+    const camReady = ref(false)
 
     return {
       isMobile,
-      route,
+      router,
       actualRoute,
       isFiltering,
       filterDictionary,
@@ -279,7 +299,10 @@ export default defineComponent({
       viewDictionary,
       isViewActive,
       dialogScanQR,
+      dialogQrResult,
       labelErrorQR,
+      assetFounded,
+      camReady,
     };
   },
   methods: {
@@ -383,30 +406,75 @@ export default defineComponent({
         this.getDataBySearchBar()
       }
     },
-    handleError(error) {
-      if (error.name === 'NotAllowedError') {
-        return this.labelErrorQR = 'Necesitas aceptar los permisos para acceder a la camara'
-      } 
-      if (error.name === 'NotFoundError') {
-        return this.labelErrorQR = 'No se encontro una camara en este dispositivo'
-      } 
-      if (error.name === 'NotSupportedError') {
-        return this.labelErrorQR = 'Contexto seguro requerido (HTTPS, localhost)'
-      } 
-      if (error.name === 'NotReadableError') {
-        return this.labelErrorQR = 'La camara ya esta en uso'
-      } 
-      if (error.name === 'OverconstrainedError') {
-        return this.labelErrorQR = 'La camara no es adecuada'
-      } 
-      if (error.name === 'StreamApiNotSupportedError') {
-        return this.labelErrorQR = 'La funcion no esta disponible en tu navegador'
-      } 
-      if (error.name === 'InsecureContextError') {
-        return this.labelErrorQR = 'El acceso a la camara solo esta permetido en un contexto seguro (HTTPS, localhost)'
-      } 
-      return this.labelErrorQR = "Ha ocurrido un error."
+    redirectToAsset(idAsset) {
+      this.$router.push({ path: `./inventario/${idAsset}` })
+    },
+    onDecode(data) {
+      const qr = data[0]
+      const qrData = qr.rawValue
+      this.assetFounded = null
+      api
+        .get(`./assets/${qrData}`)
+        .then((res) => {
+          const data = res.data
+          if (data) {
+            this.assetFounded = {
+              id: qrData,
+              label: data.description
+            }
+            this.$q.notify({
+              type: "positive",
+              message: "Producto encontrado.",
+              timeout: 2000,
+            })
+          }
+          else {
+            this.$q.notify({
+              type: "negative",
+              message: "No se encontro informacion del producto.",
+              timeout: 2000,
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$q.notify({
+            type: "negative",
+            message: "No se encontro el producto.",
+            timeout: 2000,
+          })
+        })
     }
   },
+  onError(error) {
+    if (error.name === 'NotAllowedError') {
+      return this.labelErrorQR = 'Necesitas aceptar los permisos para acceder a la camara'
+    }
+    if (error.name === 'NotFoundError') {
+      return this.labelErrorQR = 'No se encontro una camara en este dispositivo'
+    }
+    if (error.name === 'NotSupportedError') {
+      return this.labelErrorQR = 'Contexto seguro requerido (HTTPS, localhost)'
+    }
+    if (error.name === 'NotReadableError') {
+      return this.labelErrorQR = 'La camara ya esta en uso'
+    }
+    if (error.name === 'OverconstrainedError') {
+      return this.labelErrorQR = 'La camara no es adecuada'
+    }
+    if (error.name === 'StreamApiNotSupportedError') {
+      return this.labelErrorQR = 'La funcion no esta disponible en tu navegador'
+    }
+    if (error.name === 'InsecureContextError') {
+      return this.labelErrorQR = 'El acceso a la camara solo esta permetido en un contexto seguro (HTTPS, localhost)'
+    }
+    return this.labelErrorQR = "Ha ocurrido un error."
+  }
 });
 </script>
+
+<style>
+.qr-video video {
+  border-radius: 10px;
+}
+</style>

@@ -71,12 +71,47 @@ export default defineComponent({
       },
       { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
       { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
-      { name: 'manufacturer', label: 'Fabricante', field: 'manufacturer', align: 'left' },
-      { name: 'model', label: 'Modelo', field: 'model', align: 'left' },
-      { name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left' },
-      { name: 'location', label: 'Ubicacion', field: 'location', align: 'left' },
+      {
+        name: 'manufacturer', label: 'Fabricante', field: 'manufacturer', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'location', label: 'Ubicacion', field: 'location', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
       { name: 'location_extra_info', label: '', field: 'location_extra_info', align: 'left' },
-      { name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left' },
+      {
+        name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
       {
         name: 'status', label: 'Estado', field: 'status', align: 'left'
       },
@@ -101,7 +136,7 @@ export default defineComponent({
             if (data.length > 0) {
               setAssets(data)
             }
-            else if(data.length == 0){
+            else if (data.length == 0) {
               dataApiStore.clearDataApi()
               loadingState.value = false
             }

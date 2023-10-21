@@ -4,7 +4,7 @@
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section class="flex row q-px-md" style="height: 75vh;">
+    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md" style="height: 75vh;">
       <div class="col-12 col-sm-12 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
           <div class="flex justify-between">
@@ -30,8 +30,10 @@
       </div>
       <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
         <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo" @update-info="getAssetDetails(idAsset)" />
+        <AssetActions v-if="detailsLoaded && pageSections[1].state" :modelInfo="assetInfo" @update-info="getAssetDetails(idAsset)" />
       </div>
     </q-section>
+    
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
       @deleteConfirm="deleteAsset" />
   </q-page>
@@ -46,8 +48,10 @@ import { useQuasar } from 'quasar'
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import GoBackButton from 'src/components/GoBackButton.vue'
 import SecondaryNavbarButton from 'src/components/SecondaryNavbarButton.vue'
-import AssetInfo from 'src/components/AssetInfo.vue'
 import DialogConfirmDelete from 'src/components/DialogConfirmDelete.vue'
+
+import AssetInfo from 'src/components/AssetInfo.vue'
+import AssetActions from 'src/components/AssetActions.vue'
 
 export default defineComponent({
   name: 'AssetDetailsPage',
@@ -55,6 +59,7 @@ export default defineComponent({
     GoBackButton,
     SecondaryNavbarButton,
     AssetInfo,
+    AssetActions,
     MoreOptionsButton,
     DialogConfirmDelete,
   },

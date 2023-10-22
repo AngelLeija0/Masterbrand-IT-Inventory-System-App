@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pb-sm items-start">
-          <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/images/' + inputInfo.images?.default_image"
+          <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image"
             spinner-color="white" style="max-width: 260px" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
@@ -15,7 +15,7 @@
               :modelKey="'status.name'" :modelValue="inputInfo.status.name" :editing="isEditing"
               @update-input="updateInputInfo" @update-editing="updateEditing" />
             <AssetInput v-else :label="defineLabelFromProperty(stateProperty)" :modelKey="'status.' + stateProperty"
-              :modelValue="inputInfo.status[stateProperty]" :editing="isEditing" @update-input="updateInputInfo"
+              :modelValue="new RegExp('date').test(stateProperty) ? formatDate(inputInfo.status[stateProperty]) : inputInfo.status[stateProperty]" :editing="isEditing" @update-input="updateInputInfo"
               @update-editing="updateEditing" />
           </div>
         </div>
@@ -24,7 +24,8 @@
     <div class="col-12 q-pt-sm">
       <div class="row flex justify-between">
         <div class="col-md-6 col-12 q-px-md" v-for="(property, i) in allProperties" :key="i + 1">
-          <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property" :modelValue="inputInfo[property]"
+          <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property"
+            :modelValue="new RegExp('date').test(property) ? formatDate(inputInfo[property]) : inputInfo[property]"
             :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
         <div v-if="isEditing" class="col-12 flex justify-end q-pt-lg q-px-md">
@@ -37,6 +38,10 @@
         </div>
       </div>
     </div>
+    <div class="col-12 q-px-md q-pt-md q-pb-lg flex justify-end">
+      <div class="full-width text-right text-grey-14">Creado el {{ formatDate(inputInfo.created_at) }}</div>
+      <div class="full-width text-right text-grey-14">Ultima modificacion el {{ formatDate(inputInfo.updated_at) }}</div>
+    </div>
   </div>
 
   <q-dialog v-model="isEditingImage">
@@ -44,17 +49,17 @@
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="black" flat round class="q-py-none" v-close-popup />
       </q-card-actions>
-      <q-card-section class="q-pt-none">
+      <q-card-section class="q-pt-none" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h6" style="padding-top: 0;">Imagenes</div>
       </q-card-section>
-      <q-card-section class="q-pt-none q-pb-sm">
+      <q-card-section class="q-py-md">
         Selecciona una imagen para asignarla como imagen principal.
       </q-card-section>
-      <q-card-section class="flex justify-around items-around" style="max-height: 400px; overflow-y: auto;">
+      <q-card-section class="flex justify-around items-around" style="max-height: 450px;">
         <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
           @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
           @click="setNewDefaultImge(image)">
-          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/images/' + image" spinner-color="white"
+          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image" spinner-color="white"
             style="height: 120px; width: 140px" />
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>
@@ -67,6 +72,7 @@
 import { defineComponent, ref } from 'vue'
 import { api, serverURL } from "src/boot/axios"
 import { useRoute } from 'vue-router'
+import { date } from 'quasar'
 
 import AssetInput from 'src/components/AssetInput.vue'
 import AssetSelectInput from './AssetSelectInput.vue'
@@ -139,6 +145,11 @@ export default defineComponent({
       allProperties.value = formattedArrayProperties
     }
 
+    function formatDate(dateToFormat) {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      })
+    }
 
     return {
       router,
@@ -150,6 +161,7 @@ export default defineComponent({
       imageServer,
       statusOptions,
       allProperties,
+      formatDate,
     }
   },
   methods: {

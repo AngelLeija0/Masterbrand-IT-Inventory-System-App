@@ -7,6 +7,7 @@
     <div class="col-12 q-mt-md">
       <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
         table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
+        rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
         :style="{ height: isMobile ? '71vh' : '65vh' }">
         <template v-slot:body-cell-status="props">
           <q-td>
@@ -18,7 +19,7 @@
         <template v-slot:body-cell-attachments="props">
           <q-td v-if="props.row.attachments.length > 0">
             <q-btn label="Ver imagenes/videos" icon-right="navigate_next" color="dark" outline size="0.75rem"
-              style="border-radius: 10px; text-transform: capitalize;" @click="redirectToAsset(props.row._id)" />
+              style="border-radius: 10px; text-transform: capitalize;" @click="openAttachmentDialog(props.row.id)" />
           </q-td>
           <q-td v-else>
             N/A
@@ -27,7 +28,7 @@
         <template v-slot:body-cell-actions="props">
           <q-td>
             <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
-              style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
+              style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row.id)" />
             <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
               style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row.id)" />
           </q-td>
@@ -41,7 +42,7 @@
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="black" flat round @click="dialogNewAction = false" class="q-py-none" />
       </q-card-actions>
-      <q-card-section class="q-pt-none q-pb-sm">
+      <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h5 text-weight-medium">Nueva Accion</div>
       </q-card-section>
       <q-card-section>
@@ -57,7 +58,7 @@
           <q-select v-model="inputNewAction.status" :options="actionOptions" clearable dense label="Estado"
             class="q-mb-md" hint="requerido" :rules="[(val) => !!val || 'requerido']" />
           <q-file v-model="inputNewAction.attachments" dense label="Imagenes o Videos" use-chips multiple class="q-mb-md"
-            accept=".jpg, image/*" hint="opcional" />
+            accept=".jpg, image/*, .mp4, .mvk, video/*" hint="opcional" />
         </div>
       </q-card-section>
       <q-card-actions align="right">
@@ -97,12 +98,44 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+
+  <q-dialog v-model="dialogAttachmentsAction" persistent>
+    <q-card class="q-pa-md" style="width: 600px; max-width: 80vw;">
+      <q-card-actions align="right" class="q-py-none">
+        <q-btn icon="close" color="black" flat round v-close-popup class="q-py-none" />
+      </q-card-actions>
+      <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
+        <div class="text-h6">{{ currentAction.name }}</div>
+      </q-card-section>
+      <q-card-section class="q-pt-lg q-pb-sm">
+        <div class="q-pb-lg text-subtitle2 text-weight-regular">Images o videos adjuntados en la accion {{
+          currentAction.name }}.</div>
+        <div class="flex justify-center">
+          <div class="flex justify-center items-center">
+            <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"
+              style="width: 536px; max-width: 70vw;" />
+            <div class="q-py-sm full-width text-center">{{ defineFileName(currentAction.attachments[currentAttachment]) }}
+            </div>
+          </div>
+          <div class="full-width q-pt-sm flex justify-center items-center">
+            <q-btn flat round size="0.95rem" icon="navigate_before"
+              @click="currentAttachment = Number(currentAttachment) - 1"
+              :disabled="!currentAction.attachments[currentAttachment - 1]" />
+            <q-btn flat round size="0.95rem" icon="navigate_next"
+              @click="currentAttachment = Number(currentAttachment) + 1"
+              :disabled="!currentAction.attachments[currentAttachment + 1]" />
+          </div>
+          <div class="full-width text-center">{{ currentAttachment + 1 }} / {{ currentAction.attachments.length }}</div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script>
 import { defineComponent, ref, watch } from "vue"
 import { useRoute } from 'vue-router'
-import { api } from "src/boot/axios"
+import { api, serverURL } from "src/boot/axios"
 
 import PrimaryButton from 'src/components/PrimaryButton.vue'
 
@@ -136,11 +169,17 @@ export default defineComponent({
       isMobile.value = isUsingMobile()
     })
 
+    const attachmentsURL = ref(serverURL)
+
     const router = useRoute()
 
     const idAsset = ref(router.params.id)
 
     const records = ref(props.rows)
+
+    records.value.forEach((row, index) => {
+      row.index = index + 1
+    })
 
     watch(() => props.rows, (newValue) => {
       records.value = newValue
@@ -154,12 +193,16 @@ export default defineComponent({
     const actionOptions = ["Completado", "Sin completar", "En proceso", "Otro"]
 
     const dialogDeleteAction = ref(false)
-    const currentAction = ref({})
     const inputConfirmDelete = ref(null)
+
+    const currentAction = ref({})
+    const dialogAttachmentsAction = ref()
+    const currentAttachment = ref(0)
 
     return {
       isMobile,
       router,
+      attachmentsURL,
       idAsset,
       records,
       dialogNewAction,
@@ -168,6 +211,8 @@ export default defineComponent({
       dialogDeleteAction,
       currentAction,
       inputConfirmDelete,
+      currentAttachment,
+      dialogAttachmentsAction,
       pagination: ref({
         rowsPerPage: 0
       })
@@ -186,10 +231,10 @@ export default defineComponent({
         actionData.append(key, this.inputNewAction[key]);
       })
 
-      if (this.inputNewAction?.images) {
-        const assetImages = this.inputNewAction.images;
-        assetImages.forEach((image, index) => {
-          actionData.append("images", image);
+      if (this.inputNewAction?.attachments) {
+        const assetImages = this.inputNewAction.attachments;
+        assetImages.forEach((attachments, index) => {
+          actionData.append("attachments", attachments);
         });
       }
 
@@ -231,6 +276,13 @@ export default defineComponent({
       this.dialogDeleteAction = false
       this.currentAction = null
     },
+    openAttachmentDialog(idAction) {
+      this.dialogAttachmentsAction = true
+      this.currentAction = this.records.find((action) => action.id === idAction)
+    },
+    closeAttachmentDialog() {
+
+    },
     deleteAction(idAction) {
       api
         .patch(`./assets/update/delete/action/${this.idAsset}`, { idAction })
@@ -263,6 +315,10 @@ export default defineComponent({
             timeout: 2000,
           })
         })
+    },
+    defineFileName(fileName) {
+      const formattedName = fileName.replace(/\.[^.]+$/, "");
+      return formattedName
     }
   }
 });

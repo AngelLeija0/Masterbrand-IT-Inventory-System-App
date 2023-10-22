@@ -146,7 +146,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - mm:ss', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }

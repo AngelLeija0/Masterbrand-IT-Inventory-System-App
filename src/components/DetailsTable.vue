@@ -1,100 +1,41 @@
 <template>
-  <q-table
-    flat
-    bordered
-    :rows="rows"
-    :columns="columns"
-    :loading="loading"
-    loading-label="Cargando"
-    row-key="name"
-    table-header-style="font-weight: 100;"
-    class="q-pt-md"
-    no-data-label="No se encontraron datos"
-    :style="{ height: isMobile ? '72.5vh' : '66vh' }"
-  >
+  <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
+    table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
+    rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
+    :style="{ height: isMobile ? '72.5vh' : '66vh' }">
     <template v-slot:body-cell-actions="props">
       <q-td>
-        <q-btn
-          label="Editar"
-          icon-right="edit"
-          color="secondary"
-          outline
-          size="0.75rem"
-          class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize"
-          @click="openModifyDialog(props.row._id)"
-        />
-        <q-btn
-          label="Borrar"
-          icon-right="delete"
-          color="red"
-          outline
-          size="0.75rem"
-          class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize"
-          @click="openDeleteDialog(props.row._id)"
-        />
+        <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
+          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
+        <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
+          style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row._id)" />
       </q-td>
     </template>
   </q-table>
 
   <q-dialog v-model="dialogModify" persistent>
-    <q-card
-      class="q-pa-md"
-      style="width: 700px; max-width: 80vw; max-height: 80vh"
-    >
+    <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
       <div v-if="pageLabel === 'Categorias'">
         <q-card-actions align="right" class="q-py-none">
-          <q-btn
-            icon="close"
-            color="black"
-            flat
-            round
-            @click="closeModifyDialog(currentData._id)"
-            class="q-py-none"
-          />
+          <q-btn icon="close" color="black" flat round @click="closeModifyDialog(currentData._id)" class="q-py-none" />
         </q-card-actions>
-        <q-card-section class="q-pt-none q-pb-sm">
+        <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
           <div class="text-h6">{{ pageLabel }}</div>
-          <div>{{ currentData.name }}</div>
         </q-card-section>
         <q-card-section>
           <q-input v-model="currentData.name" label="Nombre" />
           <div class="q-pt-lg q-pb-md">Propiedades</div>
           <div class="row flex justify-between">
-            <div
-              class="q-ma-sm col-md-5 col-11"
-              v-for="(property, i) in checkBoxProperties"
-              :key="i"
-            >
-              <q-checkbox
-                v-model="property.value"
-                :label="property.label"
-                dense
-              />
+            <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
+              <q-checkbox v-model="property.value" :label="property.label" dense />
             </div>
           </div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn
-            label="Guardar"
-            size="0.85rem"
-            color="secondary"
-            dense
-            padding="sm lg"
-            outline
-            style="border-radius: 10px; text-transform: capitalize"
-            @click="saveRecord(currentData._id)"
-          />
-          <q-btn
-            label="Cancelar"
-            size="0.85rem"
-            flat
-            dense
-            padding="sm lg"
-            style="border-radius: 10px; text-transform: capitalize"
-            @click="closeModifyDialog(currentData._id)"
-          />
+          <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
+            style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)" />
+          <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
+            style="border-radius: 10px; text-transform: capitalize" @click="closeModifyDialog(currentData._id)" />
         </q-card-actions>
       </div>
     </q-card>
@@ -103,19 +44,9 @@
   <q-dialog v-model="dialogDelete" persistent>
     <q-card class="q-pa-md" style="width: 500px; max-width: 80vw">
       <q-card-actions align="right" class="q-py-none">
-        <q-btn
-          icon="close"
-          color="black"
-          flat
-          round
-          @click="closeDeleteDialog(currentData._id)"
-          class="q-py-none"
-        />
+        <q-btn icon="close" color="black" flat round @click="closeDeleteDialog(currentData._id)" class="q-py-none" />
       </q-card-actions>
-      <q-card-section
-        class="q-pt-none q-pb-md"
-        style="border-bottom: 1px solid #e9e9e9"
-      >
+      <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h6">Borrar {{ pageLabel }}</div>
       </q-card-section>
       <q-card-section class="q-pt-md q-pb-sm flex justify-start">
@@ -127,41 +58,19 @@
         </div>
         <div class="text-subtitle2 text-weight-regular q-pt-md">
           Escribe
-          <span class="text-red text-weight-medium"
-            >delete {{ currentData.name }}</span
-          >
+          <span class="text-red text-weight-medium">delete {{ currentData.name }}</span>
           a continuación para confirmar.
         </div>
         <div class="full-width q-pt-sm q-pb-md">
-          <q-input
-            v-model="inputConfirmDelete"
-            outlined
-            dense
-            class="full-width"
-          />
+          <q-input v-model="inputConfirmDelete" outlined dense class="full-width" />
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn
-          label="Confirmar"
-          size="0.85rem"
-          color="red"
-          dense
-          padding="sm lg"
-          outline
+        <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
           style="border-radius: 10px; text-transform: capitalize"
-          :disabled="inputConfirmDelete !== `delete ${currentData.name}`"
-          @click="deleteRecord(currentData._id)"
-        />
-        <q-btn
-          label="Cancelar"
-          size="0.85rem"
-          flat
-          dense
-          padding="sm lg"
-          style="border-radius: 10px; text-transform: capitalize"
-          @click="closeDeleteDialog(currentData._id)"
-        />
+          :disabled="inputConfirmDelete !== `delete ${currentData.name}`" @click="deleteRecord(currentData._id)" />
+        <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
+          style="border-radius: 10px; text-transform: capitalize" @click="closeDeleteDialog(currentData._id)" />
       </q-card-actions>
     </q-card>
   </q-dialog>

@@ -4,7 +4,7 @@
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="black" flat round @click="closeDialog" class="q-py-none" />
       </q-card-actions>
-      <q-card-section class="q-pt-none q-pb-sm">
+      <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h5 text-weight-medium">Nueva Categoria</div>
       </q-card-section>
       <q-card-section>

@@ -14,7 +14,7 @@
           class="q-py-none"
         />
       </q-card-actions>
-      <q-card-section class="q-pt-none q-pb-sm">
+      <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h5 text-weight-medium">Nuevo Producto</div>
       </q-card-section>
       <q-card-section>

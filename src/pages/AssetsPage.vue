@@ -30,7 +30,8 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { api } from "src/boot/axios"
-import { useDataApiStore } from "src/stores/data-api-store";
+import { useDataApiStore } from "src/stores/data-api-store"
+import { date } from 'quasar'
 
 import PageTitle from 'src/components/PageTitle.vue'
 import PrimaryButton from 'src/components/PrimaryButton.vue'
@@ -115,6 +116,12 @@ export default defineComponent({
       {
         name: 'status', label: 'Estado', field: 'status', align: 'left'
       },
+      {
+        name: 'created_at', label: 'Creado el', field: 'created_at', align: 'left',
+        format: (date) => {
+          return formatDate(date)
+        },
+      },
       { name: 'actions', label: '', align: 'left' }
     ]
 
@@ -155,6 +162,12 @@ export default defineComponent({
       }
       assetRows.value = dataApiStore.getDataApi
       loadingState.value = false
+    }
+
+    function formatDate(dateToFormat) {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - mm:ss', {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      })
     }
 
     return {

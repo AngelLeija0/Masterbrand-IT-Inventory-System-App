@@ -4,7 +4,7 @@
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md" style="height: 75vh;">
+    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md" style="height: 75vh; overflow-y: auto; overflow-x: hidden;">
       <div class="col-12 col-sm-12 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
           <div class="flex justify-between">
@@ -38,6 +38,7 @@
 
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
       @deleteConfirm="deleteAsset" />
+      
   </q-page>
 </template>
 
@@ -45,7 +46,7 @@
 import { defineComponent, ref, watch } from 'vue'
 import { api } from "src/boot/axios"
 import { useRoute } from 'vue-router'
-import { useQuasar } from 'quasar'
+import { useQuasar, date } from 'quasar'
 
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import GoBackButton from 'src/components/GoBackButton.vue'
@@ -80,8 +81,8 @@ export default defineComponent({
 
     const assetMoreOptions = ref([
       {
-        label: "Agregar accion",
-        icon: "add",
+        label: "Ver codigo QR",
+        icon: "qr_code",
         color: "black",
         value: "add-action",
       },
@@ -105,7 +106,7 @@ export default defineComponent({
         state: false
       },
       {
-        label: "Imagenes y videos",
+        label: "Archivos adjuntados",
         state: false
       }
     ])
@@ -154,7 +155,12 @@ export default defineComponent({
       { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
       { name: 'status', label: 'Estado', field: 'status', align: 'left' },
       { name: 'attachments', label: 'Imagenes y videos', field: 'attachments', align: 'left' },
-      { name: 'date', label: 'Fecha', field: 'date', align: 'left' },
+      {
+        name: 'date', label: 'Fecha', field: 'date', align: 'left',
+        format: (date) => {
+          return formatDate(date)
+        }
+      },
       { name: 'actions', label: '', align: 'left' },
     ]
 
@@ -163,6 +169,12 @@ export default defineComponent({
     function sortActions(actions) {
       actions.sort((a, b) => new Date(b.date) - new Date(a.date))
       return actions
+    }
+
+    function formatDate(dateToFormat) {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      })
     }
 
     return {

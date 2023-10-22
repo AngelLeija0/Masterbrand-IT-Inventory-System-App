@@ -1,272 +1,269 @@
 <template>
-    <div class="row">
-      <div class="col-12">
-        <div class="row">
-          <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pb-sm items-start">
-            <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/images/' + inputInfo.images?.default_image"
-              spinner-color="white" style="height: 140px; max-width: 150px" />
-            <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
-              @click="isEditingImage = true" />
-          </div>
-          <div class="col-md-6 col-sm-6 col-12 bg-grey-2 q-pa-md" style="border-radius: 10px;">
-            <div class="text-h6">Estado</div>
-            <div v-for="(stateProperty, i) in Object.keys(inputInfo.status)" :key="i + 1">
-              <AssetSelectInput v-if="stateProperty === 'name'" label="Estado" :options="statusOptions"
-                :modelKey="'status.name'" :modelValue="inputInfo.status.name" :editing="isEditing"
-                @update-input="updateInputInfo" @update-editing="updateEditing" />
-              <AssetInput v-else :label="defineLabelFromProperty(stateProperty)" :modelKey="'status.' + stateProperty"
-                :modelValue="inputInfo.status[stateProperty]" :editing="isEditing" @update-input="updateInputInfo"
-                @update-editing="updateEditing" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 q-pt-sm">
-        <div class="row flex justify-between">
-          <div class="col-md-6 col-12 q-px-md" v-for="(property, i) in filterProperties(Object.keys(inputInfo))"
-            :key="i + 1">
-            <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property" :modelValue="inputInfo[property]"
-              :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
-          </div>
-          <div v-if="isEditing" class="col-12 flex justify-end q-pt-lg q-px-md">
-            <q-btn-group flat>
-              <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" size="0.85rem"
-                style="text-transform: capitalize; border-radius: 5px;" @click="saveAsset()" />
-              <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" size="0.85rem"
-                style="text-transform: capitalize; border-radius: 5px;" />
-            </q-btn-group>
-          </div>
-        </div>
-      </div>
+  <div class="row q-pa-sm">
+    <div class="col-12 flex justify-between">
+      <div class="text-h6">Acciones</div>
+      <PrimaryButton label="Agregar accion" icon="add" class="q-mx-sm" @click="dialogNewAction = true" />
     </div>
-  
-    <q-dialog v-model="isEditingImage">
-      <q-card class="q-pa-md" style="width: 550px">
-        <q-card-section>
-          <div class="text-h6">Imagenes</div>
-        </q-card-section>
-        <q-card-section class="q-pt-none q-pb-sm">
-          Selecciona una imagen para asignarla como imagen principal.
-        </q-card-section>
-        <q-card-section class="flex justify-around items-around" style="max-height: 400px; overflow-y: auto;">
-          <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
-            @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
-            @click="setNewDefaultImge(image)">
-            <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/images/' + image" spinner-color="white"
-              style="height: 120px; width: 140px" />
-            <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
-          </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-file v-model="inputNewImage" label="Subir nueva imagen" outlined dense rounded="10px" clearable accept=".jpg, image/*"
-            class="q-mx-md" label-color="primary" color="primary"
-            style="text-transform: none; font-size: 12px; height: fit-content;">
-            <template v-slot:prepend>
-              <q-icon name="cloud_upload" color="primary" />
-            </template>
-          </q-file>
-          <q-btn label="Cancelar" color="black" flat size="0.85rem" padding="sm md" v-close-popup
-            style="text-transform: capitalize; border-radius: 10px;" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </template>
-  
-  <script>
-  import { defineComponent, ref } from 'vue'
-  import { api, serverURL } from "src/boot/axios"
-  import { useRoute } from 'vue-router'
-  
-  import AssetInput from 'src/components/AssetInput.vue'
-  import AssetSelectInput from './AssetSelectInput.vue'
-  
-  export default defineComponent({
-    name: "AssetInfo",
-    props: {
-      modelInfo: {
-        type: Object,
-      },
+    <div class="col-12 q-mt-md">
+      <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
+        table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
+        :style="{ height: isMobile ? '71vh' : '65vh' }">
+        <template v-slot:body-cell-status="props">
+          <q-td>
+            <q-icon name="circle" :color="defineStatusColor(props.row?.status)" />
+            &nbsp;
+            {{ props.row?.status }}
+          </q-td>
+        </template>
+        <template v-slot:body-cell-attachments="props">
+          <q-td v-if="props.row.attachments.length > 0">
+            <q-btn label="Ver imagenes/videos" icon-right="navigate_next" color="dark" outline size="0.75rem"
+              style="border-radius: 10px; text-transform: capitalize;" @click="redirectToAsset(props.row._id)" />
+          </q-td>
+          <q-td v-else>
+            N/A
+          </q-td>
+        </template>
+        <template v-slot:body-cell-actions="props">
+          <q-td>
+            <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
+              style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
+            <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
+              style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row.id)" />
+          </q-td>
+        </template>
+      </q-table>
+    </div>
+  </div>
+
+  <q-dialog v-model="dialogNewAction" persistent>
+    <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
+      <q-card-actions align="right" class="q-py-none">
+        <q-btn icon="close" color="black" flat round @click="dialogNewAction = false" class="q-py-none" />
+      </q-card-actions>
+      <q-card-section class="q-pt-none q-pb-sm">
+        <div class="text-h5 text-weight-medium">Nueva Accion</div>
+      </q-card-section>
+      <q-card-section>
+        <div class="q-mb-lg">
+          <q-title class="text-subtitle2 text-weight-regular">Completa los siguientes campos para agregar una nueva
+            accion.</q-title>
+        </div>
+        <div>
+          <q-input v-model="inputNewAction.name" clearable dense label="Nombre" class="q-mb-md" hint="requerido"
+            :rules="[(val) => !!val || 'requerido']" />
+          <q-input v-model="inputNewAction.description" clearable dense label="Descripcion" class="q-mb-md"
+            hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+          <q-select v-model="inputNewAction.status" :options="actionOptions" clearable dense label="Estado"
+            class="q-mb-md" hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+          <q-file v-model="inputNewAction.attachments" dense label="Imagenes o Videos" use-chips multiple class="q-mb-md"
+            accept=".jpg, image/*" hint="opcional" />
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn label="Agregar" size="0.85rem" color="primary" dense outline padding="sm lg" @click="addAction"
+          style="border-radius: 10px; text-transform: capitalize" />
+        <q-btn label="Cancelar" size="0.85rem" flat dense outline @click="dialogNewAction = false" padding="sm lg"
+          style="border-radius: 10px; text-transform: capitalize" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+
+  <q-dialog v-model="dialogDeleteAction" persistent>
+    <q-card class="q-pa-md" style="width: 500px; max-width: 80vw;">
+      <q-card-actions align="right" class="q-py-none">
+        <q-btn icon="close" color="black" flat round v-close-popup class="q-py-none" />
+      </q-card-actions>
+      <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
+        <div class="text-h6">Borrar {{ currentAction.name }}</div>
+      </q-card-section>
+      <q-card-section class="q-pt-md q-pb-sm flex justify-start">
+        <div class="text-center text-subtitle1 text-weight-regular">¿Estas seguro de borrarlo?
+        </div>
+        <div class="text-subtitle2 text-weight-regular q-pt-sm">Ten en cuenta que una vez borrado no sera posible
+          recuperarlo.</div>
+        <div class="text-subtitle2 text-weight-regular q-pt-md">Escribe <span class="text-red text-weight-medium">delete
+            {{ currentAction.name }}</span> a continuación para confirmar.</div>
+        <div class="full-width q-pt-sm q-pb-md">
+          <q-input v-model="inputConfirmDelete" outlined dense class="full-width" />
+        </div>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
+          style="border-radius: 10px; text-transform: capitalize;"
+          :disabled="inputConfirmDelete !== `delete ${currentAction.name}`" @click="deleteAction(currentAction.id)" />
+        <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
+          style="border-radius: 10px; text-transform: capitalize;" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script>
+import { defineComponent, ref, watch } from "vue"
+import { useRoute } from 'vue-router'
+import { api } from "src/boot/axios"
+
+import PrimaryButton from 'src/components/PrimaryButton.vue'
+
+export default defineComponent({
+  name: "AssetActions",
+  props: {
+    rows: {
+      type: Array,
     },
-    components: {
-      AssetInput,
-      AssetSelectInput,
+    columns: {
+      type: Array,
     },
-    data() {
-      return {
-        highlightedImageIndex: -1
-      };
+    loading: {
+      type: Boolean,
+    }
+  },
+  components: {
+    PrimaryButton
+  },
+  setup(props) {
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
+    const router = useRoute()
+
+    const idAsset = ref(router.params.id)
+
+    const records = ref(props.rows)
+
+    watch(() => props.rows, (newValue) => {
+      records.value = newValue
+      records.value.forEach((row, index) => {
+        row.index = index + 1
+      })
+    })
+
+    const dialogNewAction = ref(false)
+    const inputNewAction = ref({})
+    const actionOptions = ["Completado", "Sin completar", "En proceso", "Otro"]
+
+    const dialogDeleteAction = ref(false)
+    const currentAction = ref({})
+    const inputConfirmDelete = ref(null)
+
+    return {
+      isMobile,
+      router,
+      idAsset,
+      records,
+      dialogNewAction,
+      inputNewAction,
+      actionOptions,
+      dialogDeleteAction,
+      currentAction,
+      inputConfirmDelete,
+      pagination: ref({
+        rowsPerPage: 0
+      })
+    }
+  },
+  methods: {
+    defineStatusColor(status) {
+      if (status === 'Completado') return 'green'
+      if (status === 'Otro' || status === 'En proceso') return 'orange'
+      if (status === 'Sin completar') return 'red'
     },
-    setup(props) {
-  
-      const imageServer = ref(serverURL)
-  
-      const router = useRoute()
-  
-      const inputInfo = ref(props.modelInfo)
-      const originalInputInfo = ref({ ...inputInfo.value })
-  
-      const isEditing = ref(false)
-      const isEditingImage = ref(false)
-  
-      const inputNewImage = ref()
-  
-      const statusOptions = ref([
-        "Activo",
-        "Inactivo",
-        "Roto",
-        "Con stock",
-        "Bajo stock",
-        "Sin stock",
-      ]);
-  
-      return {
-        router,
-        originalInputInfo,
-        inputInfo,
-        isEditing,
-        isEditingImage,
-        inputNewImage,
-        imageServer,
-        statusOptions,
+    addAction() {
+      const actionData = new FormData();
+
+      Object.keys(this.inputNewAction).map((key) => {
+        actionData.append(key, this.inputNewAction[key]);
+      })
+
+      if (this.inputNewAction?.images) {
+        const assetImages = this.inputNewAction.images;
+        assetImages.forEach((image, index) => {
+          actionData.append("images", image);
+        });
       }
-    },
-    methods: {
-      updateInputInfo(key, newValue) {
-        this.inputInfo[key] = newValue
-      },
-      updateEditing(value) {
-        this.isEditing = !value
-        this.inputInfo = { ...this.originalInputInfo }
-      },
-      saveAsset() {
-        const asset = this.inputInfo
-        api
-          .patch(`./assets/update/${asset._id}`, asset)
-          .then((res) => {
-            const data = res.data
-            if (data) {
-              this.inputInfo = data
-              this.originalInputInfo = { ...data };
-              this.isEditing = false
-              this.$emit("update-info")
-              this.$q.notify({
-                type: 'positive',
-                message: 'Modificado correctamente.',
-                timeout: 2000,
-              })
-            } else {
-              this.$q.notify({
-                type: 'negative',
-                message: 'Ha ocurrido un error.',
-                timeout: 2000,
-              })
-            }
-          })
-          .catch((err) => {
+
+      api
+        .patch(`./assets/update/create/action/${this.idAsset}`, actionData)
+        .then((res) => {
+          const data = res.data
+          if (data) {
+            this.dialogNewAction = false
+            this.inputNewAction = {}
+            this.$emit("update-info")
             this.$q.notify({
-              type: 'negative',
-              message: `Ha ocurrido un error. ${err.message}`,
+              type: 'positive',
+              message: 'Modificado correctamente.',
               timeout: 2000,
             })
-          });
-      },
-      setNewDefaultImge(image) {
-        this.inputInfo.images.default_image = image
-        const asset = this.inputInfo
-        console.log(asset)
-        try {
-          api
-            .patch(`./assets/update/${asset._id}`, asset)
-            .then((res) => {
-              const data = res.data
-              if (data) {
-                this.inputInfo = data
-                this.isEditingImage = false
-                this.$q.notify({
-                  type: 'positive',
-                  message: 'Modificado correctamente.',
-                  timeout: 2000,
-                })
-              }
+          } else {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Ha ocurrido un error.',
+              timeout: 2000,
             })
-            .catch((err) => {
-              this.$q.notify({
-                type: 'negative',
-                message: `Ha ocurrido un error. ${err.message}`,
-                timeout: 2000,
-              })
-            });
-        } catch (error) {
-          this.$q.notify({
-            type: 'negative',
-            message: `Ha ocurrido un error. Error: ${error.message}`,
-            timeout: 2000,
-          })
-        }
-      },
-      filterProperties(arrayProperties) {
-        const formattedArrayProperties = []
-        arrayProperties.map((property) => {
-          if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' &&
-            property !== 'updated_at' && property !== 'status' && property !== 'status.name') {
-            return formattedArrayProperties.push(property)
           }
         })
-        return formattedArrayProperties
-      },
-      defineLabelFromProperty(property) {
-        const translationDictionary = {
-          _id: "ID",
-          category: "Categoría",
-          images: "Imágenes",
-          description: "Descripción",
-          manufacturer: "Fabricante",
-          model: "Modelo",
-          serial_number: "Número de serie",
-          purchase_from: "Lugar de compra",
-          purchase_date: "Fecha de compra",
-          cost: "Costo",
-          warranty_info: "Información de garantía",
-          warranty_expiration_date: "Fecha de vencimiento de la garantía",
-          operating_system: "S/O",
-          ip_address: "Dirección IP",
-          ram: "RAM",
-          location: "Ubicación",
-          location_extra_info: "Información adicional de ubicación",
-          current_employee: "Empleado actual",
-          actions: "Acciones",
-          status: "Estado",
-          name: "Nombre",
-          date: "Fecha",
-          created_at: "Creado el",
-          updated_at: "Actualizado el",
-        }
-        return translationDictionary[property] || property;
-      },
-      cancelEdit() {
-        this.isEditing = false
-        this.inputInfo = { ...this.originalInputInfo };
-      }
+        .catch((err) => {
+          console.log(err)
+          this.$q.notify({
+            type: 'negative',
+            message: 'Ha ocurrido un error.',
+            timeout: 2000,
+          })
+        })
+    },
+    openDeleteDialog(idAction) {
+      this.dialogDeleteAction = true
+      this.currentAction = this.records.find((action) => action.id === idAction)
+    },
+    closeDeleteDialog() {
+      this.dialogDeleteAction = false
+      this.currentAction = null
+    },
+    deleteAction(idAction) {
+      api
+        .patch(`./assets/update/delete/action/${this.idAsset}`, { idAction })
+        .then((res) => {
+          const data = res.data
+          console.log(data)
+          if (data) {
+            this.dialogDeleteAction = false
+            this.inputConfirmDelete = null
+            this.currentAction = null
+            this.$emit("update-info")
+            this.$q.notify({
+              type: 'positive',
+              message: 'Modificado correctamente.',
+              timeout: 2000,
+            })
+          } else {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Ha ocurrido un error.',
+              timeout: 2000,
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$q.notify({
+            type: 'negative',
+            message: 'Ha ocurrido un error.',
+            timeout: 2000,
+          })
+        })
     }
-  });
-  </script>
-  
-  <style scoped>
-  .image-circle-hover {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #1976d243;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
-  </style>
-  
-  
-  
-  
-  
-  
-  
+});
+</script>

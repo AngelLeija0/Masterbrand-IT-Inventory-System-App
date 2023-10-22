@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pb-sm items-start">
           <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/images/' + inputInfo.images?.default_image"
-            spinner-color="white" style="height: 140px; max-width: 150px" />
+            spinner-color="white" style="max-width: 260px" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
         </div>
@@ -23,8 +23,7 @@
     </div>
     <div class="col-12 q-pt-sm">
       <div class="row flex justify-between">
-        <div class="col-md-6 col-12 q-px-md" v-for="(property, i) in filterProperties(Object.keys(inputInfo))"
-          :key="i + 1">
+        <div class="col-md-6 col-12 q-px-md" v-for="(property, i) in allProperties" :key="i + 1">
           <AssetInput :label="defineLabelFromProperty(property)" :modelKey="property" :modelValue="inputInfo[property]"
             :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
@@ -42,8 +41,11 @@
 
   <q-dialog v-model="isEditingImage">
     <q-card class="q-pa-md" style="width: 550px">
-      <q-card-section>
-        <div class="text-h6">Imagenes</div>
+      <q-card-actions align="right" class="q-py-none">
+        <q-btn icon="close" color="black" flat round class="q-py-none" v-close-popup />
+      </q-card-actions>
+      <q-card-section class="q-pt-none">
+        <div class="text-h6" style="padding-top: 0;">Imagenes</div>
       </q-card-section>
       <q-card-section class="q-pt-none q-pb-sm">
         Selecciona una imagen para asignarla como imagen principal.
@@ -57,17 +59,6 @@
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>
       </q-card-section>
-      <q-card-actions align="right">
-        <q-file v-model="inputNewImage" label="Subir nueva imagen" outlined dense rounded="10px" clearable accept=".jpg, image/*"
-          class="q-mx-md" label-color="primary" color="primary"
-          style="text-transform: none; font-size: 12px; height: fit-content;">
-          <template v-slot:prepend>
-            <q-icon name="cloud_upload" color="primary" />
-          </template>
-        </q-file>
-        <q-btn label="Cancelar" color="black" flat size="0.85rem" padding="sm md" v-close-popup
-          style="text-transform: capitalize; border-radius: 10px;" />
-      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
@@ -119,6 +110,36 @@ export default defineComponent({
       "Sin stock",
     ]);
 
+    const allProperties = ref([])
+
+    getCategorProperties()
+    function getCategorProperties() {
+      const category = inputInfo.value?.category
+      api
+        .get(`./categories/name/${category}`)
+        .then((res) => {
+          const data = res.data
+          const keyProperties = data.properties.map((property) => property.key)
+          joinPropertiesAndFilter(Object.keys(inputInfo.value), keyProperties)
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+    }
+
+    function joinPropertiesAndFilter(infoProperties, categoryProperties) {
+      const propertiesJoined = [...new Set([...infoProperties, ...categoryProperties])];
+      const formattedArrayProperties = []
+      propertiesJoined.map((property) => {
+        if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' &&
+          property !== 'updated_at' && property !== 'status' && property !== 'status.name') {
+          return formattedArrayProperties.push(property)
+        }
+      })
+      allProperties.value = formattedArrayProperties
+    }
+
+
     return {
       router,
       originalInputInfo,
@@ -128,15 +149,22 @@ export default defineComponent({
       inputNewImage,
       imageServer,
       statusOptions,
+      allProperties,
     }
   },
   methods: {
     updateInputInfo(key, newValue) {
-      this.inputInfo[key] = newValue
+      if (key === "status.name") {
+        this.originalInputInfo.status.name = this.inputInfo.status.name
+        this.inputInfo.status.name = newValue
+      } else {
+        this.inputInfo[key] = newValue
+      }
     },
     updateEditing(value) {
       this.isEditing = !value
       this.inputInfo = { ...this.originalInputInfo }
+      this.$emit("update-info")
     },
     saveAsset() {
       const asset = this.inputInfo
@@ -146,7 +174,7 @@ export default defineComponent({
           const data = res.data
           if (data) {
             this.inputInfo = data
-            this.originalInputInfo = { ...data };
+            this.originalInputInfo = { ...this.inputInfo }
             this.isEditing = false
             this.$emit("update-info")
             this.$q.notify({
@@ -204,16 +232,6 @@ export default defineComponent({
         })
       }
     },
-    filterProperties(arrayProperties) {
-      const formattedArrayProperties = []
-      arrayProperties.map((property) => {
-        if (property !== '_id' && property !== 'images' && property !== '__v' && property !== 'actions' && property !== 'created_at' &&
-          property !== 'updated_at' && property !== 'status' && property !== 'status.name') {
-          return formattedArrayProperties.push(property)
-        }
-      })
-      return formattedArrayProperties
-    },
     defineLabelFromProperty(property) {
       const translationDictionary = {
         _id: "ID",
@@ -245,7 +263,7 @@ export default defineComponent({
     },
     cancelEdit() {
       this.isEditing = false
-      this.inputInfo = { ...this.originalInputInfo };
+      this.inputInfo = { ...this.originalInputInfo }
     }
   }
 });

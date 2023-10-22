@@ -447,6 +447,7 @@ export default defineComponent({
     }
   },
   onError(error) {
+    console.log(error)
     if (error.name === 'NotAllowedError') {
       return this.labelErrorQR = 'Necesitas aceptar los permisos para acceder a la camara'
     }

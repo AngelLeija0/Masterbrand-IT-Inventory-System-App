@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-section class="flex justify-between q-pa-md">
+    <q-section class="flex justify-between q-px-md q-py-sm">
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
@@ -10,9 +10,9 @@
           <div class="flex justify-between">
             <div class="text-h6 q-pr-md">{{ assetInfo.category }} {{ assetInfo.model }}</div>
             <div v-if="assetInfo.status?.name">
-              <q-icon name="circle" :color="defineStatusColor(assetInfo.status.name)" />
+              <q-icon name="circle" :color="defineStatusColor(assetInfo.status?.name)" />
               &nbsp;
-              {{ assetInfo.status?.name }}
+              {{ assetInfo.status.name }}
             </div>
             <div v-else>
               <q-icon name="circle" color="black" />
@@ -29,11 +29,13 @@
         </div>
       </div>
       <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
-        <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo" @update-info="getAssetDetails(idAsset)" />
-        <AssetActions v-if="detailsLoaded && pageSections[1].state" :modelInfo="assetInfo" @update-info="getAssetDetails(idAsset)" />
+        <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo"
+          @update-info="getAssetDetails(idAsset)" />
+        <AssetActions v-if="detailsLoaded && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
+          @update-info="getAssetDetails(idAsset)" />
       </div>
     </q-section>
-    
+
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
       @deleteConfirm="deleteAsset" />
   </q-page>
@@ -124,6 +126,7 @@ export default defineComponent({
             const data = res.data
             if (data) {
               assetInfo.value = data
+              sortedActions.value = sortActions(data.actions)
               detailsLoaded.value = true
             } else {
               router.push({ name: 'assets-page' })
@@ -141,6 +144,27 @@ export default defineComponent({
 
     getAssetDetails(idAsset.value)
 
+    const assetActionsColumns = [
+      {
+        name: 'index',
+        label: '#',
+        field: 'index'
+      },
+      { name: 'name', label: 'Nombre', field: 'name', align: 'left' },
+      { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
+      { name: 'status', label: 'Estado', field: 'status', align: 'left' },
+      { name: 'attachments', label: 'Imagenes y videos', field: 'attachments', align: 'left' },
+      { name: 'date', label: 'Fecha', field: 'date', align: 'left' },
+      { name: 'actions', label: '', align: 'left' },
+    ]
+
+    const sortedActions = ref()
+
+    function sortActions(actions) {
+      actions.sort((a, b) => new Date(b.date) - new Date(a.date))
+      return actions
+    }
+
     return {
       $q,
       router,
@@ -152,6 +176,8 @@ export default defineComponent({
       assetMoreOptions,
       dialogConfirmDeleteState,
       pageSections,
+      assetActionsColumns,
+      sortedActions,
     }
   },
   methods: {
@@ -201,7 +227,7 @@ export default defineComponent({
       if (status === 'Activo' || status === 'Con stock') return 'green'
       if (status === 'Inactivo' || status === 'Bajo stock') return 'orange'
       if (status === 'Roto' || status === 'Sin stock') return 'red'
-    }
+    },
   },
 });
 </script>

@@ -38,6 +38,13 @@
 
     <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="assetInfo.model ? assetInfo.model : assetInfo.description"
       @deleteConfirm="deleteAsset" />
+
+    <q-dialog v-model="stateQrDialog">
+      <div>
+        QR
+      </div>
+      <QRCodeVue3 :value="idAsset" level="H" :options="{ type: 'svg' }" />
+    </q-dialog>
       
   </q-page>
 </template>
@@ -47,6 +54,8 @@ import { defineComponent, ref, watch } from 'vue'
 import { api } from "src/boot/axios"
 import { useRoute } from 'vue-router'
 import { useQuasar, date } from 'quasar'
+
+import QRCodeVue3 from "qrcode-vue3";
 
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import GoBackButton from 'src/components/GoBackButton.vue'
@@ -65,6 +74,7 @@ export default defineComponent({
     AssetActions,
     MoreOptionsButton,
     DialogConfirmDelete,
+    QRCodeVue3,
   },
   setup() {
     const $q = useQuasar()
@@ -84,7 +94,7 @@ export default defineComponent({
         label: "Ver codigo QR",
         icon: "qr_code",
         color: "black",
-        value: "add-action",
+        value: "view-qr",
       },
       {
         label: "Borrar",
@@ -177,6 +187,8 @@ export default defineComponent({
       })
     }
 
+    const stateQrDialog = ref(false)
+
     return {
       $q,
       router,
@@ -190,11 +202,16 @@ export default defineComponent({
       pageSections,
       assetActionsColumns,
       sortedActions,
+      stateQrDialog,
     }
   },
   methods: {
     handleOptionClick(option) {
       if (option === 'delete-asset') return this.deleteAsset()
+      if (option === 'view-qr') {
+        console.log("QR")
+        this.openQrDialog()
+      }
     },
     goToSection(toSection) {
       this.pageSections.map((section) => {
@@ -239,6 +256,12 @@ export default defineComponent({
       if (status === 'Activo' || status === 'Con stock') return 'green'
       if (status === 'Inactivo' || status === 'Bajo stock') return 'orange'
       if (status === 'Roto' || status === 'Sin stock') return 'red'
+    },
+    openQrDialog() {
+      this.stateQrDialog = true
+    },
+    closeQrDialog() {
+      this.stateQrDialog = false
     },
   },
 });

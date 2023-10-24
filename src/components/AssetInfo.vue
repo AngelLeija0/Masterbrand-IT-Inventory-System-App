@@ -28,7 +28,7 @@
             :modelValue="new RegExp('date').test(property) ? formatDate(inputInfo[property]) : inputInfo[property]"
             :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
-        <div v-if="isEditing" class="col-12 flex justify-end q-pt-lg q-px-md">
+        <div v-if="isEditing" class="col-12 flex justify-end q-px-md q-py-lg">
           <q-btn-group flat>
             <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" size="0.85rem"
               style="text-transform: capitalize; border-radius: 5px;" @click="saveAsset()" />
@@ -38,7 +38,7 @@
         </div>
       </div>
     </div>
-    <div class="col-12 q-px-md q-pt-md q-pb-lg flex justify-end">
+    <div class="col-12 q-px-md flex justify-end">
       <div class="full-width text-right text-grey-14">Creado el {{ formatDate(inputInfo.created_at) }}</div>
       <div class="full-width text-right text-grey-14">Ultima modificacion el {{ formatDate(inputInfo.updated_at) }}</div>
     </div>

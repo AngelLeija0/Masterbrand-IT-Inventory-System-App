@@ -24,16 +24,34 @@
           </div>
           <div class="text-grey-14" v-if="assetInfo.serial_number">#{{ assetInfo.serial_number }}</div>
         </div>
-        <div class="q-py-lg">
+        <div class="q-py-lg" :style="{ paddingTop: isMobile ? '5px' : '', paddingBottom: isMobile ? '10px' : '' }">
           <div v-for="(section, i) in pageSections" :key="i + 1">
-            <SecondaryNavbarButton :label="section.label" :active="section.state" @click="goToSection(section.label)" />
+            <div v-if="isMobile">
+              <div v-if="expandSectionBar == true || section.state">
+                <SecondaryNavbarButton class="full-width" borderPosition="left" :label="section.label"
+                  :active="section.state" @click="goToSection(section.label)" />
+              </div>
+            </div>
+            <div v-else>
+              <SecondaryNavbarButton class="full-width" borderPosition="left" :label="section.label"
+                :active="section.state" @click="goToSection(section.label)" />
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <q-btn v-if="isMobile && expandSectionBar == true" icon="expand_less" flat size="14px" class="full-width"
+              style="border-radius: 5px;" @click="expandSectionBar = false" />
+            <q-btn v-else-if="isMobile && expandSectionBar == false" icon="expand_more" flat size="14px"
+              class="full-width" style="border-radius: 5px;" @click="expandSectionBar = true" />
           </div>
         </div>
       </div>
-      <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" :style="{ overflowY: isMobile ? '' : 'auto' }">
+      <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm"
+        :style="{ overflowY: !isMobile ? 'auto' : '', paddingLeft: isMobile ? '0' : '', paddingRight: isMobile ? '0' : '' }">
         <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
         <AssetActions v-if="detailsLoaded && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
+          @update-info="getAssetDetails(idAsset)" />
+        <AssetAttachments v-if="detailsLoaded && pageSections[2].state" :asset="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
       </div>
     </q-section>
@@ -60,7 +78,8 @@
           <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-if="assetInfo.serial_number">{{
             assetInfo.category }} {{
     assetInfo.serial_number }}</div>
-          <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-else>{{ assetInfo.category }}&{{ assetInfo.description
+          <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-else>{{ assetInfo.category }}&{{
+            assetInfo.description
           }}</div>
           <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'"
             style="width: 200px; opacity: 0.7;" />
@@ -72,7 +91,8 @@
       <q-card class="q-pa-md" style="width: 200px;">
         <q-card-section class="flex justify-center items-center">
           <vue-qr :text="assetInfo._id" size="150"></vue-qr>
-          <div class="text-grey-14 full-width text-center" style="font-size: 6px;" v-if="assetInfo.serial_number">{{ assetInfo.category
+          <div class="text-grey-14 full-width text-center" style="font-size: 6px;" v-if="assetInfo.serial_number">{{
+            assetInfo.category
           }} {{ assetInfo.serial_number }}</div>
           <div class="text-grey-14 full-width text-center" style="font-size: 6px;" v-else>{{ assetInfo.category }}&{{
             assetInfo.description
@@ -99,6 +119,7 @@ import DialogConfirmDelete from 'src/components/DialogConfirmDelete.vue'
 
 import AssetInfo from 'src/components/AssetInfo.vue'
 import AssetActions from 'src/components/AssetActions.vue'
+import AssetAttachments from 'src/components/AssetAttachments.vue'
 
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 
@@ -112,6 +133,7 @@ export default defineComponent({
     MoreOptionsButton,
     DialogConfirmDelete,
     vueQr,
+    AssetAttachments,
   },
   setup() {
 
@@ -119,7 +141,7 @@ export default defineComponent({
 
     function isUsingMobile() {
       const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const validation2 = window.innerWidth < 768
+      const validation2 = window.innerWidth < 1024
       const finalValidation = validation1 || validation2;
       return finalValidation;
     }
@@ -243,6 +265,8 @@ export default defineComponent({
     const stateQrDialog = ref(false)
     const contentToPrint = ref(false)
 
+    const expandSectionBar = ref(false)
+
     return {
       isMobile,
       $q,
@@ -260,6 +284,7 @@ export default defineComponent({
       stateQrDialog,
       contentToPrint,
       imageServer,
+      expandSectionBar,
     }
   },
   methods: {
@@ -274,6 +299,9 @@ export default defineComponent({
       this.pageSections.map((section) => {
         if (section.label === toSection) {
           section.state = true
+          if (this.expandSectionBar == true) {
+            this.expandSectionBar = false
+          }
         } else {
           section.state = false
         }

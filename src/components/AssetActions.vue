@@ -2,7 +2,8 @@
   <div class="row q-px-sm q-pt-sm q-pb-none">
     <div class="col-12 flex justify-between">
       <div class="text-h6">Acciones</div>
-      <PrimaryButton label="Agregar accion" icon="add" class="q-mx-sm" @click="dialogNewAction = true" />
+      <PrimaryButton v-if="isMobile" flat icon="add" class="q-mx-sm" @click="dialogNewAction = true" />
+      <PrimaryButton v-else label="Agregar accion" icon="add" class="q-mx-sm" @click="dialogNewAction = true" />
     </div>
     <div class="col-12 q-mt-md">
       <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
@@ -102,7 +103,7 @@
   <q-dialog v-model="dialogAttachmentsAction" persistent>
     <q-card class="q-pa-md" style="width: 600px; max-width: 80vw;">
       <q-card-actions align="right" class="q-py-none">
-        <q-btn icon="close" color="black" flat round v-close-popup class="q-py-none" />
+        <q-btn icon="close" color="black" flat round @click="closeAttachmentDialog()" class="q-py-none" />
       </q-card-actions>
       <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
         <div class="text-h6">{{ currentAction.name }}</div>
@@ -112,16 +113,16 @@
           currentAction.name }}.</div>
         <div class="flex justify-center">
           <div class="flex justify-center items-center">
-            <div v-if="isImageOrVideo(currentAction.attachments[currentAttachment]) === 'image'">
+            <div v-if="defineFileType(currentAction.attachments[currentAttachment]) === 'image'">
               <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"
                 style="width: 536px; max-width: 70vw;" />
             </div>
-            <div v-else-if="isImageOrVideo(currentAction.attachments[currentAttachment]) === 'video'">
+            <div v-else-if="defineFileType(currentAction.attachments[currentAttachment]) === 'video'">
               <q-video :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"
                 style="width: 536px; max-width: 70vw;" />
             </div>
             <div v-else>
-              <div class="text-red">Error al mostrar el contenido</div>
+              <div class="text-red full-width">Error al mostrar el contenido</div>
             </div>
             <div class="q-py-sm full-width text-center">{{ defineFileName(currentAction.attachments[currentAttachment]) }}
             </div>
@@ -324,7 +325,8 @@ export default defineComponent({
       this.currentAction = this.records.find((action) => action.id === idAction)
     },
     closeAttachmentDialog() {
-
+      this.dialogAttachmentsAction = false
+      this.currentAction = null
     },
     deleteAction(idAction) {
       api
@@ -363,7 +365,7 @@ export default defineComponent({
       const formattedName = fileName.replace(/\.[^.]+$/, "");
       return formattedName
     },
-    isImageOrVideo(fileName) {
+    defineFileType(fileName) {
       const extension = fileName.split('.').pop().toLowerCase()
 
       const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff']
@@ -391,9 +393,8 @@ export default defineComponent({
         .then((res) => {
           const data = res.data
           if (data) {
-            console.log(data)
-            //this.dialogEditAction = false
-            //this.currentAction = null
+            this.dialogEditAction = false
+            this.currentAction = null
             this.$emit("update-info")
             this.$q.notify({
               type: 'positive',

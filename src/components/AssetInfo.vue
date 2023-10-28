@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <div class="row">
-        <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pb-sm items-start">
+        <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
           <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image"
             spinner-color="white" style="max-width: 260px" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"

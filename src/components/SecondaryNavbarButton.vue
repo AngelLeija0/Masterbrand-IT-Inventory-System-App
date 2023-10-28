@@ -1,13 +1,16 @@
 <template>
   <q-btn
     :label="label"
-    class="full-width"
     size="0.9rem"
     align="left"
     flat
     padding="sm md"
+    :color="active ? 'dark' : 'grey-8'"
     :style="{
-      borderLeft: active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
+      borderTop: borderPosition === 'top' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
+      borderBottom: borderPosition === 'bottom' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
+      borderRight: borderPosition === 'right' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
+      borderLeft: borderPosition === 'left' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
       textTransform: 'capitalize',
       fontWeight: 'normal'
     }"
@@ -24,6 +27,9 @@ export default defineComponent({
       type: String,
     },
     active: {
+      type: String,
+    },
+    borderPosition: {
       type: String,
     }
   },

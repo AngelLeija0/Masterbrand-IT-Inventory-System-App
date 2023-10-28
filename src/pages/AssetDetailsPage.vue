@@ -4,11 +4,13 @@
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md" style="height: 75vh; overflow-y: auto; overflow-x: hidden;">
+    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md"
+      :style="{ height: '73vh', overflowY: isMobile ? 'auto' : '' }">
       <div class="col-12 col-sm-12 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
           <div class="flex justify-between">
-            <div class="text-h6 q-pr-md">{{ assetInfo.category }} {{ assetInfo.model }}</div>
+            <div class="text-h6 q-pr-md" v-if="assetInfo.model">{{ assetInfo.category }} {{ assetInfo.model }}</div>
+            <div class="text-h6 q-pr-md" v-else>{{ assetInfo.category }} {{ assetInfo.description }}</div>
             <div v-if="assetInfo.status?.name">
               <q-icon name="circle" :color="defineStatusColor(assetInfo.status?.name)" />
               &nbsp;
@@ -28,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" style="overflow-y: auto;">
+      <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm" :style="{ overflowY: isMobile ? '' : 'auto' }">
         <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
         <AssetActions v-if="detailsLoaded && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
@@ -40,22 +42,55 @@
       @deleteConfirm="deleteAsset" />
 
     <q-dialog v-model="stateQrDialog">
-      <div>
-        QR
-      </div>
-      <QRCodeVue3 :value="idAsset" level="H" :options="{ type: 'svg' }" />
+      <q-card class="q-pa-md" style="width: 500px; max-width: 80vw;">
+        <q-card-actions align="right" class="q-py-none">
+          <q-btn icon="close" color="black" flat round v-close-popup class="q-py-none" />
+        </q-card-actions>
+        <q-card-section class="q-pt-none q-pb-md" style="border-bottom: 1px solid #e9e9e9">
+          <div class="text-h6" v-if="assetInfo.model">{{ assetInfo.category }} {{ assetInfo.model }}</div>
+          <div class="text-h6" v-else>{{ assetInfo.category }} {{ assetInfo.description }}</div>
+        </q-card-section>
+        <q-card-actions class="q-pb-none q-mb-none" align="right">
+          <q-btn flat round icon="print" color="primary" size="0.95rem" @click="printQr()">
+            <q-tooltip class="bg-black" style="font-size: 0.75rem;">Imprimir</q-tooltip>
+          </q-btn>
+        </q-card-actions>
+        <q-card-section class="flex justify-center items-center q-pt-none q-mt-none">
+          <vue-qr :text="assetInfo._id" size="300"></vue-qr>
+          <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-if="assetInfo.serial_number">{{
+            assetInfo.category }} {{
+    assetInfo.serial_number }}</div>
+          <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-else>{{ assetInfo.category }}&{{ assetInfo.description
+          }}</div>
+          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'"
+            style="width: 200px; opacity: 0.7;" />
+        </q-card-section>
+      </q-card>
     </q-dialog>
-      
+
+    <q-dialog v-model="contentToPrint">
+      <q-card class="q-pa-md" style="width: 200px;">
+        <q-card-section class="flex justify-center items-center">
+          <vue-qr :text="assetInfo._id" size="150"></vue-qr>
+          <div class="text-grey-14 full-width text-center" style="font-size: 6px;" v-if="assetInfo.serial_number">{{ assetInfo.category
+          }} {{ assetInfo.serial_number }}</div>
+          <div class="text-grey-14 full-width text-center" style="font-size: 6px;" v-else>{{ assetInfo.category }}&{{
+            assetInfo.description
+          }}</div>
+          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'"
+            style="width: 100px; opacity: 0.7;" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
-import { api } from "src/boot/axios"
+import { api, serverURL } from "src/boot/axios"
 import { useRoute } from 'vue-router'
 import { useQuasar, date } from 'quasar'
-
-import QRCodeVue3 from "qrcode-vue3";
 
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import GoBackButton from 'src/components/GoBackButton.vue'
@@ -64,6 +99,8 @@ import DialogConfirmDelete from 'src/components/DialogConfirmDelete.vue'
 
 import AssetInfo from 'src/components/AssetInfo.vue'
 import AssetActions from 'src/components/AssetActions.vue'
+
+import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 
 export default defineComponent({
   name: 'AssetDetailsPage',
@@ -74,9 +111,23 @@ export default defineComponent({
     AssetActions,
     MoreOptionsButton,
     DialogConfirmDelete,
-    QRCodeVue3,
+    vueQr,
   },
   setup() {
+
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
+
     const $q = useQuasar()
     const router = useRoute()
 
@@ -88,6 +139,8 @@ export default defineComponent({
     const idAsset = ref(router.params.id)
 
     const actualSection = ref("details")
+
+    const imageServer = ref(serverURL)
 
     const assetMoreOptions = ref([
       {
@@ -188,8 +241,10 @@ export default defineComponent({
     }
 
     const stateQrDialog = ref(false)
+    const contentToPrint = ref(false)
 
     return {
+      isMobile,
       $q,
       router,
       idAsset,
@@ -203,6 +258,8 @@ export default defineComponent({
       assetActionsColumns,
       sortedActions,
       stateQrDialog,
+      contentToPrint,
+      imageServer,
     }
   },
   methods: {
@@ -263,6 +320,14 @@ export default defineComponent({
     closeQrDialog() {
       this.stateQrDialog = false
     },
+    printQr() {
+      this.stateQrDialog = false
+      this.contentToPrint = true
+      setTimeout(() => {
+        window.print()
+        this.contentToPrint = false
+      }, 500);
+    }
   },
 });
 </script>

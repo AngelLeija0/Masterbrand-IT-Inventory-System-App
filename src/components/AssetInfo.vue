@@ -15,8 +15,8 @@
               :modelKey="'status.name'" :modelValue="inputInfo.status.name" :editing="isEditing"
               @update-input="updateInputInfo" @update-editing="updateEditing" />
             <AssetInput v-else :label="defineLabelFromProperty(stateProperty)" :modelKey="'status.' + stateProperty"
-              :modelValue="new RegExp('date').test(stateProperty) ? formatDate(inputInfo.status[stateProperty]) : inputInfo.status[stateProperty]" :editing="isEditing" @update-input="updateInputInfo"
-              @update-editing="updateEditing" />
+              :modelValue="new RegExp('date').test(stateProperty) ? formatDate(inputInfo.status[stateProperty]) : inputInfo.status[stateProperty]"
+              :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
           </div>
         </div>
       </div>
@@ -28,19 +28,22 @@
             :modelValue="new RegExp('date').test(property) ? formatDate(inputInfo[property]) : inputInfo[property]"
             :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
-        <div v-if="isEditing" class="col-12 flex justify-end q-px-md q-py-lg">
+        <div v-if="isEditing" class="col-12 flex q-px-md q-pt-lg" :style="{ justifyContent: isMobile ? 'center' : 'end' }">
           <q-btn-group flat>
-            <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" size="0.85rem"
+            <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" :size="isMobile ? '0.725rem' : '0.85rem'"
               style="text-transform: capitalize; border-radius: 5px;" @click="saveAsset()" />
-            <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" size="0.85rem"
+            <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" :size="isMobile ? '0.725rem' : '0.85rem'"
               style="text-transform: capitalize; border-radius: 5px;" />
           </q-btn-group>
         </div>
       </div>
     </div>
-    <div class="col-12 q-px-md flex justify-end">
-      <div class="full-width text-right text-grey-14">Creado el {{ formatDate(inputInfo.created_at) }}</div>
-      <div class="full-width text-right text-grey-14">Ultima modificacion el {{ formatDate(inputInfo.updated_at) }}</div>
+    <div class="col-12 q-px-md q-pt-md flex justify-end">
+      <div class="full-width text-grey-14" :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end' }">Creado el {{
+        formatDate(inputInfo.created_at) }}</div>
+      <div class="full-width text-grey-14"
+        :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end', paddingTop: isMobile ? '5px' : '' }">Ultima modificacion el {{
+          formatDate(inputInfo.updated_at) }}</div>
     </div>
   </div>
 
@@ -94,6 +97,19 @@ export default defineComponent({
     };
   },
   setup(props) {
+
+    const isMobile = ref(isUsingMobile());
+
+    function isUsingMobile() {
+      const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const validation2 = window.innerWidth < 768
+      const finalValidation = validation1 || validation2;
+      return finalValidation;
+    }
+
+    window.addEventListener("resize", () => {
+      isMobile.value = isUsingMobile()
+    })
 
     const imageServer = ref(serverURL)
 
@@ -152,6 +168,7 @@ export default defineComponent({
     }
 
     return {
+      isMobile,
       router,
       originalInputInfo,
       inputInfo,

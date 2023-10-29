@@ -9,10 +9,10 @@
           <q-card class="my-card text-center">
             <q-card-section style="height: 200px; display: grid; align-items: center;">
               <div v-if="attachment.type === 'image'">
-                <q-img :src="attachment.url" style="width: 90%; height: 200px;" />
+                <q-img :src="attachment.url" style="width: 90%; height: 200px;" spinner-color="white" />
               </div>
               <div v-else-if="attachment.type === 'video'">
-                <q-video :src="attachment.url" style="width: 90%;" />
+                <q-video :src="attachment.url" style="width: 90%;" spinner-color="white" />
               </div>
               <div v-else>
                 <div class="text-red full-width">Error al mostrar el contenido</div>

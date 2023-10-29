@@ -45,7 +45,7 @@
                 </div>
               </q-btn-dropdown>
             </q-list>
-            <q-list>
+            <q-list v-if="actualRoute === 'assets-page'">
               <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs" style="text-transform: none;">
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
@@ -160,7 +160,7 @@
             style="position: absolute; background: white; bottom: 48px; border-radius: 0 10px 10px 0;">
             <q-btn :label="assetFounded.label" icon-right="navigate_next" size="14px" flat
               style="text-transform: capitalize; font-weight: normal;" @click="redirectToAsset(assetFounded.id)">
-              <q-tooltip class="bg-black" style="font-size: 0.75rem;" >Ver mas informacion</q-tooltip>
+              <q-tooltip class="bg-black" style="font-size: 0.75rem;">Ver mas informacion</q-tooltip>
             </q-btn>
           </div>
         </q-card-section>
@@ -274,11 +274,15 @@ export default defineComponent({
     const inputSearchBar = ref(null)
 
     const viewStore = useViewStore()
-    const viewDictionary = ref({
-      details: false,
-      content: false,
-    })
+    const viewDictionary = ref()
     const isViewActive = ref(false)
+
+    if (!viewStore.getView) {
+      viewDictionary.value = {
+        details: true,
+        content: false,
+      }
+    }
 
     const dialogScanQR = ref(false)
     const dialogQrResult = ref(false)
@@ -307,21 +311,15 @@ export default defineComponent({
   },
   methods: {
     updateView(view) {
-      const updatedView = this.viewDictionary[view]
-      if (this.viewStore.getView) {
-        this.viewStore.clearView
-      }
-      if (view === 'details') {
-        this.viewDictionary.content = false
-      }
-      else if (view === 'content') {
-        this.viewDictionary.details = false
-      }
-      this.viewStore.setView({
-        key: view,
-        value: updatedView,
+      Object.keys(this.viewDictionary).map((key) => {
+        if (view !== key) {
+          this.viewDictionary[key] = false
+        } else {
+          this.viewDictionary[key] = true
+        }
       })
-      this.isViewActive = true
+      this.viewStore.setView(this.viewDictionary)
+      console.log(this.viewStore.getView)
     },
     defineFilterOptions(filter) {
       if (this.dataApi != null) {

@@ -28,9 +28,10 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { api } from "src/boot/axios"
 import { useDataApiStore } from "src/stores/data-api-store"
+import { useViewStore } from 'src/stores/view-store'
 import { date } from 'quasar'
 
 import PageTitle from 'src/components/PageTitle.vue'
@@ -64,7 +65,56 @@ export default defineComponent({
 
     const stateDialogNewAsset = ref(false)
 
-    const assetColumns = [
+    const assetColumns = ref([])
+
+    const assetRows = ref([])
+
+    const loadingState = ref(false)
+
+    const dataApiStore = useDataApiStore()
+
+    getAllAssets()
+
+    function getAllAssets() {
+      loadingState.value = true
+      try {
+        api
+          .get("./assets")
+          .then((res) => {
+            const data = res.data
+            if (data.length > 0) {
+              setAssets(data)
+            }
+            else if (data.length == 0) {
+              dataApiStore.clearDataApi()
+              loadingState.value = false
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          });
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    function setAssets(data = null) {
+      if (data !== null) {
+        dataApiStore.setDataApi(data)
+      }
+      assetRows.value = dataApiStore.getDataApi
+      loadingState.value = false
+    }
+
+    function formatDate(dateToFormat) {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - mm:ss', {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+      })
+    }
+
+    const viewStore = useViewStore()
+
+    const detailsColumns = ref([
       {
         name: 'index',
         label: '#',
@@ -123,52 +173,70 @@ export default defineComponent({
         },
       },
       { name: 'actions', label: '', align: 'left' }
-    ]
+    ])
 
-    const assetRows = ref([])
+    const contentColumns = ref([
+      {
+        name: 'index',
+        label: '#',
+        field: 'index'
+      },
+      { name: 'image', label: 'Imagen', field: 'image', align: 'center' },
+      { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
+      { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
+      {
+        name: 'manufacturer', label: 'Fabricante', field: 'manufacturer', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => {
+          if (value) {
+            return value
+          }
+          return "N/A"
+        }
+      },
+      {
+        name: 'status', label: 'Estado', field: 'status', align: 'left'
+      },
+      {
+        name: 'created_at', label: 'Creado el', field: 'created_at', align: 'left',
+        format: (date) => {
+          return formatDate(date)
+        },
+      },
+      { name: 'actions', label: '', align: 'left' }
+    ])
 
-    const loadingState = ref(false)
-
-    const dataApiStore = useDataApiStore()
-
-    getAllAssets()
-
-    function getAllAssets() {
-      loadingState.value = true
-      try {
-        api
-          .get("./assets")
-          .then((res) => {
-            const data = res.data
-            if (data.length > 0) {
-              setAssets(data)
-            }
-            else if (data.length == 0) {
-              dataApiStore.clearDataApi()
-              loadingState.value = false
-            }
-          })
-          .catch((err) => {
-            console.log(err)
-          });
-      } catch (error) {
-        console.log(error)
+    if (!viewStore.getView) {
+      assetColumns.value = detailsColumns.value
+    } else {
+      const viewConfig = viewStore.getView
+      if (viewConfig?.content == true) {
+        assetColumns.value = contentColumns.value
+      }
+      if (viewConfig?.details == true) {
+        assetColumns.value = detailsColumns.value
       }
     }
 
-    function setAssets(data = null) {
-      if (data !== null) {
-        dataApiStore.setDataApi(data)
+    watch(() => viewStore.getView, (newValue) => {
+      if (newValue?.content == true) {
+        assetColumns.value = contentColumns.value
       }
-      assetRows.value = dataApiStore.getDataApi
-      loadingState.value = false
-    }
-
-    function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - mm:ss', {
-        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-      })
-    }
+    })
 
     return {
       isMobile,
@@ -179,6 +247,8 @@ export default defineComponent({
       dataApiStore,
       getAllAssets,
       setAssets,
+      detailsColumns,
+      contentColumns,
     }
   },
   methods: {

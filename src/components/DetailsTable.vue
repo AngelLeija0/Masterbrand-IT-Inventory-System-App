@@ -3,6 +3,11 @@
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
     :style="{ height: isMobile ? '72.5vh' : '66vh' }">
+    <template v-slot:body-cell-properties="props">
+      <q-td style="max-width: 700px; overflow-x: hidden;">
+        {{ formatProperties(props.row?.properties) }}
+      </q-td>
+    </template>
     <template v-slot:body-cell-actions="props">
       <q-td>
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
@@ -268,6 +273,16 @@ export default defineComponent({
     };
   },
   methods: {
+    formatProperties(properties) {
+      let propertiesString = ""
+      properties.map((property, index) => {
+        if (index === (properties.length - 1)) {
+          propertiesString += property.name
+        }
+        propertiesString += property.name + ", "
+      })
+      return propertiesString
+    },
     redirectToAsset(idAsset) {
       this.$router.push({ path: `inventario/${idAsset}` });
     },

@@ -81,7 +81,7 @@
           <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-else>{{ assetInfo.category }}&{{
             assetInfo.description
           }}</div>
-          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'"
+          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'" spinner-color="white"
             style="width: 200px; opacity: 0.7;" />
         </q-card-section>
       </q-card>

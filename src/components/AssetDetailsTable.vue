@@ -3,6 +3,12 @@
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
     :style="{ height: isMobile ? '72.5vh' : '66vh' }">
+    <template v-slot:body-cell-image="props">
+      <q-td style="width: 15%;">
+        <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + props.row?.image"
+          spinner-color="white" style="max-width: 260px" />
+      </q-td>
+    </template>
     <template v-slot:body-cell-status="props">
       <q-td>
         <div v-if="props.row?.status">
@@ -29,7 +35,7 @@
 <script>
 import { defineComponent, ref, watch } from "vue"
 import { useRoute } from 'vue-router'
-import { useViewStore } from "src/stores/view-store"
+import { serverURL } from "src/boot/axios";
 
 export default defineComponent({
   name: "AssetDetailsTable",
@@ -62,6 +68,8 @@ export default defineComponent({
 
     const records = ref(props.rows)
 
+    const imageServer = ref(serverURL)
+
     watch(() => props.rows, (newValue) => {
       records.value = newValue
       records.value.forEach((row, index) => {
@@ -69,28 +77,10 @@ export default defineComponent({
       })
     })
 
-    const viewStore = useViewStore()
-    const viewConfig = ref(viewStore.getView)
-
-    watch(() => viewStore.getView, (newValue) => {
-      console.log(newValue)
-      viewConfig.value = newValue
-      setTableView()
-    })
-
-    function setTableView() {
-      if (viewConfig.value.value) {
-        console.log(viewConfig.value.value)
-        const newColumn = { name: 'image', label: 'Imagen', field: 'image' }
-      }
-    }
-
     return {
       isMobile,
       route,
-      viewStore,
-      viewConfig,
-      setTableView,
+      imageServer,
       pagination: ref({
         rowsPerPage: 0
       })

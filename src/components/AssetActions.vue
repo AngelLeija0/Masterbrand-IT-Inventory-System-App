@@ -114,7 +114,7 @@
         <div class="flex justify-center">
           <div class="flex justify-center items-center">
             <div v-if="defineFileType(currentAction.attachments[currentAttachment]) === 'image'">
-              <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"
+              <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]" spinner-color="white"
                 style="width: 536px; max-width: 70vw;" />
             </div>
             <div v-else-if="defineFileType(currentAction.attachments[currentAttachment]) === 'video'">

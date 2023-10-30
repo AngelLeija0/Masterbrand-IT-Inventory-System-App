@@ -19,10 +19,10 @@
         </template>
         <template v-slot:body-cell-attachments="props">
           <q-td v-if="props.row.attachments.length > 0">
-            <q-btn label="Ver imagenes/videos" icon-right="navigate_next" color="dark" outline size="0.75rem"
+            <q-btn label="Ver" icon-right="navigate_next" color="dark" outline size="0.75rem"
               style="border-radius: 10px; text-transform: capitalize;" @click="openAttachmentDialog(props.row.id)" />
           </q-td>
-          <q-td v-else>
+          <q-td class="flex justify-center items-center" v-else>
             N/A
           </q-td>
         </template>

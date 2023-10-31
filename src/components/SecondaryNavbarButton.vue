@@ -12,7 +12,7 @@
       borderRight: borderPosition === 'right' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
       borderLeft: borderPosition === 'left' && active == true ? '5px solid #1565c0' : '5px solid #f5f5f5',
       textTransform: 'capitalize',
-      fontWeight: 'normal'
+      fontWeight: active ? '600' : ''
     }"
   />
 </template>

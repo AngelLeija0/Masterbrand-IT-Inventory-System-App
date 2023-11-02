@@ -169,6 +169,7 @@ export default defineComponent({
     },
     closeDialog() {
       this.dialogState = false
+      this.inputInfo = {}
     },
     addCategory() {
       const properties = this.checkBoxProperties.map((property) => {
@@ -191,7 +192,6 @@ export default defineComponent({
               message: 'Creado correctamente.',
               timeout: 2000,
             })
-            this.inputInfo = {}
             this.dialogState = false
             this.$emit("categoryAdded")
           } else {
@@ -210,6 +210,7 @@ export default defineComponent({
             timeout: 2000,
           })
         })
+        this.inputInfo = {}
     },
   },
 });

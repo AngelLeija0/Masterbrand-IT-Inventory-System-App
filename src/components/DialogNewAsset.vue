@@ -179,7 +179,9 @@ export default defineComponent({
       this.getAllCategories();
     },
     closeDialog() {
-      this.inputInfo = {};
+      this.inputInfo = {
+        status: {}
+      }
       this.dialogState = false;
     },
     addAsset() {
@@ -210,6 +212,9 @@ export default defineComponent({
         .then((res) => {
           if (res.data) {
             this.dialogState = false;
+            this.inputInfo = {
+              status: {}
+            }
             this.$emit("reloadData");
             this.$q.notify({
               type: "positive",

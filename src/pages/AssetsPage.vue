@@ -123,14 +123,6 @@ export default defineComponent({
       { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
       { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
       {
-        name: 'manufacturer', label: 'Fabricante', field: 'manufacturer', align: 'left', format: (value) => {
-          if (value) {
-            return value
-          }
-          return "N/A"
-        }
-      },
-      {
         name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => {
           if (value) {
             return value

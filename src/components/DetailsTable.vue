@@ -9,7 +9,7 @@
       </q-td>
     </template>
     <template v-slot:body-cell-actions="props">
-      <q-td>
+      <q-td style="width: 16%;">
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
           style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"

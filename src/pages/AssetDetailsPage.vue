@@ -4,7 +4,7 @@
       <GoBackButton />
       <MoreOptionsButton :options="assetMoreOptions" @optionClicked="handleOptionClick" />
     </q-section>
-    <q-section v-if="Object.keys(assetInfo).length > 0" class="flex row q-px-md"
+    <q-section v-if="Object.keys(assetInfo).length > 0 && detailsLoaded === true" class="flex row q-px-md"
       :style="{ height: '73vh', overflowY: isMobile ? 'auto' : '' }">
       <div class="col-12 col-sm-12 col-md-3 bg-grey-2 flex" style="border-radius: 12px; flex-direction: column;">
         <div class="q-pa-md">
@@ -23,6 +23,7 @@
             </div>
           </div>
           <div class="text-grey-14" v-if="assetInfo.serial_number">#{{ assetInfo.serial_number }}</div>
+          <div class="text-grey-14" v-else>#General</div>
         </div>
         <div class="q-py-lg" :style="{ paddingTop: isMobile ? '5px' : '', paddingBottom: isMobile ? '10px' : '' }">
           <div v-for="(section, i) in pageSections" :key="i + 1">
@@ -47,12 +48,31 @@
       </div>
       <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm"
         :style="{ overflowY: !isMobile ? 'auto' : '', paddingLeft: isMobile ? '0' : '', paddingRight: isMobile ? '0' : '' }">
-        <AssetInfo v-if="detailsLoaded && pageSections[0].state" :modelInfo="assetInfo"
+        <AssetInfo v-if="detailsLoaded === true && pageSections[0].state" :modelInfo="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
-        <AssetActions v-if="detailsLoaded && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
+        <AssetActions v-if="detailsLoaded === true && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
           @update-info="getAssetDetails(idAsset)" />
-        <AssetAttachments v-if="detailsLoaded && pageSections[2].state" :asset="assetInfo"
+        <AssetAttachments v-if="detailsLoaded === true && pageSections[2].state" :asset="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
+      </div>
+    </q-section>
+    <q-section v-else>
+      <div v-if="detailsLoaded === false" class="flex justify-center items-center q-pa-xl q-ma-xl">
+        <div class="full-width text-center">
+          Cargando información del producto
+        </div>
+        <q-spinner-dots color="primary" size="32px" />
+      </div>
+      <div v-else-if="detailsLoaded == 'failed'" class="flex justify-center items-center q-pa-xl q-ma-xl">
+        <q-icon name="error" color="red" size="128px" />
+        <div class="full-width text-center q-py-lg text-h6">
+          Error al cargar el producto
+        </div>
+        <div class="full-width text-center q-pb-md">
+          Vuelve a seleccionar el producto en la seccion del inventario.
+        </div>
+        <q-btn label="Regresar al inventario" color="dark" style="text-transform: none; border-radius: 5px;"
+          to="../inventario" />
       </div>
     </q-section>
 
@@ -76,12 +96,11 @@
         <q-card-section class="flex justify-center items-center q-pt-none q-mt-none">
           <vue-qr :text="assetInfo._id" size="300"></vue-qr>
           <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-if="assetInfo.serial_number">{{
-            assetInfo.category }} {{
-    assetInfo.serial_number }}</div>
+            assetInfo.category }} {{ assetInfo.serial_number }}</div>
           <div class="text-grey-14 full-width text-center" style="font-size: 0.75rem;" v-else>{{ assetInfo.category }}&{{
             assetInfo.description
           }}</div>
-          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'" spinner-color="white"
+          <q-img :src="imageServer + '/uploads/attachments/masterbrand-full-logo.jpg'" spinner-color="primary"
             style="width: 200px; opacity: 0.7;" />
         </q-card-section>
       </q-card>
@@ -215,15 +234,15 @@ export default defineComponent({
               sortedActions.value = sortActions(data.actions)
               detailsLoaded.value = true
             } else {
-              router.push({ name: 'assets-page' })
+              detailsLoaded.value = "failed"
             }
           })
           .catch((err) => {
-            router.push({ name: 'assets-page' })
+            detailsLoaded.value = "failed"
             console.log(err)
           });
       } catch (error) {
-        router.push({ name: 'assets-page' })
+        detailsLoaded.value = "failed"
         console.log(error)
       }
     }

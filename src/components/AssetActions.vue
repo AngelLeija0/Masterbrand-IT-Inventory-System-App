@@ -8,8 +8,7 @@
     <div class="col-12 q-mt-md">
       <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
         table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
-        rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
-        style="height: 64vh;">
+        rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]" style="height: 64vh;">
         <template v-slot:body-cell-status="props">
           <q-td>
             <q-icon name="circle" :color="defineStatusColor(props.row?.status)" />
@@ -27,7 +26,7 @@
           </q-td>
         </template>
         <template v-slot:body-cell-actions="props">
-          <q-td>
+          <q-td style="width: 23%;">
             <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
               style="border-radius: 10px; text-transform: capitalize" @click="openEditDialog(props.row.id)" />
             <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
@@ -110,12 +109,12 @@
       </q-card-section>
       <q-card-section class="q-pt-lg q-pb-sm">
         <div class="q-pb-lg text-subtitle2 text-weight-regular">Images o videos adjuntados en la accion {{
-          currentAction.name }}.</div>
+                  currentAction.name }}.</div>
         <div class="flex justify-center">
           <div class="flex justify-center items-center">
             <div v-if="defineFileType(currentAction.attachments[currentAttachment]) === 'image'">
-              <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]" spinner-color="white"
-                style="width: 536px; max-width: 70vw;" />
+              <q-img :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"
+                spinner-color="primary" style="width: 536px; max-width: 70vw;" />
             </div>
             <div v-else-if="defineFileType(currentAction.attachments[currentAttachment]) === 'video'">
               <q-video :src="attachmentsURL + '/uploads/attachments/' + currentAction.attachments[currentAttachment]"

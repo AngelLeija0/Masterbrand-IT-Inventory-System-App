@@ -6,7 +6,7 @@
     <template v-slot:body-cell-image="props">
       <q-td style="width: 15%;">
         <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + props.row?.image"
-          spinner-color="white" style="max-width: 260px" />
+          spinner-color="primary" style="max-width: 260px" />
       </q-td>
     </template>
     <template v-slot:body-cell-status="props">
@@ -24,7 +24,7 @@
       </q-td>
     </template>
     <template v-slot:body-cell-actions="props">
-      <q-td>
+      <q-td style="width: 10%;">
         <q-btn label="Ver mas" icon-right="navigate_next" color="dark" outline size="0.75rem"
           style="border-radius: 10px; text-transform: capitalize;" @click="redirectToAsset(props.row._id)" />
       </q-td>

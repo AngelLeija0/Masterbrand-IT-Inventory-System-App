@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
           <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image"
-            spinner-color="white" style="max-width: 260px" />
+            spinner-color="primary" style="max-width: 260px" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
         </div>
@@ -28,10 +28,12 @@
             :modelValue="new RegExp('date').test(property) ? formatDate(inputInfo[property]) : inputInfo[property]"
             :editing="isEditing" @update-input="updateInputInfo" @update-editing="updateEditing" />
         </div>
-        <div v-if="isEditing" class="col-12 flex q-px-md q-pt-lg" :style="{ justifyContent: isMobile ? 'center' : 'end' }">
+        <div v-if="isEditing" class="col-12 flex q-px-md q-pt-lg"
+          :style="{ justifyContent: isMobile ? 'center' : 'end' }">
           <q-btn-group flat>
-            <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save" :size="isMobile ? '0.725rem' : '0.85rem'"
-              style="text-transform: capitalize; border-radius: 5px;" @click="saveAsset()" />
+            <q-btn class="q-ma-xs" label="Guardar" color="primary" icon-right="save"
+              :size="isMobile ? '0.725rem' : '0.85rem'" style="text-transform: capitalize; border-radius: 5px;"
+              @click="saveAsset()" />
             <q-btn class="q-ma-xs" label="Cancelar" flat @click="cancelEdit()" :size="isMobile ? '0.725rem' : '0.85rem'"
               style="text-transform: capitalize; border-radius: 5px;" />
           </q-btn-group>
@@ -39,11 +41,13 @@
       </div>
     </div>
     <div class="col-12 q-px-md q-pt-md flex justify-end">
-      <div class="full-width text-grey-14" :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end' }">Creado el {{
-        formatDate(inputInfo.created_at) }}</div>
       <div class="full-width text-grey-14"
-        :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end', paddingTop: isMobile ? '5px' : '' }">Ultima modificacion el {{
-          formatDate(inputInfo.updated_at) }}</div>
+        :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end' }">Creado el {{
+                formatDate(inputInfo.created_at) }}</div>
+      <div class="full-width text-grey-14"
+        :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end', paddingTop: isMobile ? '5px' : '' }">
+        Ultima modificacion el {{
+                formatDate(inputInfo.updated_at) }}</div>
     </div>
   </div>
 
@@ -62,7 +66,7 @@
         <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
           @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
           @click="setNewDefaultImge(image)">
-          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image" spinner-color="white"
+          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image" spinner-color="primary"
             style="height: 120px; width: 140px" />
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>

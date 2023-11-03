@@ -149,7 +149,7 @@ export default defineComponent({
 
     const checkBoxProperties = ref([
       {
-        label: "Descripcion",
+        label: "Descripción",
         key: "description",
         value: false,
       },

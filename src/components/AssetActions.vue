@@ -53,7 +53,7 @@
         <div>
           <q-input v-model="inputNewAction.name" clearable dense label="Nombre" class="q-mb-md" hint="requerido"
             :rules="[(val) => !!val || 'requerido']" />
-          <q-input v-model="inputNewAction.description" clearable dense label="Descripcion" class="q-mb-md"
+          <q-input v-model="inputNewAction.description" clearable dense label="Descripción" class="q-mb-md"
             hint="requerido" :rules="[(val) => !!val || 'requerido']" />
           <q-select v-model="inputNewAction.status" :options="actionOptions" clearable dense label="Estado"
             class="q-mb-md" hint="requerido" :rules="[(val) => !!val || 'requerido']" />
@@ -109,7 +109,7 @@
       </q-card-section>
       <q-card-section class="q-pt-lg q-pb-sm">
         <div class="q-pb-lg text-subtitle2 text-weight-regular">Images o videos adjuntados en la accion {{
-                  currentAction.name }}.</div>
+          currentAction.name }}.</div>
         <div class="flex justify-center">
           <div class="flex justify-center items-center">
             <div v-if="defineFileType(currentAction.attachments[currentAttachment]) === 'image'">
@@ -156,7 +156,7 @@
         <div>
           <q-input v-model="currentAction.name" clearable dense label="Nombre" class="q-mb-md" hint="requerido"
             :rules="[(val) => !!val || 'requerido']" />
-          <q-input v-model="currentAction.description" clearable dense label="Descripcion" class="q-mb-md"
+          <q-input v-model="currentAction.description" clearable dense label="Descripción" class="q-mb-md"
             hint="requerido" :rules="[(val) => !!val || 'requerido']" />
           <q-select v-model="currentAction.status" :options="actionOptions" clearable dense label="Estado" class="q-mb-md"
             hint="requerido" :rules="[(val) => !!val || 'requerido']" />

@@ -50,8 +50,8 @@
         :style="{ overflowY: !isMobile ? 'auto' : '', paddingLeft: isMobile ? '0' : '', paddingRight: isMobile ? '0' : '' }">
         <AssetInfo v-if="detailsLoaded === true && pageSections[0].state" :modelInfo="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
-        <AssetActions v-if="detailsLoaded === true && pageSections[1].state" :columns="assetActionsColumns" :rows="sortedActions"
-          @update-info="getAssetDetails(idAsset)" />
+        <AssetActions v-if="detailsLoaded === true && pageSections[1].state" :columns="assetActionsColumns"
+          :rows="sortedActions" @update-info="getAssetDetails(idAsset)" />
         <AssetAttachments v-if="detailsLoaded === true && pageSections[2].state" :asset="assetInfo"
           @update-info="getAssetDetails(idAsset)" />
       </div>
@@ -256,13 +256,17 @@ export default defineComponent({
         field: 'index'
       },
       { name: 'name', label: 'Nombre', field: 'name', align: 'left' },
-      { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
+      { name: 'description', label: 'Descripción', field: 'description', align: 'left' },
       { name: 'status', label: 'Estado', field: 'status', align: 'left' },
       { name: 'attachments', label: 'Imagenes y videos', field: 'attachments', align: 'left' },
       {
-        name: 'date', label: 'Fecha', field: 'date', align: 'left',
+        name: 'date', label: 'Fecha de creación', field: 'date', align: 'left',
         format: (date) => {
           return formatDate(date)
+        },
+        sortable: true,
+        sort: (a, b) => {
+          return new Date(b) - new Date(a)
         }
       },
       { name: 'actions', label: '', align: 'left' },

@@ -3,8 +3,10 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
-          <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image"
-            spinner-color="primary" style="max-width: 260px" />
+          <q-img v-if="inputInfo.images?.default_image" class="q-pa-md q-mx-sm"
+            :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image" spinner-color="primary"
+            style="max-width: 260px" />
+          <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
         </div>
@@ -43,11 +45,13 @@
     <div class="col-12 q-px-md q-pt-md flex justify-end">
       <div class="full-width text-grey-14"
         :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end' }">Creado el {{
-                formatDate(inputInfo.created_at) }}</div>
-      <div class="full-width text-grey-14"
+          formatDate(inputInfo.created_at) }}</div>
+      <div class="full-width text-grey-14" v-if="inputInfo.updated_at"
         :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end', paddingTop: isMobile ? '5px' : '' }">
-        Ultima modificacion el {{
-                formatDate(inputInfo.updated_at) }}</div>
+        Ultima modificacion el {{ formatDate(inputInfo.updated_at) }}</div>
+      <div class="full-width text-grey-14" v-else
+        :style="{ fontSize: isMobile ? '12px' : '14px', textAlign: isMobile ? 'start' : 'end', paddingTop: isMobile ? '5px' : '' }">
+        Sin modificaciones</div>
     </div>
   </div>
 
@@ -71,12 +75,19 @@
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>
       </q-card-section>
+      <q-card-actions align="right" class="q-px-md q-pt-lg">
+        <q-file size="0.75rem" label-color="dark" outlined rounded dense label="Subir nueva imagen" accept=".jpg, image/*" v-model="inputNewImage" @update:model-value="uploadNewImage()" >
+          <template v-slot:prepend>
+            <q-icon name="cloud_upload" color="dark" class="q-px-xs" />
+          </template>
+        </q-file>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, watch } from 'vue'
 import { api, serverURL } from "src/boot/axios"
 import { useRoute } from 'vue-router'
 import { date } from 'quasar'
@@ -121,6 +132,10 @@ export default defineComponent({
 
     const inputInfo = ref(props.modelInfo)
     const originalInputInfo = ref({ ...inputInfo.value })
+
+    watch(props.modelInfo, (newValue) => {
+      inputInfo.value = newValue
+    })
 
     const isEditing = ref(false)
     const isEditingImage = ref(false)
@@ -234,7 +249,6 @@ export default defineComponent({
     setNewDefaultImge(image) {
       this.inputInfo.images.default_image = image
       const asset = this.inputInfo
-      console.log(asset)
       try {
         api
           .patch(`./assets/update/${asset._id}`, asset)
@@ -297,7 +311,43 @@ export default defineComponent({
     cancelEdit() {
       this.isEditing = false
       this.inputInfo = { ...this.originalInputInfo }
-    }
+    },
+    uploadNewImage() {
+      const asset = this.inputInfo
+      const imageForm = new FormData();
+      imageForm.append("attachments", this.inputNewImage)
+      api
+        .patch(`./assets/update/add-new-image/${asset._id}`, imageForm)
+        .then((res) => {
+          const data = res.data
+          if (data) {
+            this.inputInfo = data
+            this.originalInputInfo = { ...this.inputInfo }
+            this.isEditingImage = false
+            this.inputNewImage = null
+            this.$emit("update-info")
+            this.$q.notify({
+              type: 'positive',
+              message: 'Imagen agregada correctamente.',
+              timeout: 2000,
+            })
+          } else {
+            this.$q.notify({
+              type: 'negative',
+              message: 'Ha ocurrido un error.',
+              timeout: 2000,
+            })
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+          this.$q.notify({
+            type: 'negative',
+            message: 'Ha ocurrido un error.',
+            timeout: 2000,
+          })
+        })
+    },
   }
 });
 </script>

@@ -115,54 +115,25 @@ export default defineComponent({
     const viewStore = useViewStore()
 
     const detailsColumns = ref([
+      { name: 'index', label: '#', field: 'index' },
       {
-        name: 'index',
-        label: '#',
-        field: 'index'
-      },
-      { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
-      { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
-      {
-        name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => {
-          if (value) {
-            return value
-          }
-          return "N/A"
+        name: 'category', label: 'Categoria', field: 'category', align: 'left',
+        sortable: true,
+        sort: (a, b) => {
+          return a.localeCompare(b)
         }
       },
+      { name: 'description', label: 'Descripción', field: 'description', align: 'left' },
+      { name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => value ? value : 'N/A' },
+      { name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => value ? value : 'N/A' },
+      { name: 'location', label: 'Ubicación', field: 'location', align: 'left' },
+      { name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => value ? value : 'N/A' },
+      { name: 'status', label: 'Estado', field: 'status', align: 'left' },
       {
-        name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => {
-          if (value) {
-            return value
-          }
-          return "N/A"
-        }
-      },
-      {
-        name: 'location', label: 'Ubicacion', field: 'location', align: 'left', format: (value) => {
-          if (value) {
-            return value
-          }
-          return "N/A"
-        }
-      },
-      { name: 'location_extra_info', label: '', field: 'location_extra_info', align: 'left' },
-      {
-        name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => {
-          if (value) {
-            return value
-          }
-          return "N/A"
-        }
-      },
-      {
-        name: 'status', label: 'Estado', field: 'status', align: 'left'
-      },
-      {
-        name: 'created_at', label: 'Creado el', field: 'created_at', align: 'left',
-        format: (date) => {
-          return formatDate(date)
-        },
+        name: 'created_at', label: 'Fecha de creación', field: 'created_at', align: 'left',
+        format: (date) => formatDate(date),
+        sortable: true,
+        sort: (a, b) => new Date(b) - new Date(a)
       },
       { name: 'actions', label: '', align: 'left' }
     ])
@@ -175,7 +146,7 @@ export default defineComponent({
       },
       { name: 'image', label: 'Imagen', field: 'image', align: 'center' },
       { name: 'category', label: 'Categoria', field: 'category', align: 'left' },
-      { name: 'description', label: 'Descripcion', field: 'description', align: 'left' },
+      { name: 'description', label: 'Descripción', field: 'description', align: 'left' },
       {
         name: 'manufacturer', label: 'Fabricante', field: 'manufacturer', align: 'left', format: (value) => {
           if (value) {
@@ -208,6 +179,10 @@ export default defineComponent({
         format: (date) => {
           return formatDate(date)
         },
+        sortable: true,
+        sort: (a, b) => {
+          return new Date(b) - new Date(a)
+        }
       },
       { name: 'actions', label: '', align: 'left' }
     ])

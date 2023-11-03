@@ -88,22 +88,30 @@ export default defineComponent({
       },
       {
         name: 'created_at',
-        label: 'Fecha de registro',
+        label: 'Fecha de creación',
         field: 'created_at',
         format: (date) => {
           return formatDate(date)
+        },
+        sortable: true,
+        sort: (a, b) => {
+          return new Date(b) - new Date(a)
         },
         align: 'left'
       },
       {
         name: 'updated_at',
-        label: 'Fecha de modificacion',
+        label: 'Ultima fecha de modificación',
         field: 'updated_at',
         format: (date) => {
           if (date == null) {
             return 'Sin modificar'
           }
           return formatDate(date)
+        },
+        sortable: true,
+        sort: (a, b) => {
+          return new Date(b) - new Date(a)
         },
         align: 'left'
       },

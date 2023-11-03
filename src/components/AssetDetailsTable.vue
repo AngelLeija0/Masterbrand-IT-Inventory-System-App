@@ -9,6 +9,15 @@
           spinner-color="primary" style="max-width: 260px" />
       </q-td>
     </template>
+    <template v-slot:body-cell-location="props">
+      <q-td>
+        <div v-if="props.row.location">
+          {{ props.row.location_extra_info ? `${props.row.location} - ${props.row.location_extra_info}` :
+            props.row.location }}
+        </div>
+        <div v-else> N/A </div>
+      </q-td>
+    </template>
     <template v-slot:body-cell-status="props">
       <q-td>
         <div v-if="props.row?.status">

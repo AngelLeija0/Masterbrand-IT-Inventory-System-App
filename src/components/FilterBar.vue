@@ -319,7 +319,7 @@ export default defineComponent({
         }
       })
       this.viewStore.setView(this.viewDictionary)
-      console.log(this.viewStore.getView)
+      this.$emit("updateView")
     },
     defineFilterOptions(filter) {
       if (this.dataApi != null) {

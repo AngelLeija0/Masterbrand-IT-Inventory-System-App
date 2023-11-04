@@ -18,10 +18,10 @@
       </div>
     </q-section>
     <q-section>
-      <FilterBar @getAllData="getAllAssets" @reloadData="setAssets"></FilterBar>
+      <FilterBar @getAllData="getAllAssets" @reloadData="setAssets" @updateView="getView" ></FilterBar>
     </q-section>
     <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" @reloadData="setAssets">
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" :rowsPerPage="tableRowsPerPage" @reloadData="setAssets">
       </AssetDetailsTable>
     </q-section>
   </q-page>
@@ -70,6 +70,8 @@ export default defineComponent({
     const assetRows = ref([])
 
     const loadingState = ref(false)
+
+    const tableRowsPerPage = ref([5, 10, 15, 20, 0])
 
     const dataApiStore = useDataApiStore()
 
@@ -199,12 +201,6 @@ export default defineComponent({
       }
     }
 
-    watch(() => viewStore.getView, (newValue) => {
-      if (newValue?.content == true) {
-        assetColumns.value = contentColumns.value
-      }
-    })
-
     return {
       isMobile,
       assetColumns,
@@ -216,12 +212,26 @@ export default defineComponent({
       setAssets,
       detailsColumns,
       contentColumns,
+      viewStore,
+      tableRowsPerPage,
     }
   },
   methods: {
     activateDialogNewAsset() {
       this.$refs.dialogNewAssetRef.openDialog();
     },
+    getView() {
+      const view = this.viewStore.getView
+      console.log(view)
+      if (view.content == true) {
+        this.tableRowsPerPage = [3, 5, 10, 15, 20, 0]
+        return this.assetColumns = this.contentColumns
+      }
+      if (view.details == true) {
+        this.tableRowsPerPage = [5, 10, 15, 20, 0]
+        return this.assetColumns = this.detailsColumns
+      }
+    }
   }
 })
 </script>

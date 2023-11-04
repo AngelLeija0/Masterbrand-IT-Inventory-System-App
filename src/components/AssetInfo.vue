@@ -3,9 +3,9 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
-          <q-img v-if="inputInfo.images?.default_image" class="q-pa-md q-mx-sm"
+          <q-img v-if="defaultImageFounded" class="q-pa-md q-mx-sm"
             :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image" spinner-color="primary"
-            style="max-width: 260px" />
+            style="max-width: 260px" @error="handleImageError" />
           <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />
@@ -76,7 +76,8 @@
         </div>
       </q-card-section>
       <q-card-actions align="right" class="q-px-md q-pt-lg">
-        <q-file size="0.75rem" label-color="dark" outlined rounded dense label="Subir nueva imagen" accept=".jpg, image/*" v-model="inputNewImage" @update:model-value="uploadNewImage()" >
+        <q-file size="0.75rem" label-color="dark" outlined rounded dense label="Subir nueva imagen" accept=".jpg, image/*"
+          v-model="inputNewImage" @update:model-value="uploadNewImage()">
           <template v-slot:prepend>
             <q-icon name="cloud_upload" color="dark" class="q-px-xs" />
           </template>
@@ -132,6 +133,12 @@ export default defineComponent({
 
     const inputInfo = ref(props.modelInfo)
     const originalInputInfo = ref({ ...inputInfo.value })
+
+    const defaultImageFounded = ref()
+
+    if (inputInfo.value.images?.default_image) {
+      defaultImageFounded.value = true
+    }
 
     watch(props.modelInfo, (newValue) => {
       inputInfo.value = newValue
@@ -198,6 +205,7 @@ export default defineComponent({
       statusOptions,
       allProperties,
       formatDate,
+      defaultImageFounded,
     }
   },
   methods: {
@@ -348,6 +356,14 @@ export default defineComponent({
           })
         })
     },
+    handleImageError() {
+      this.defaultImageFounded = false
+      this.$q.notify({
+        type: 'warning',
+        message: 'Error al cargar la imagen por defecto.',
+        timeout: 2000,
+      })
+    }
   }
 });
 </script>

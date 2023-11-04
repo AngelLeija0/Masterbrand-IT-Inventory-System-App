@@ -1,12 +1,16 @@
 <template>
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
-    rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
+    rows-per-page-label="Cantidad de registros" :rows-per-page-options="rowsPerPage"
     :style="{ height: isMobile ? '72.5vh' : '66vh' }">
     <template v-slot:body-cell-image="props">
-      <q-td style="width: 15%;">
-        <q-img class="q-pa-md q-mx-sm" :src="imageServer + '/uploads/attachments/' + props.row?.image"
-          spinner-color="primary" style="max-width: 260px" />
+      <q-td style="width: 15%;" class="text-center">
+        <q-img v-if="props.row?.image" class="q-pa-md q-ma-sm"
+          :src="imageServer + '/uploads/attachments/' + props.row?.image" spinner-color="primary"
+          style="max-width: 260px; height: 100px;"
+          @error="() => props.row.image = null"
+          />
+        <q-icon v-else name="image" size="90px" class="q-pa-md q-ma-sm" style="max-width: 260;" />
       </q-td>
     </template>
     <template v-slot:body-cell-location="props">
@@ -53,6 +57,9 @@ export default defineComponent({
       type: Array,
     },
     columns: {
+      type: Array,
+    },
+    rowsPerPage: {
       type: Array,
     },
     loading: {

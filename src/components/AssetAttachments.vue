@@ -8,15 +8,18 @@
         <div class="col-lg-3 col-md-4 col-sm-6 col-12 q-pa-md" v-for="(attachment, i) in allAttachments" :key="i + 1">
           <q-card class="my-card text-center">
             <q-card-actions align="right" class="q-pt-sm q-pb-none">
-              <q-btn icon="download" color="black" flat round class="q-py-none" size="0.75rem"
+              <q-btn icon="download" color="black" flat round class="q-py-none" size="0.75rem" :disabled="!attachment.url"
                 @click="downloadAttachment(attachment)" />
             </q-card-actions>
             <q-card-section class="q-py-none" style="height: 200px; display: grid; align-items: center;">
               <div v-if="attachment.type === 'image'">
-                <q-img :src="attachment.url" style="width: 90%; height: 200px;" spinner-color="primary" />
+                <q-img v-if="attachment.url" :src="attachment.url" style="width: 90%; height: 200px;" spinner-color="primary"
+                @error="() => attachment.url = null" />
+                <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
               </div>
               <div v-else-if="attachment.type === 'video'">
-                <q-video :src="attachment.url" style="width: 90%;" spinner-color="primary" />
+                <q-video v-if="attachment.url" :src="attachment.url" style="width: 90%;" spinner-color="primary" />
+                <q-icon v-else name="videocam" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
               </div>
               <div v-else>
                 <div class="text-red full-width">Error al mostrar el contenido</div>

@@ -2,8 +2,9 @@
   <div class="flex justify-between items-center q-py-sm"
     style="border-bottom: 1px solid rgb(239, 239, 239); width: 100%;">
     <div class="q-pr-md text-grey-14" :style="{ width: isMobile ? '100%' : '30%' }">{{ label }}</div>
-    <q-input v-model="localValue" dense borderless :readonly="!isEditing || label === 'Categoría'" @change="updateValue"
-      input-style="font-weight: 500;" :style="{ width: isMobile ? '70%' : '50%' }" />
+    <q-input v-model="localValue" dense borderless :readonly="!isEditing || label === 'Categoría'"
+      :rules="inputRulesDictionary[keyValue]" @change="updateValue" hide-bottom-space input-style="font-weight: 500;"
+      :style="{ width: isMobile ? '70%' : '50%' }" />
     <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'black'" @click="toggleEditing"
       :disabled="label === 'Categoría'">
       <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-if="label === 'Categoría'">No es posible editar la
@@ -52,6 +53,84 @@ export default defineComponent({
     const keyValue = ref(props.modelKey)
     const isEditing = ref(props.editing)
 
+    const inputRulesDictionary = ref({
+      name: [
+        val => !!val,
+        val => val.length < 30,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      description: [
+        val => !!val,
+        val => val.length < 80,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      "status.description": [
+        val => !!val,
+        val => val.length < 50,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      "status.date": [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      manufacturer: [
+        val => !!val,
+        val => val.length < 30,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      model: [
+        val => !!val,
+        val => val.length < 30,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      serial_number: [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      purchase_from: [
+        val => !!val,
+        val => val.length < 30,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      purchase_date: [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      cost: [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;'<>?~`]/gi.test(val)
+      ],
+      warranty_info: [
+        val => !!val,
+        val => val.length < 30,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      warranty_expiration_date: [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      current_employee: [
+        val => !!val,
+        val => val.length < 50,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      operating_system: [
+        val => !!val,
+        val => val.length < 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+      ram: [
+        val => !!val,
+        val => val.length > 20,
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
+      ],
+    });
+
     watch(() => props.modelValue, (newValue) => {
       localValue.value = newValue
     })
@@ -69,6 +148,7 @@ export default defineComponent({
       localValue,
       keyValue,
       isEditing,
+      inputRulesDictionary,
     }
   },
   methods: {

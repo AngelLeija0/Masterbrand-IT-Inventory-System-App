@@ -22,18 +22,25 @@
           <q-file dense v-model="inputInfo.images" label="Imagenes" use-chips multiple class="q-mb-md"
             accept=".jpg, image/*" hint="opcional" />
           <div v-for="(property, i) in propertiesOptions" :key="i">
-            <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
-              hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+            <div v-if="property.key.includes('date')">
+              <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" type="date"
+                :locale="{ format: 'dd/MM/yyyy', language: 'es' }" class="q-mb-md" hint="requerido"
+                :rules="inputRulesDictionary[property.key]" @change="validateForm()" />
+            </div>
+            <div v-else>
+              <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
+                hint="requerido" :rules="inputRulesDictionary[property.key]" @change="validateForm()" />
+            </div>
           </div>
           <q-select clearable dense v-model="inputInfo.status.name" :options="statusOptions" label="Estado"
-            class="q-mb-md" hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+            class="q-mb-md" hint="requerido" :rules="inputRulesDictionary.name" />
           <q-input clearable dense v-model="inputInfo.status.description" label="Descripción del estado" class="q-mb-md"
-            hint="requerido" :rules="[(val) => !!val || 'requerido']" />
+            hint="requerido" :rules="inputRulesDictionary.description" />
         </div>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Agregar" size="0.85rem" color="primary" dense outline padding="sm lg" @click="addAsset"
-          style="border-radius: 10px; text-transform: capitalize" />
+          style="border-radius: 10px; text-transform: capitalize" :disable="!validateForm()" />
         <q-btn label="Cancelar" size="0.85rem" flat dense outline @click="closeDialog" padding="sm lg"
           style="border-radius: 10px; text-transform: capitalize" />
       </q-card-actions>
@@ -49,6 +56,85 @@ import { api } from "src/boot/axios";
 export default defineComponent({
   name: "DialogNewAsset",
   setup() {
+
+    const inputRulesDictionary = ref({
+      name: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      description: [
+        val => !!val || '* Requerido',
+        val => val.length < 80 || 'Porfavor usa un maximo de 80 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      manufacturer: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      model: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      serial_number: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      purchase_from: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      purchase_date: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      cost: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;'<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      warranty_info: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      warranty_expiration_date: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      current_employee: [
+        val => !!val || '* Requerido',
+        val => val.length < 50 || 'Porfavor usa un maximo de 50 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      operating_system: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      ram: [
+        val => !!val || '* Requerido',
+        val => val.length < 20 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      status: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      category: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+    });
+
     const $q = useQuasar();
     const dialogState = ref(false);
 
@@ -100,6 +186,10 @@ export default defineComponent({
       }
     }
 
+    function getAllLocations() {
+      
+    }
+
     return {
       $q,
       dialogState,
@@ -108,6 +198,7 @@ export default defineComponent({
       statusOptions,
       inputInfo,
       getAllCategories,
+      inputRulesDictionary,
     };
   },
   methods: {
@@ -175,6 +266,35 @@ export default defineComponent({
           });
         });
     },
+    validateForm() {
+      if (this.inputInfo && this.inputRulesDictionary) {
+        const results = []
+
+        Object.keys(this.inputInfo).map((key) => {
+          if (key !== "status") {
+            if (this.inputRulesDictionary?.[key]) {
+              const rules = this.inputRulesDictionary[key]
+              for (const rule of rules) {
+                const errorMessage = rule(this.inputInfo[key]);
+                if (errorMessage !== true) {
+                  results.push(false)
+                } else {
+                  results.push(true)
+                }
+              }
+            } else {
+              results.push(false)
+            }
+          }
+        })
+        if (results.includes(false)) {
+          return false
+        }
+        else {
+          return true
+        }
+      }
+    }
   },
 });
 </script>

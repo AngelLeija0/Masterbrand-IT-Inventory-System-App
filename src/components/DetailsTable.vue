@@ -27,7 +27,7 @@
         <div class="text-h6">{{ pageLabel }}</div>
       </q-card-section>
       <q-card-section v-if="pageLabel === 'Categorias'">
-        <q-input v-model="currentData.name" label="Nombre" />
+        <q-input v-model="currentData.name" label="Nombre" @change="validateForm" :rules="inputRulesRictionary['name']" />
         <div class="q-pt-lg q-pb-md">Propiedades</div>
         <div class="row flex justify-between">
           <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
@@ -40,7 +40,8 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
-          style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)" />
+          style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)"
+          :disabled="!validateForm()" />
         <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
           style="border-radius: 10px; text-transform: capitalize" @click="closeModifyDialog(currentData._id)" />
       </q-card-actions>
@@ -124,6 +125,14 @@ export default defineComponent({
     window.addEventListener("resize", () => {
       isMobile.value = isUsingMobile();
     });
+
+    const inputRulesRictionary = ref({
+      name: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+    })
 
     const $q = useQuasar();
     const route = useRoute();
@@ -263,6 +272,7 @@ export default defineComponent({
     return {
       $q,
       isMobile,
+      inputRulesRictionary,
       route,
       nameSection,
       pageLabel,
@@ -308,9 +318,10 @@ export default defineComponent({
         }
       }
     },
-    closeModifyDialog(id) {
+    closeModifyDialog() {
       this.dialogModify = false;
       this.currentData = null;
+      this.$emit("elementDeleted");
     },
     saveRecord(id) {
       const recordInfo = this.currentData
@@ -397,8 +408,31 @@ export default defineComponent({
           });
         });
     },
-    inputFilter(data) {
-      console.log(data)
+    validateForm() {
+      if (this.currentData) {
+        const results = []
+        Object.keys(this.currentData).map((key) => {
+          if (this.inputRulesRictionary?.[key]) {
+            const rules = this.inputRulesRictionary[key]
+            for (const rule of rules) {
+              const errorMessage = rule(this.currentData[key]);
+              if (errorMessage !== true) {
+                results.push(false)
+              } else {
+                results.push(true)
+              }
+            }
+          } else {
+            results.push(false)
+          }
+        })
+        if (results.includes(false)) {
+          return false
+        }
+        else {
+          return true
+        }
+      }
     }
   },
 });

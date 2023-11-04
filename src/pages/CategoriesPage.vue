@@ -21,8 +21,8 @@
       <FilterBar @getAllData="getAllCategories" @realodData="setCategories"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable label="Categorias" :columns="assetColumns" :rows="categoryRows" :loading="loadingState"
-        @categoryDeleted="getAllCategories()"></DetailsTable>
+      <DetailsTable section="categories" label="Categorias" :columns="assetColumns" :rows="categoryRows" :loading="loadingState"
+        @elementDeleted="getAllCategories()"></DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -135,6 +135,10 @@ export default defineComponent({
             const data = res.data
             if (data.length > 0) {
               setCategories(data)
+            }
+            else if (data.length == 0) {
+              dataApiStore.clearDataApi()
+              loadingState.value = false
             }
           })
           .catch((err) => {

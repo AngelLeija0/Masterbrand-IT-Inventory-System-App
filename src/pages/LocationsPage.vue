@@ -21,8 +21,8 @@
       <FilterBar @getAllData="getAllLocations" @realodData="setLocations"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable label="Ubicaciones" :columns="locationColumns" :rows="locationRows" :loading="loadingState"
-        @locationDeleted="getAllLocations()"></DetailsTable>
+      <DetailsTable section="locations" label="Ubicaciones" :columns="locationColumns" :rows="locationRows" :loading="loadingState"
+        @elementDeleted="getAllLocations()"></DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -120,6 +120,10 @@ export default defineComponent({
             const data = res.data
             if (data.length > 0) {
               setLocations(data)
+            }
+            else if (data.length == 0) {
+              dataApiStore.clearDataApi()
+              loadingState.value = false
             }
           })
           .catch((err) => {

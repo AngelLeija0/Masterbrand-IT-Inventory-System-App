@@ -20,29 +20,30 @@
 
   <q-dialog v-model="dialogModify" persistent>
     <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
-      <div v-if="pageLabel === 'Categorias'">
-        <q-card-actions align="right" class="q-py-none">
-          <q-btn icon="close" color="black" flat round @click="closeModifyDialog(currentData._id)" class="q-py-none" />
-        </q-card-actions>
-        <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
-          <div class="text-h6">{{ pageLabel }}</div>
-        </q-card-section>
-        <q-card-section>
-          <q-input v-model="currentData.name" label="Nombre" />
-          <div class="q-pt-lg q-pb-md">Propiedades</div>
-          <div class="row flex justify-between">
-            <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
-              <q-checkbox v-model="property.value" :label="property.label" dense />
-            </div>
+      <q-card-actions align="right" class="q-py-none">
+        <q-btn icon="close" color="black" flat round @click="closeModifyDialog(currentData._id)" class="q-py-none" />
+      </q-card-actions>
+      <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
+        <div class="text-h6">{{ pageLabel }}</div>
+      </q-card-section>
+      <q-card-section v-if="pageLabel === 'Categorias'">
+        <q-input v-model="currentData.name" label="Nombre" />
+        <div class="q-pt-lg q-pb-md">Propiedades</div>
+        <div class="row flex justify-between">
+          <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
+            <q-checkbox v-model="property.value" :label="property.label" dense />
           </div>
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
-            style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)" />
-          <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
-            style="border-radius: 10px; text-transform: capitalize" @click="closeModifyDialog(currentData._id)" />
-        </q-card-actions>
-      </div>
+        </div>
+      </q-card-section>
+      <q-card-section v-if="pageLabel === 'Ubicaciones'">
+        <q-input v-model="currentData.name" label="Nombre" />
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
+          style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)" />
+        <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
+          style="border-radius: 10px; text-transform: capitalize" @click="closeModifyDialog(currentData._id)" />
+      </q-card-actions>
     </q-card>
   </q-dialog>
 
@@ -93,6 +94,9 @@ export default defineComponent({
     label: {
       type: String,
     },
+    section: {
+      type: String,
+    },
     rows: {
       type: Array,
     },
@@ -125,6 +129,7 @@ export default defineComponent({
     const route = useRoute();
 
     const pageLabel = ref(props.label);
+    const nameSection = ref(props.section);
 
     const records = ref(props.rows);
 
@@ -259,6 +264,7 @@ export default defineComponent({
       $q,
       isMobile,
       route,
+      nameSection,
       pageLabel,
       records,
       dialogModify,
@@ -287,10 +293,10 @@ export default defineComponent({
       this.$router.push({ path: `inventario/${idAsset}` });
     },
     openModifyDialog(id) {
+      this.dialogModify = true;
+      const recordInfo = this.records.find((record) => record._id === id)
+      this.currentData = recordInfo
       if (this.isCategory) {
-        this.dialogModify = true;
-        const recordInfo = this.records.find((category) => category._id === id);
-        this.currentData = recordInfo;
         if (recordInfo.properties) {
           const properties = recordInfo.properties;
           this.checkBoxProperties.map((checkBoxProperty, i) => {
@@ -307,8 +313,8 @@ export default defineComponent({
       this.currentData = null;
     },
     saveRecord(id) {
+      const recordInfo = this.currentData
       if (this.isCategory) {
-        const recordInfo = this.records.find((category) => category._id === id);
         const properties = this.checkBoxProperties
           .map((property) => {
             if (property.value == true) {
@@ -320,37 +326,36 @@ export default defineComponent({
           })
           .filter((property) => property !== undefined);
         recordInfo.properties = properties;
-        recordInfo.updated_at = new Date();
-
-        api
-          .patch(`./categories/update/${recordInfo._id}`, recordInfo)
-          .then((res) => {
-            const data = res.data;
-            if (data) {
-              this.$q.notify({
-                type: "positive",
-                message: "Guardado correctamente.",
-                timeout: 2000,
-              });
-              this.dialogModify = false;
-              this.currentData = null;
-            } else {
-              this.$q.notify({
-                type: "negative",
-                message: "Ha ocurrido un error.",
-                timeout: 2000,
-              });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
+      }
+      recordInfo.updated_at = new Date();
+      api
+        .patch(`./${this.nameSection}/update/${recordInfo._id}`, recordInfo)
+        .then((res) => {
+          const data = res.data;
+          if (data) {
+            this.$q.notify({
+              type: "positive",
+              message: "Guardado correctamente.",
+              timeout: 2000,
+            });
+            this.dialogModify = false;
+            this.currentData = null;
+          } else {
             this.$q.notify({
               type: "negative",
               message: "Ha ocurrido un error.",
               timeout: 2000,
             });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$q.notify({
+            type: "negative",
+            message: "Ha ocurrido un error.",
+            timeout: 2000,
           });
-      }
+        });
     },
     openDeleteDialog(id) {
       this.inputConfirmDelete = null;
@@ -363,39 +368,38 @@ export default defineComponent({
       this.currentData = null;
     },
     deleteRecord(id) {
-      if (this.isCategory) {
-        api
-          .delete(`./categories/delete/${id}`)
-          .then((res) => {
-            console.log(res);
-            console.log(res.data);
-            if (res.status === 200) {
-              this.$q.notify({
-                type: "warning",
-                message: "Borrado correctamente.",
-                timeout: 2000,
-              });
-              this.dialogDelete = false;
-              this.currentData = null;
-              this.$emit("categoryDeleted");
-            } else {
-              this.$q.notify({
-                type: "negative",
-                message: "Ha ocurrido un error.",
-                timeout: 2000,
-              });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
+      api
+        .delete(`./${this.nameSection}/delete/${id}`)
+        .then((res) => {
+          if (res.status === 200) {
+            this.$q.notify({
+              type: "warning",
+              message: "Borrado correctamente.",
+              timeout: 2000,
+            });
+            this.dialogDelete = false;
+            this.currentData = null;
+            this.$emit("elementDeleted");
+          } else {
             this.$q.notify({
               type: "negative",
               message: "Ha ocurrido un error.",
               timeout: 2000,
             });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$q.notify({
+            type: "negative",
+            message: "Ha ocurrido un error.",
+            timeout: 2000,
           });
-      }
+        });
     },
+    inputFilter(data) {
+      console.log(data)
+    }
   },
 });
 </script>

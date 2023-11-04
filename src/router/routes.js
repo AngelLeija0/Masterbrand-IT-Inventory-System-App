@@ -24,6 +24,11 @@ const routes = [
         component: () => import('pages/CategoriesPage.vue')
       },
       {
+        path: 'ubicaciones',
+        name: 'locations-page',
+        component: () => import('pages/LocationsPage.vue')
+      },
+      {
         path: 'tarjetas',
         name: 'cards-page',
         component: () => import('pages/CardsPage.vue')

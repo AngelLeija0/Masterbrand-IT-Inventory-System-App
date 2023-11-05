@@ -5,10 +5,11 @@
         <img src="../assets/masterbrand-logo.webp" style="max-height: 30px; max-width: 70%" />
         <div v-if="isMobile" class="q-mr-md">
           <q-btn class="q-mx-xs" icon="menu" size="13px" flat rounded @click="menuState = true" />
-          <div v-if="menuState" class="menu-bar">
-            <div class="menu-div">
+          <q-dialog v-model="menuState" class="menu-bar" position="left" transition-show="slide-right"
+            transition-hide="slide-left" maximized>
+            <div class="bg-grey-10">
               <div class="flex justify-end">
-                <q-btn icon="close" size="14px" round @click="menuState = false" />
+                <q-btn icon="close" size="14px" class="q-pa-md" color="white" flat round @click="menuState = false" />
               </div>
               <q-list class="q-pa-sm">
                 <NavbarButton label="Inicio" icon="home" toPage="home-page" />
@@ -25,13 +26,12 @@
               <q-list class="q-pa-sm">
                 <NavbarButtonDropdown label="Herramientas" icon="hardware" flat />
               </q-list>
-              <q-space style="height: 50vh" />
-              <q-list class="q-pa-sm">
-                <q-btn label="Cerrar sesion" icon="logout" size="0.9rem" class="q-mx-xs q-px-lg"
+              <q-list class="q-pa-sm" style="margin-top: 50vh;">
+                <q-btn label="Cerrar sesion" icon="logout" size="0.9rem" color="grey-4" class="q-mx-xs q-px-lg" flat
                   style="text-transform: none" />
               </q-list>
             </div>
-          </div>
+          </q-dialog>
         </div>
       </q-toolbar>
       <q-toolbar v-if="!isMobile" class="justify-center" inset>
@@ -106,21 +106,5 @@ body {
 
 .q-dialog__backdrop {
   backdrop-filter: blur(1px);
-}
-
-.menu-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  backdrop-filter: blur(1px);
-  height: 100vh;
-  width: 100vw;
-}
-
-.menu-div {
-  height: 100vh;
-  width: 65vw;
-  background: #212121;
-  backdrop-filter: blur(0px);
 }
 </style>

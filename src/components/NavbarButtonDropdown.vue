@@ -1,8 +1,9 @@
 <template>
   <q-btn-dropdown :label="label" :icon="icon" :class="'q-mx-xs q-px-lg ' + (isMobile ? 'full-width' : '')" align="left" size="0.9rem" :style="{
     borderBottom: !isMobile && active ? '3px solid #1565c0' : '',
-    color: isMobile && active ? '#1565c0' : '',
+    color: isMobile && active ? '#1565c0' : '#e0e0e0',
     textTransform: 'capitalize',
+    borderRadius: '7px 7px 2px 2px',
   }">
     <q-list>
       <q-item clickable v-close-popup @click="redirectToPage('cards-page')">

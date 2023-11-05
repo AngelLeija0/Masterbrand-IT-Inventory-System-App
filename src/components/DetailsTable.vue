@@ -27,7 +27,7 @@
         <div class="text-h6">{{ pageLabel }}</div>
       </q-card-section>
       <q-card-section v-if="pageLabel === 'Categorias'">
-        <q-input v-model="currentData.name" label="Nombre" @change="validateForm" :rules="inputRulesRictionary['name']" />
+        <q-input v-model="currentData.name" label="Nombre" @change="validateForm" :rules="inputRulesDictionary.name" />
         <div class="q-pt-lg q-pb-md">Propiedades</div>
         <div class="row flex justify-between">
           <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
@@ -125,14 +125,6 @@ export default defineComponent({
     window.addEventListener("resize", () => {
       isMobile.value = isUsingMobile();
     });
-
-    const inputRulesRictionary = ref({
-      name: [
-        val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
-        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
-      ],
-    })
 
     const $q = useQuasar();
     const route = useRoute();
@@ -267,12 +259,19 @@ export default defineComponent({
         key: "date_last_restock",
         value: false,
       },
-    ]);
+    ])
+
+    const inputRulesDictionary = ref({
+      name: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+    })
 
     return {
       $q,
       isMobile,
-      inputRulesRictionary,
       route,
       nameSection,
       pageLabel,
@@ -283,6 +282,7 @@ export default defineComponent({
       checkBoxProperties,
       isCategory,
       inputConfirmDelete,
+      inputRulesDictionary,
       pagination: ref({
         rowsPerPage: 0,
       }),
@@ -412,26 +412,27 @@ export default defineComponent({
       if (this.currentData) {
         const results = []
         Object.keys(this.currentData).map((key) => {
-          if (this.inputRulesRictionary?.[key]) {
-            const rules = this.inputRulesRictionary[key]
+          if (this.inputRulesDictionary[key]) {
+            const rules = this.inputRulesDictionary[key]
             for (const rule of rules) {
-              const errorMessage = rule(this.currentData[key]);
+              const errorMessage = rule(this.currentData[key])
               if (errorMessage !== true) {
                 results.push(false)
               } else {
                 results.push(true)
               }
             }
-          } else {
-            results.push(false)
           }
         })
+
         if (results.includes(false)) {
           return false
         }
         else {
           return true
         }
+      } else {
+        return false
       }
     }
   },

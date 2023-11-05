@@ -27,6 +27,11 @@
                 :locale="{ format: 'dd/MM/yyyy', language: 'es' }" class="q-mb-md" hint="requerido"
                 :rules="inputRulesDictionary[property.key]" @change="validateForm()" />
             </div>
+            <div v-else-if="property.key === 'location'">
+              <q-select clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
+                :options="locationOptions" hint="requerido" :rules="inputRulesDictionary[property.key]"
+                @change="validateForm()" />
+            </div>
             <div v-else>
               <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
                 hint="requerido" :rules="inputRulesDictionary[property.key]" @change="validateForm()" />
@@ -136,14 +141,14 @@ export default defineComponent({
     });
 
     const $q = useQuasar();
-    const dialogState = ref(false);
+    const dialogState = ref(false)
 
     const inputInfo = ref({
       status: {},
-    });
-    const categoriesInfo = ref([]);
-    const categoriesOptions = ref([]);
-    const propertiesOptions = ref([]);
+    })
+    const categoriesInfo = ref([])
+    const categoriesOptions = ref([])
+    const propertiesOptions = ref([])
     const statusOptions = ref([
       "Activo",
       "Inactivo",
@@ -151,7 +156,7 @@ export default defineComponent({
       "Con stock",
       "Bajo stock",
       "Sin stock",
-    ]);
+    ])
 
     watch(
       () => inputInfo.value.category,
@@ -166,28 +171,39 @@ export default defineComponent({
     );
 
     function getAllCategories() {
-      try {
-        api
-          .get("./categories")
-          .then((res) => {
-            const data = res.data;
-            if (data.length > 0) {
-              categoriesInfo.value = data;
-              categoriesOptions.value = data.map((category) => {
-                return category.name;
-              });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      api
+        .get("./categories")
+        .then((res) => {
+          const data = res.data;
+          if (data.length > 0) {
+            categoriesInfo.value = data;
+            categoriesOptions.value = data.map((category) => {
+              return category.name;
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
+    const locationOptions = ref()
+
     function getAllLocations() {
-      
+      api
+        .get("./locations")
+        .then((res) => {
+          const data = res.data;
+          if (data.length > 0) {
+            const formattedOptions = data.map((value) => {
+              return value.name
+            })
+            locationOptions.value = formattedOptions
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     return {
@@ -199,12 +215,15 @@ export default defineComponent({
       inputInfo,
       getAllCategories,
       inputRulesDictionary,
+      locationOptions,
+      getAllLocations,
     };
   },
   methods: {
     openDialog() {
-      this.dialogState = true;
-      this.getAllCategories();
+      this.dialogState = true
+      this.getAllCategories()
+      this.getAllLocations()
     },
     closeDialog() {
       this.inputInfo = {
@@ -267,32 +286,50 @@ export default defineComponent({
         });
     },
     validateForm() {
-      if (this.inputInfo && this.inputRulesDictionary) {
-        const results = []
+      if (this.propertiesOptions.length == 0) {
+        return false
+      }
 
-        Object.keys(this.inputInfo).map((key) => {
-          if (key !== "status") {
-            if (this.inputRulesDictionary?.[key]) {
-              const rules = this.inputRulesDictionary[key]
-              for (const rule of rules) {
-                const errorMessage = rule(this.inputInfo[key]);
-                if (errorMessage !== true) {
-                  results.push(false)
-                } else {
-                  results.push(true)
-                }
-              }
-            } else {
-              results.push(false)
-            }
+      const results = []
+      if (this.inputInfo.status?.name && this.inputInfo.status?.description) {
+        const rules = this.inputRulesDictionary.name
+
+        for (const rule of rules) {
+          const nameErrorMessage = rule(this.inputInfo.status.name)
+          const descriptionErrorMessage = rule(this.inputInfo.status.description)
+
+          if (nameErrorMessage !== true && descriptionErrorMessage !== true) {
+            results.push(false)
+          } else {
+            results.push(true)
           }
-        })
-        if (results.includes(false)) {
-          return false
         }
-        else {
-          return true
+      } else {
+        return false
+      }
+
+      Object.keys(this.propertiesOptions).map((property) => {
+        const rules = this.inputRulesDictionary[this.propertiesOptions?.[property]?.key]
+
+        if (this.inputInfo[this.propertiesOptions?.[property]?.key] === undefined) {
+          return results.push(false)
         }
+
+        for (const rule of rules) {
+          const errorMessage = rule(this.inputInfo[this.propertiesOptions?.[property]?.key])
+          if (errorMessage !== true) {
+            results.push(false)
+          } else {
+            results.push(true)
+          }
+        }
+      })
+
+      if (results.includes(false)) {
+        return false
+      }
+      else {
+        return true
       }
     }
   },

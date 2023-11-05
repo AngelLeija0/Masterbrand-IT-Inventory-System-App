@@ -14,13 +14,13 @@
           <div class="q-mb-lg q-pt-md">
             <div class="col-12 q-pt-sm text-weight-medium">Nombre</div>
             <q-input clearable dense v-model="inputInfo.name" class="q-mb-md" hint="requerido"
-              :rules="[val => !!val || 'requerido']" />
+              :rules="inputRulesDictionary.name" />
           </div>
         </div>
       </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Agregar" size="0.85rem" color="primary" dense padding="sm lg" outline
-          style="border-radius: 10px; text-transform: capitalize;" @click="addLocation" />
+          style="border-radius: 10px; text-transform: capitalize;" @click="addLocation" :disable="!validateForm()" />
         <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg" outline
           style="border-radius: 10px; text-transform: capitalize;" @click="closeDialog" />
       </q-card-actions>
@@ -41,9 +41,18 @@ export default defineComponent({
 
     const inputInfo = ref({})
 
+    const inputRulesDictionary = ref({
+      name: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+    })
+
     return {
       dialogState,
       inputInfo,
+      inputRulesDictionary,
     }
   },
   methods: {
@@ -86,6 +95,36 @@ export default defineComponent({
         })
       this.inputInfo = {}
     },
+    validateForm() {
+      const results = []
+
+      if (Object.keys(this.inputInfo).length > 0) {
+        Object.keys(this.inputInfo).map((key) => {
+          const info = this.inputInfo[key]
+          if (info) {
+            const rules = this.inputRulesDictionary[key]
+            for (const rule of rules) {
+              const errorMessage = rule(info)
+              if (errorMessage !== true) {
+                results.push(false)
+              } else {
+                results.push(true)
+              }
+            }
+          } else {
+            return results.push(false)
+          }
+        })
+      } else {
+        return false
+      }
+
+      if (results.includes(false)) {
+        return false
+      } else {
+        return true
+      }
+    }
   },
 });
 </script>

@@ -11,22 +11,22 @@
               <div class="flex justify-end">
                 <q-btn icon="close" size="14px" class="q-pa-md" color="white" flat round @click="menuState = false" />
               </div>
-              <q-list class="q-pa-sm">
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Inicio" icon="home" toPage="home-page" />
               </q-list>
-              <q-list class="q-pa-sm">
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Inventario" icon="inventory" toPage="assets-page" />
               </q-list>
-              <q-list class="q-pa-sm">
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Categorias" icon="bookmark" toPage="categories-page" />
               </q-list>
-              <q-list class="q-pa-sm">
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Ubicaciones" icon="place" toPage="locations-page" />
               </q-list>
-              <q-list class="q-pa-sm">
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButtonDropdown label="Herramientas" icon="hardware" flat />
               </q-list>
-              <q-list class="q-pa-sm" style="margin-top: 42vh;">
+              <q-list class="q-px-lg q-py-sm" style="margin-top: 42vh;">
                 <q-btn label="Cerrar sesion" icon="logout" size="0.9rem" color="grey-4" class="q-mx-xs q-px-lg" flat
                   style="text-transform: none" />
               </q-list>

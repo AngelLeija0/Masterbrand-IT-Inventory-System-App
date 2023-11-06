@@ -44,8 +44,8 @@
         </q-btn-group>
       </q-toolbar>
     </q-header>
-    <q-page-container class="bg-grey-10" style="height: 100vh">
-      <router-view class="bg-white q-ml-md q-mr-md q-mb-md" style="min-height: 95%; border-radius: 15px;" />
+    <q-page-container class="bg-grey-10" style="height: 100vh;">
+      <router-view class="bg-white q-ml-md q-mr-md q-mb-md" style="min-height: 98%; border-radius: 15px;" />
     </q-page-container>
   </q-layout>
 </template>
@@ -100,8 +100,9 @@ export default defineComponent({
 </script>
 
 <style>
-body {
-  overflow: hidden;
+html, body {
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .q-dialog__backdrop {

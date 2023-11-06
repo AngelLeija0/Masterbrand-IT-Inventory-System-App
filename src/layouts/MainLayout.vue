@@ -26,7 +26,7 @@
               <q-list class="q-pa-sm">
                 <NavbarButtonDropdown label="Herramientas" icon="hardware" flat />
               </q-list>
-              <q-list class="q-pa-sm" style="margin-top: 50vh;">
+              <q-list class="q-pa-sm" style="margin-top: 42vh;">
                 <q-btn label="Cerrar sesion" icon="logout" size="0.9rem" color="grey-4" class="q-mx-xs q-px-lg" flat
                   style="text-transform: none" />
               </q-list>
@@ -101,8 +101,7 @@ export default defineComponent({
 
 <style>
 html, body {
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .q-dialog__backdrop {

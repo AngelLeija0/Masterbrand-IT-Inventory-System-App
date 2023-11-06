@@ -11,13 +11,13 @@
         <q-btn size="13px" icon="menu" flat hide-dropdown-icon>
           <q-menu class="justify-center q-py-sm">
             <q-list v-if="actualRoute === 'assets-page'">
-              <q-btn-dropdown flat size="0.8rem" label="Buscar por QR" icon="qr_code_scanner" class="q-ma-xs"
-                style="text-transform: none;" @click="dialogScanQR = true" />
+              <q-btn-dropdown flat size="0.8rem" label="Buscar por QR" icon="qr_code_scanner" class="q-ma-xs full-width"
+                style="text-transform: none; align-items: start;" @click="dialogScanQR = true" />
             </q-list>
             <q-list>
               <q-btn-dropdown label="Filtrar" size="0.8rem" :text-color="isFiltering ? 'primary' : ''"
-                :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat class="q-ma-xs" content-style="height: 400px;"
-                style="text-transform: none;">
+                :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat class="q-ma-xs full-width" content-style="height: 400px;"
+                style="text-transform: none; align-items: start;">
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Filtros</div>
@@ -46,7 +46,7 @@
               </q-btn-dropdown>
             </q-list>
             <q-list v-if="actualRoute === 'assets-page'">
-              <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs" style="text-transform: none;">
+              <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs full-width" style="text-transform: none; align-items: start;">
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Vista</div>

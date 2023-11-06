@@ -2,7 +2,7 @@
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="[5, 10, 20, 30, 0]"
-    :style="{ height: isMobile ? '72.5vh' : '66vh' }">
+    :style="{ height: isMobile ? '590px' : '540px' }">
     <template v-slot:body-cell-properties="props">
       <q-td style="max-width: 700px; overflow-x: hidden;">
         {{ formatProperties(props.row?.properties) }}

@@ -2,7 +2,7 @@
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="rowsPerPage"
-    :style="{ height: isMobile ? '72.5vh' : '66vh' }">
+    :style="{ height: isMobile ? '590px' : '540px' }">
     <template v-slot:body-cell-image="props">
       <q-td style="width: 15%;" class="text-center">
         <q-img v-if="props.row?.image" class="q-pa-md q-ma-sm"
@@ -39,7 +39,7 @@
     <template v-slot:body-cell-actions="props">
       <q-td style="width: 10%;">
         <q-btn label="Ver mas" icon-right="navigate_next" color="dark" outline size="0.75rem"
-          style="border-radius: 10px; text-transform: capitalize;" @click="redirectToAsset(props.row._id)" />
+          style="border-radius: 10px; text-transform: capitalize; width: 120px;" @click="redirectToAsset(props.row._id)" />
       </q-td>
     </template>
   </q-table>

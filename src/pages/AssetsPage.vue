@@ -233,5 +233,5 @@ export default defineComponent({
       }
     }
   }
-})
+});
 </script>

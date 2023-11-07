@@ -1,19 +1,19 @@
 import { defineStore } from "pinia";
 
-export const useViewStore = defineStore('viewStore', {
+export const useUserStore = defineStore('userStore', {
   state: () => ({
     data: null,
   }),
   getters: {
-    getView(state) {
+    getUser(state) {
       return state.data
     }
   },
   actions: {
-    setView(data) {
+    setUser(data) {
       this.data = data;
     },
-    clearView() {
+    clearUser() {
       this.data = null;
     },
   },

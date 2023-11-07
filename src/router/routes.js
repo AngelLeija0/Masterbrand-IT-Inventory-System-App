@@ -4,7 +4,12 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '',
+        path: 'login',
+        name: 'login-page',
+        component: () => import('pages/LoginPage.vue')
+      },
+      {
+        path: '/',
         name: 'home-page',
         component: () => import('pages/IndexPage.vue')
       },
@@ -35,7 +40,6 @@ const routes = [
       },
     ]
   },
-
   // Always leave this as last one,
   // but you can also remove it
   {

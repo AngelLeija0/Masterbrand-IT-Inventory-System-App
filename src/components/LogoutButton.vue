@@ -1,31 +1,12 @@
 <template>
-  <q-btn-dropdown :label="label" dropdown-icon="person" :class="'q-mx-xs q-px-lg ' + (isMobile ? 'full-width' : '')" size="0.9rem" flat
-    style="text-transform: capitalize; border-radius: 7px 7px 2px 2px;" @click="logout()">
-    <div class="row no-wrap q-pa-md">
-      <div class="column">
-        <div class="text-h6 q-mb-md">Settings</div>
-        <q-toggle v-model="mobileData" label="Use Mobile Data" />
-        <q-toggle v-model="bluetooth" label="Bluetooth" />
-      </div>
-
-      <q-separator vertical inset class="q-mx-lg" />
-
-      <div class="column items-center">
-        <q-avatar size="72px">
-          <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-        </q-avatar>
-
-        <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
-
-        <q-btn color="primary" label="Logout" push size="sm" v-close-popup />
-      </div>
-    </div>
-  </q-btn-dropdown>
+  <PrimaryButton label="Cerrar sesion" icon="logout" size="0.7rem" style="border-radius: 7px; text-transform: none;" />
 </template>
 
 <script>
 import { capitalize, defineComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+import PrimaryButton from './PrimaryButton.vue'
 
 export default defineComponent({
   name: 'LogoutButton',
@@ -33,6 +14,9 @@ export default defineComponent({
     label: {
       String,
     },
+  },
+  components: {
+    PrimaryButton,
   },
   setup() {
     const isMobile = ref(isUsingMobile())

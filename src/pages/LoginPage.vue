@@ -109,7 +109,7 @@ export default defineComponent({
       });
 
       const apiPromise = new Promise((resolve, reject) => {
-        api.post("./administrators/login", this.inputInfo)
+        api.post("./auth/login", this.inputInfo)
           .then((res) => resolve(res))
           .catch((err) => reject(err));
       });

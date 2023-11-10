@@ -5,7 +5,7 @@
     <q-input v-model="localValue" dense borderless :readonly="!isEditing || label === 'Categoría'"
       :rules="inputRulesDictionary[keyValue]" @change="updateValue" hide-bottom-space input-style="font-weight: 500;"
       :style="{ width: isMobile ? '70%' : '50%' }" />
-    <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'black'" @click="toggleEditing"
+    <q-btn icon="edit" flat round size="12px" :color="isEditing ? 'primary' : 'grey-14'" @click="toggleEditing"
       :disabled="label === 'Categoría'">
       <q-tooltip class="bg-black" style="font-size: 0.75rem;" v-if="label === 'Categoría'">No es posible editar la
         categoria</q-tooltip>

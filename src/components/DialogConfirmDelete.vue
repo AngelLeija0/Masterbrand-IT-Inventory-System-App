@@ -33,7 +33,7 @@
 import { defineComponent, ref } from "vue";
 
 export default defineComponent({
-  name: "MoreOptionsButton",
+  name: "DialogConfirmDelete",
   props: {
     label: {
       type: String,

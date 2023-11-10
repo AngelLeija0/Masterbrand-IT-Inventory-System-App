@@ -8,7 +8,7 @@ import axios from 'axios'
 // "export default () => {}" function below (which runs individually
 // for each client)
 
-const serverURL = "http://localhost:3000"
+const serverURL = "https://api-masterbrand-it-inventory-system.onrender.com"
 
 const api = axios.create({ baseURL: serverURL })
 

@@ -39,7 +39,8 @@
           <div class="text-h5 text-weight-medium q-pl-md q-py-xs">Iniciar sesión</div>
           <div class="q-pt-lg">
             <span class="q-pl-md">Correo electrónico</span>
-            <q-input v-model="inputInfo.email" type="email" rounded outlined dense style="width: 400px;">
+            <q-input v-model="inputInfo.email" type="email" rounded outlined dense hide-bottom-space :rules="inputRulesDictionary.email"
+              style="width: 400px; padding-bottom: 0;">
               <template v-slot:prepend>
                 <q-icon name="person" />
               </template>
@@ -47,7 +48,8 @@
           </div>
           <div class="q-pt-md">
             <span class="q-pl-md">Contraseña</span>
-            <q-input v-model="inputInfo.password" type="password" rounded outlined dense style="width: 400px;">
+            <q-input v-model="inputInfo.password" type="password" rounded outlined dense hide-bottom-space
+              :rules="inputRulesDictionary.password" style="width: 400px;">
               <template v-slot:prepend>
                 <q-icon name="lock" />
               </template>
@@ -55,7 +57,7 @@
           </div>
           <div class="q-pt-lg">
             <q-btn label="Ingresar" color="dark" rounded class="full-width" style="text-transform: none; padding: 12px 0;"
-              @click="submitLogin()" />
+              @click="submitLogin()" :disable="!validateForm()" />
           </div>
         </div>
       </div>
@@ -88,25 +90,76 @@ export default defineComponent({
       isMobile.value = isUsingMobile()
     })
 
-    const inputInfo = ref({})
+    const inputInfo = ref({
+      email: null,
+      password: null
+    })
 
     const userStore = useUserStore()
     const router = useRoute()
+
+    const inputRulesDictionary = ref({
+      email: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!#$%^&*()+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      password: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+      ],
+    })
 
     return {
       isMobile,
       inputInfo,
       router,
       userStore,
+      inputRulesDictionary
     }
   },
   methods: {
+    validateForm() {
+      if (!this.inputInfo.email || !this.inputInfo.password) {
+        return false
+      }
+      const results = []
+
+      const emailRules = this.inputRulesDictionary.email
+      for (const emailRule of emailRules) {
+        const nameErrorMessage = emailRule(this.inputInfo.email)
+        const descriptionErrorMessage = emailRule(this.inputInfo.email)
+        if (nameErrorMessage !== true && descriptionErrorMessage !== true) {
+          results.push(false)
+        } else {
+          results.push(true)
+        }
+      }
+
+      const passwordRules = this.inputRulesDictionary.password
+      for (const passwordRule of passwordRules) {
+        const nameErrorMessage = passwordRule(this.inputInfo.password)
+        const descriptionErrorMessage = passwordRule(this.inputInfo.password)
+        if (nameErrorMessage !== true && descriptionErrorMessage !== true) {
+          results.push(false)
+        } else {
+          results.push(true)
+        }
+      }
+
+      if (results.includes(false)) {
+        return false
+      }
+      else {
+        return true
+      }
+    },
     submitLogin() {
       this.$q.notify({
         spinner: true,
         message: 'Por favor, espera un momento',
         timeout: 300,
-      });
+      })
 
       const apiPromise = new Promise((resolve, reject) => {
         api.post("./auth/login", this.inputInfo)

@@ -7,15 +7,15 @@
           <PrimaryButton flat icon="add" toolTip="Agregar producto" @click="activateDialogNewAsset" />
           <DialogNewAsset ref="dialogNewAssetRef" />
           <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
-          <DialogFindStock ref="dialogFindStock" />
+          <DialogReport ref="dialogReport" />
         </q-btn-group>
       </div>
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
           <DialogNewAsset ref="dialogNewAssetRef" @reloadData="getAllAssets" />
-          <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption"/>
-          <DialogFindStock ref="dialogFindStock" />
+          <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
+          <DialogReport ref="dialogReport" />
         </q-btn-group>
       </div>
     </q-section>
@@ -23,7 +23,8 @@
       <FilterBar @getAllData="getAllAssets" @reloadData="setAssets" @updateView="getView"></FilterBar>
     </q-section>
     <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" :rowsPerPage="tableRowsPerPage" @reloadData="setAssets">
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" :rowsPerPage="tableRowsPerPage"
+        @reloadData="setAssets">
       </AssetDetailsTable>
     </q-section>
   </q-page>
@@ -42,7 +43,7 @@ import FilterBar from 'src/components/FilterBar.vue'
 import AssetDetailsTable from 'src/components/AssetDetailsTable.vue'
 import DialogNewAsset from 'src/components/DialogNewAsset.vue'
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
-import DialogFindStock from 'src/components/DialogFindStock.vue'
+import DialogReport from 'src/components/DialogReport.vue'
 
 export default defineComponent({
   name: 'AssetsPage',
@@ -53,7 +54,7 @@ export default defineComponent({
     AssetDetailsTable,
     DialogNewAsset,
     MoreOptionsButton,
-    DialogFindStock
+    DialogReport,
   },
   setup() {
     const isMobile = ref(isUsingMobile());
@@ -212,10 +213,10 @@ export default defineComponent({
         label: "Consulta existencias",
         icon: "find_in_page",
         color: "",
-        value: "find-stock"
+        value: "get-report"
       }
     ])
-    const dialogFindStock = ref(false)
+    const dialogReport = ref(false)
 
     return {
       isMobile,
@@ -231,7 +232,7 @@ export default defineComponent({
       viewStore,
       tableRowsPerPage,
       assetOptions,
-      dialogFindStock,
+      dialogReport,
     }
   },
   methods: {
@@ -253,16 +254,16 @@ export default defineComponent({
     handleActionOption(option) {
       console.log(option)
       switch (option) {
-        case "find-stock":
-          this.activateDialogFindStock()
+        case "get-report":
+          this.activateDialogReport()
           break;
 
         default:
           break;
       }
     },
-    activateDialogFindStock() {
-      this.$refs.dialogFindStock.openDialog();
+    activateDialogReport() {
+      this.$refs.dialogReport.openDialog()
     },
   }
 });

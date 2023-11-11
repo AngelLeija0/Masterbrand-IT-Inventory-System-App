@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-grey-10 flex flex-center" style="height: 100vh;">
     <router-view>
-      <div v-if="isMobile" class="bg-white q-pa-md"
+      <div v-if="isMobile" class="bg-white q-pa-md q-ma-md"
         style="width: 110vh; border-radius: 15px; display: flex; padding: 50px 20px;">
         <div class="q-px-md" style="flex: 1;">
           <div class="text-center q-pb-lg">

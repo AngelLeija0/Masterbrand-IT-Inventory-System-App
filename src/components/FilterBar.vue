@@ -16,8 +16,8 @@
             </q-list>
             <q-list>
               <q-btn-dropdown label="Filtrar" size="0.8rem" :text-color="isFiltering ? 'primary' : ''"
-                :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat class="q-ma-xs full-width" content-style="height: 400px;"
-                style="text-transform: none; align-items: start;">
+                :icon="isFiltering ? 'filter_alt' : 'filter_list'" flat class="q-ma-xs full-width"
+                content-style="height: 400px;" style="text-transform: none; align-items: start;">
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Filtros</div>
@@ -46,7 +46,8 @@
               </q-btn-dropdown>
             </q-list>
             <q-list v-if="actualRoute === 'assets-page'">
-              <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs full-width" style="text-transform: none; align-items: start;">
+              <q-btn-dropdown label="Vista" size="0.8rem" icon="tune" flat class="q-ma-xs full-width"
+                style="text-transform: none; align-items: start;">
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Vista</div>
@@ -112,8 +113,8 @@
               </div>
             </div>
           </q-btn-dropdown>
-          <q-btn-dropdown size="14px" label="Vista" icon="tune" :color="isViewActive ? 'primary' : 'black'" flat rounded
-            style="text-transform: capitalize">
+          <q-btn-dropdown v-if="actualRoute === 'assets-page'" size="14px" label="Vista" icon="tune"
+            :color="isViewActive ? 'primary' : 'black'" flat rounded style="text-transform: capitalize">
             <div class="row no-wrap q-pa-md">
               <div class="column">
                 <div class="text-h6 q-mb-md">Vista</div>
@@ -277,7 +278,9 @@ export default defineComponent({
     const viewDictionary = ref()
     const isViewActive = ref(false)
 
-    if (!viewStore.getView) {
+    if (viewStore.getView) {
+      viewDictionary.value = { ...viewStore.getView }
+    } else {
       viewDictionary.value = {
         details: true,
         content: false,
@@ -324,25 +327,26 @@ export default defineComponent({
     defineFilterOptions(filter) {
       if (this.dataApi != null) {
         const allData = this.dataApi
-        const options = allData.map((data) => data[filter]);
+        const options = allData.map((data) => data[filter])
 
         if (filter === "properties") {
           const depuredOptions = options.flatMap((value) => {
             return value.flatMap((value2) => {
               return Object.keys(value2).map((key) => {
                 if (key === "name") {
-                  return value2[key];
+                  return value2[key]
                 }
-              }).filter((element) => element !== undefined);
-            });
-          });
+              }).filter((element) => element !== undefined)
+            })
+          })
 
-          const depuredAllOptions = [...new Set(depuredOptions)];
-          return depuredAllOptions;
+          const preDepuredAllOptions = [...new Set(depuredOptions)]
+          const depuredAllOptions = preDepuredAllOptions.filter(element => element !== undefined)
+          return depuredAllOptions
         }
-
-        const depuredAllOptions = [...new Set(options)];
-        return depuredAllOptions;
+        const preDepuredAllOptions = [...new Set(options)]
+        const depuredAllOptions = preDepuredAllOptions.filter(element => element !== undefined)
+        return depuredAllOptions
       }
       this.dataApi = this.dataApiStore.getDataApi
       this.defineFilterOptions(filter)

@@ -78,7 +78,7 @@ export default defineComponent({
 
     const loadingState = ref(false)
 
-    const tableRowsPerPage = ref([5, 10, 15, 20, 0])
+    const tableRowsPerPage = ref([8, 10, 15, 20, 0])
 
     const dataApiStore = useDataApiStore()
 

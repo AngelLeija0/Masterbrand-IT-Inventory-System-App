@@ -49,7 +49,7 @@
           <div class="q-pt-md">
             <span class="q-pl-md">Contraseña</span>
             <q-input v-model="inputInfo.password" type="password" rounded outlined dense hide-bottom-space
-              :rules="inputRulesDictionary.password" style="width: 400px;">
+              :rules="inputRulesDictionary.password" @keydown.enter.prevent="submitLogin()" style="width: 400px;">
               <template v-slot:prepend>
                 <q-icon name="lock" />
               </template>

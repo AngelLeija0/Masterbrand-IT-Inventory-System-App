@@ -5,14 +5,14 @@
       <div v-if="isMobile">
         <q-btn-group flat>
           <PrimaryButton flat icon="add" class="q-mx-sm" @click="activateDialogNewLocation" />
-          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="getAllLocations()" />
+          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nueva" icon="add" class="q-mx-sm" @click="activateDialogNewLocation" />
-          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="getAllLocations()" />
+          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
@@ -22,7 +22,7 @@
     </q-section>
     <q-section>
       <DetailsTable section="locations" label="Ubicaciones" :columns="locationColumns" :rows="locationRows" :loading="loadingState"
-        @elementDeleted="getAllLocations()"></DetailsTable>
+        @elementDeleted="() => { getAllLocations(); emitEventUpdateNotifications() }"></DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -164,6 +164,9 @@ export default defineComponent({
     activateDialogNewLocation() {
       this.$refs.dialogNewLocationRef.openDialog();
     },
+    emitEventUpdateNotifications() {
+      this.$emit("updateNotifications")
+    }
   }
 })
 </script>

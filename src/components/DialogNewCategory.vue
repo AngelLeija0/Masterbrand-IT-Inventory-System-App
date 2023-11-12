@@ -41,10 +41,14 @@
 import { defineComponent, ref } from "vue"
 import { api } from "src/boot/axios"
 import { useQuasar } from 'quasar'
+import { useUserStore } from "../stores/user-store"
 
 export default defineComponent({
   name: "DialogNewCategory",
   setup() {
+
+    const userStore = useUserStore()
+
     const $q = useQuasar()
     const dialogState = ref(false)
 
@@ -167,6 +171,7 @@ export default defineComponent({
     })
 
     return {
+      userStore,
       dialogState,
       inputInfo,
       checkBoxProperties,
@@ -193,7 +198,7 @@ export default defineComponent({
       this.inputInfo.properties = properties
       this.inputInfo.created_at = new Date()
       api
-        .post("./categories/create", this.inputInfo)
+        .post(`./categories/create`, this.inputInfo)
         .then((res) => {
           const data = res.data
           if (data) {

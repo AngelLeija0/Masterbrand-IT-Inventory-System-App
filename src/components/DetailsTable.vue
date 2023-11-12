@@ -9,7 +9,7 @@
       </q-td>
     </template>
     <template v-slot:body-cell-actions="props">
-      <q-td style="width: 16%;">
+      <q-td style="width: 20%;">
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
           style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
@@ -88,6 +88,7 @@ import { defineComponent, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api } from "src/boot/axios";
 import { useQuasar } from "quasar";
+import { useUserStore } from "../stores/user-store"
 
 export default defineComponent({
   name: "DetailsTable",
@@ -125,6 +126,8 @@ export default defineComponent({
     window.addEventListener("resize", () => {
       isMobile.value = isUsingMobile();
     });
+
+    const userStore = useUserStore()
 
     const $q = useQuasar();
     const route = useRoute();
@@ -270,6 +273,7 @@ export default defineComponent({
     })
 
     return {
+      userStore,
       $q,
       isMobile,
       route,

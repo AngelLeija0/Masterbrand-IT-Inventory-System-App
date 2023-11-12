@@ -49,11 +49,11 @@
       <div class="col-12 col-sm-12 col-md-9 q-px-lg q-py-sm"
         :style="{ overflowY: !isMobile ? 'auto' : '', paddingLeft: isMobile ? '0' : '', paddingRight: isMobile ? '0' : '' }">
         <AssetInfo v-if="detailsLoaded === true && pageSections[0].state" :modelInfo="assetInfo"
-          @update-info="getAssetDetails(idAsset)" />
+          @update-info="() => { getAssetDetails(idAsset); emitEventUpdateNotifications() }" />
         <AssetActions v-if="detailsLoaded === true && pageSections[1].state" :columns="assetActionsColumns"
-          :rows="sortedActions" @update-info="getAssetDetails(idAsset)" />
+          :rows="sortedActions" @update-info="() => { getAssetDetails(idAsset); emitEventUpdateNotifications() }" />
         <AssetAttachments v-if="detailsLoaded === true && pageSections[2].state" :asset="assetInfo"
-          @update-info="getAssetDetails(idAsset)" />
+          @update-info="() => { getAssetDetails(idAsset); emitEventUpdateNotifications() }" />
       </div>
     </q-section>
     <q-section v-else>
@@ -318,6 +318,9 @@ export default defineComponent({
         this.openQrDialog()
       }
     },
+    emitEventUpdateNotifications() {
+      this.$emit("updateNotifications")
+    },
     goToSection(toSection) {
       this.pageSections.map((section) => {
         if (section.label === toSection) {
@@ -344,6 +347,7 @@ export default defineComponent({
               timeout: 2500,
             })
             this.$router.push({ name: 'assets-page' })
+            this.emitEventUpdateNotifications()
           } else {
             this.$q.notify({
               type: 'negative',

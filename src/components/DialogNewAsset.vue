@@ -32,9 +32,16 @@
                 :options="locationOptions" hint="requerido" :rules="inputRulesDictionary[property.key]"
                 @change="validateForm()" />
             </div>
+            <div v-else-if="property.key === 'network_status'">
+              <q-select clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
+                :options="['En red', 'En local']" hint="requerido" :rules="inputRulesDictionary[property.key]"
+                @change="validateForm()" />
+            </div>
             <div v-else>
               <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
-                hint="requerido" :rules="inputRulesDictionary[property.key]" @change="validateForm()" />
+                hint="requerido"
+                :rules="inputRulesDictionary[property.key] ? inputRulesDictionary[property.key] : inputGeneralRules"
+                @change="validateForm()" />
             </div>
           </div>
           <q-select clearable dense v-model="inputInfo.status.name" :options="statusOptions" label="Estado"
@@ -140,6 +147,12 @@ export default defineComponent({
       ],
     });
 
+    const inputGeneralRules = ref([
+      val => !!val || '* Requerido',
+      val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+      val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+    ])
+
     const $q = useQuasar();
     const dialogState = ref(false)
 
@@ -217,6 +230,7 @@ export default defineComponent({
       inputRulesDictionary,
       locationOptions,
       getAllLocations,
+      inputGeneralRules,
     };
   },
   methods: {
@@ -309,7 +323,7 @@ export default defineComponent({
       }
 
       Object.keys(this.propertiesOptions).map((property) => {
-        const rules = this.inputRulesDictionary[this.propertiesOptions?.[property]?.key]
+        const rules = this.inputRulesDictionary[this.propertiesOptions?.[property]?.key] ? this.inputRulesDictionary[this.propertiesOptions?.[property]?.key] : this.inputGeneralRules
 
         if (this.inputInfo[this.propertiesOptions?.[property]?.key] === undefined) {
           return results.push(false)

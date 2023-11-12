@@ -5,7 +5,7 @@
       <div v-if="isMobile">
         <q-btn-group flat>
           <PrimaryButton flat icon="add" toolTip="Agregar producto" @click="activateDialogNewAsset" />
-          <DialogNewAsset ref="dialogNewAssetRef" />
+          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
           <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
           <DialogReport ref="dialogReport" />
         </q-btn-group>
@@ -13,7 +13,7 @@
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
-          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="getAllAssets" />
+          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
           <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
           <DialogReport ref="dialogReport" />
         </q-btn-group>
@@ -24,7 +24,7 @@
     </q-section>
     <q-section>
       <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" :rowsPerPage="tableRowsPerPage"
-        @reloadData="setAssets">
+        @reloadData="() => { setAssets(); emitEventUpdateNotifications(); }">
       </AssetDetailsTable>
     </q-section>
   </q-page>
@@ -265,6 +265,9 @@ export default defineComponent({
     activateDialogReport() {
       this.$refs.dialogReport.openDialog()
     },
+    emitEventUpdateNotifications() {
+      this.$emit("updateNotifications")
+    }
   }
 });
 </script>

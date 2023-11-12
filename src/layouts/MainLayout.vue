@@ -3,9 +3,67 @@
     <q-header class="bg-grey-10">
       <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
         <img src="../assets/masterbrand-logo.webp" style="max-height: 30px; max-width: 70%" />
-        <LogoutButton v-if="!isMobile" class="q-mx-lg" :label="getNameUserStore()" @click="logout()" />
+        <div v-if="!isMobile">
+          <q-btn :icon="quantityNotifications ? 'notifications' : 'notifications_none'" round class="q-mx-md"
+            style="border-radius: 20px;" @click="getAllNotifications()">
+            <q-badge v-if="quantityNotifications" color="red" floating>
+              {{ quantityNotifications }}
+            </q-badge>
+            <q-menu style="width: 400px; overflow-y: auto;">
+              <div class="q-px-lg q-py-md text-h6" style="border-bottom: 1px solid rgb(239, 239, 239);">Notificaciones
+              </div>
+              <q-list v-for="(notification, i) in notifications" :key="i + 1">
+                <q-item class="q-pa-lg flex justify-center items-center" clickable
+                  @click="markNotification(notification._id)" style="border-bottom: 1px solid rgb(239, 239, 239);">
+                  <q-icon :name="notification.icon" size="36px"
+                    :style="{ color: defineImportanceColor(notification.importance) }" />
+                  <div class="q-mx-md">
+                    <q-item-label
+                      :style="{ fontWeight: 500, fontSize: '15px', color: defineImportanceColor(notification.importance) }">{{
+                        notification.name }}</q-item-label>
+                    <div class="full-width q-pt-xs text-grey-14" style="font-size: 11px;">{{
+                      formatDate(notification.created_at)
+                    }}</div>
+                    <div class="full-width q-pt-sm" style="font-size: 13px;">{{ notification.description }}</div>
+                  </div>
+                  <q-btn icon="close" size="12px" flat round dense />
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
+          <LogoutButton class="q-mr-lg" :label="getNameUserStore()" @click="logout()" />
+        </div>
         <div v-if="isMobile" class="q-mr-md">
-          <q-btn class="q-mx-xs" icon="menu" size="13px" flat rounded @click="menuState = true" />
+          <div>
+            <q-btn :icon="quantityNotifications ? 'notifications' : 'notifications_none'" round class="q-mx-md"
+              style="border-radius: 20px;" @click="getAllNotifications()">
+              <q-badge v-if="quantityNotifications" color="red" floating>
+                {{ quantityNotifications }}
+              </q-badge>
+              <q-menu style="width: 400px; max-height: 72vh; overflow-y: auto;">
+                <div class="q-px-lg q-py-md text-h6" style="border-bottom: 1px solid rgb(239, 239, 239);">Notificaciones
+                </div>
+                <q-list v-for="(notification, i) in notifications" :key="i + 1">
+                  <q-item class="q-pa-lg flex justify-center items-center" clickable
+                    @click="markNotification(notification._id)" style="border-bottom: 1px solid rgb(239, 239, 239);">
+                    <q-icon :name="notification.icon" size="36px"
+                      :style="{ color: defineImportanceColor(notification.importance) }" />
+                    <div class="q-mx-md">
+                      <q-item-label
+                        :style="{ fontWeight: 500, fontSize: '15px', color: defineImportanceColor(notification.importance) }">{{
+                          notification.name }}</q-item-label>
+                      <div class="full-width q-pt-xs text-grey-14" style="font-size: 11px;">{{
+                        formatDate(notification.created_at)
+                      }}</div>
+                      <div class="full-width q-pt-sm" style="font-size: 13px;">{{ notification.description }}</div>
+                    </div>
+                    <q-btn icon="close" size="12px" flat round dense />
+                  </q-item>
+                </q-list>
+              </q-menu>
+            </q-btn>
+            <q-btn class="q-mx-xs" icon="menu" size="13px" flat rounded @click="menuState = true" />
+          </div>
           <q-dialog v-model="menuState" class="menu-bar" position="left" transition-show="slide-right"
             transition-hide="slide-left" maximized>
             <div class="bg-grey-10">
@@ -46,15 +104,19 @@
       </q-toolbar>
     </q-header>
     <q-page-container class="bg-grey-10" style="height: 100vh;">
-      <router-view class="bg-white q-ml-md q-mr-md q-mb-md" style="min-height: 98%; border-radius: 15px;" />
+      <router-view @updateNotifications="handleEventUpdateNotifications" class="bg-white q-ml-md q-mr-md q-mb-md"
+        style="min-height: 98%; border-radius: 15px;" />
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
+import { date } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from "../stores/user-store"
+import { useNotificationStore } from "../stores/notification-store"
+import { api } from 'src/boot/axios'
 
 import NavbarButton from 'src/components/NavbarButton.vue'
 import NavbarButtonDropdown from 'src/components/NavbarButtonDropdown.vue'
@@ -91,15 +153,62 @@ export default defineComponent({
 
     const menuState = ref(false)
 
+    const notificationStore = useNotificationStore()
+    const quantityNotifications = ref(0)
+
+    const notifications = ref([])
+
+    getAllNotifications()
+    function getAllNotifications() {
+      if (notificationStore.getNotification) {
+        notificationStore.clearNotification()
+      }
+      const user = userStore.getUser
+      api
+        .get(`./notifications/unreaded/${user.id}`)
+        .then((res) => {
+          const data = res.data
+          notificationStore.setNotification(data)
+          notifications.value = data
+          quantityNotifications.value = data.length
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
+
     return {
       isMobile,
       menuState,
       userStore,
       router,
       route,
+      getAllNotifications,
+      notifications,
+      quantityNotifications,
+      notificationStore,
     }
   },
   methods: {
+    handleEventUpdateNotifications() {
+      setTimeout(() => {
+        if (this.notificationStore.getNotification) {
+          this.notificationStore.clearNotification()
+        }
+        const user = this.userStore.getUser
+        api
+          .get(`./notifications/unreaded/${user.id}`)
+          .then((res) => {
+            const data = res.data
+            this.notificationStore.setNotification(data)
+            this.notifications = data
+            this.quantityNotifications = data.length
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      }, 1000)
+    },
     getNameUserStore() {
       return this.userStore.getUser.username ? this.userStore.getUser.username : 'Undefinido'
     },
@@ -110,6 +219,38 @@ export default defineComponent({
         message: 'Cerrando sesion',
         timeout: 500,
         onDismiss: () => this.router.push({ name: 'login-page' })
+      })
+    },
+    defineImportanceColor(importance) {
+      if (importance === "high") {
+        return "red"
+      }
+      if (importance === "medium") {
+        return "#F2C037"
+      }
+      if (importance === "normal") {
+        return "black" // Secondary: #26A69A
+      }
+      return "black"
+    },
+    markNotification(id) {
+      api
+        .post(`./notifications/mark/${id}`, {
+          administrator: this.userStore.getUser.id
+        })
+        .then((res) => {
+          const data = res.data
+          if (data.message === "Correctly done") {
+            this.getAllNotifications()
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    },
+    formatDate(dateToFormat) {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }
   }
@@ -124,5 +265,9 @@ body {
 
 .q-dialog__backdrop {
   backdrop-filter: blur(1px);
+}
+
+.q-menu {
+  max-height: 72vh !important;
 }
 </style>

@@ -70,8 +70,8 @@
         <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
           @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
           @click="setNewDefaultImge(image)">
-          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image" spinner-color="primary"
-            style="height: 120px; width: 140px" />
+          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image"
+            spinner-color="primary" style="height: 120px; width: 140px" />
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>
       </q-card-section>

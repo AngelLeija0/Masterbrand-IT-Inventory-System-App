@@ -1,6 +1,12 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header class="bg-grey-10">
+    <q-header v-if="route.name === 'admins-page'" class="bg-grey-10">
+      <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
+        <img src="../assets/masterbrand-logo.webp" style="max-height: 30px;" />
+        <LogoutButton class="q-mr-lg" :label="getNameUserStore()" @click="logout()" />
+      </q-toolbar>
+    </q-header>
+    <q-header v-else class="bg-grey-10">
       <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
         <img src="../assets/masterbrand-logo.webp" style="max-height: 30px; max-width: 70%" />
         <div v-if="!isMobile">

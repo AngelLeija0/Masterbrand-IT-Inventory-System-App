@@ -9,7 +9,9 @@
       </q-td>
     </template>
     <template v-slot:body-cell-actions="props">
-      <q-td style="width: 20%;">
+      <q-td style="width: 30%;">
+        <q-btn v-if="section == 'administrators'" label="Cambiar contraseña" icon-right="lock_open" outline size="0.75rem" class="q-mx-xs"
+          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
           style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
@@ -38,6 +40,12 @@
       <q-card-section v-if="pageLabel === 'Ubicaciones'">
         <q-input v-model="currentData.name" label="Nombre" />
       </q-card-section>
+      <q-card-section v-if="pageLabel === 'Administradores'">
+        <q-input clearable dense v-model="currentData.username" label="Nombre" class="q-mb-md" hint="requerido"
+          :rules="inputRulesDictionary.username" @update:model-value="validateForm" />
+        <q-input clearable dense v-model="currentData.email" label="Correo electronico" type="email" class="q-mb-md"
+          hint="requerido" :rules="inputRulesDictionary.email" @update:model-value="validateForm" />
+      </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
           style="border-radius: 10px; text-transform: capitalize" @click="saveRecord(currentData._id)"
@@ -65,7 +73,7 @@
         </div>
         <div class="text-subtitle2 text-weight-regular q-pt-md">
           Escribe
-          <span class="text-red text-weight-medium">delete {{ currentData.name }}</span>
+          <span class="text-red text-weight-medium">delete {{ currentData.name ? currentData.name : currentData.username ? currentData.username : 'Error' }}</span>
           a continuación para confirmar.
         </div>
         <div class="full-width q-pt-sm q-pb-md">
@@ -75,7 +83,7 @@
       <q-card-actions align="right">
         <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
           style="border-radius: 10px; text-transform: capitalize"
-          :disabled="inputConfirmDelete !== `delete ${currentData.name}`" @click="deleteRecord(currentData._id)" />
+          :disabled="inputConfirmDelete !== `delete ${currentData.name ? currentData.name : currentData.username ? currentData.username : 'Error'}`" @click="deleteRecord(currentData._id)" />
         <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
           style="border-radius: 10px; text-transform: capitalize" @click="closeDeleteDialog(currentData._id)" />
       </q-card-actions>
@@ -129,13 +137,15 @@ export default defineComponent({
 
     const userStore = useUserStore()
 
-    const $q = useQuasar();
-    const route = useRoute();
+    const $q = useQuasar()
+    const route = useRoute()
 
-    const pageLabel = ref(props.label);
-    const nameSection = ref(props.section);
+    const pageLabel = ref(props.label)
+    const nameSection = ref(props.section)
 
-    const records = ref(props.rows);
+    const records = ref(props.rows)
+
+    console.log(records.value)
 
     watch(
       () => props.rows,
@@ -264,13 +274,30 @@ export default defineComponent({
       },
     ])
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
     const inputRulesDictionary = ref({
       name: [
         val => !!val || '* Requerido',
         val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
+      username: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      email: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => emailRegex.test(val) || 'Ingresa un correo electrónico válido'
+      ],
+      password: [
+        val => !!val || '* Requerido',
+        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres'
+      ],
     })
+
 
     return {
       userStore,
@@ -309,6 +336,7 @@ export default defineComponent({
     openModifyDialog(id) {
       this.dialogModify = true;
       const recordInfo = this.records.find((record) => record._id === id)
+      console.log(recordInfo)
       this.currentData = recordInfo
       if (this.isCategory) {
         if (recordInfo.properties) {

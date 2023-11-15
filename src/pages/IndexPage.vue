@@ -7,7 +7,7 @@
       </div>
     </q-section>
     <q-section class="q-pt-lg">
-      <div class="row flex justify-between items-center" style="height: 78vh;" v-if="categories.length > 0">
+      <div class="row flex justify-between items-center" style="height: 70vh;" v-if="categories.length > 0">
         <div class="col-md-8 col-sm-8 col-12">
 
         </div>

@@ -145,6 +145,10 @@ export default defineComponent({
         val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
+      ip_address: [
+        val => val.length < 30 || 'Porfavor usa un maximo de 20 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ]
     });
 
     const inputGeneralRules = ref([

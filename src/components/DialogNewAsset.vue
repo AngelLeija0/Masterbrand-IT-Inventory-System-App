@@ -38,7 +38,6 @@
                 @change="validateForm()" />
             </div>
             <div v-else>
-              {{ property.key }}
               <q-input clearable dense v-model="inputInfo[property.key]" :label="property.name" class="q-mb-md"
                 hint="requerido"
                 :rules="inputRulesDictionary[property.key] ? inputRulesDictionary[property.key] : inputGeneralRules"

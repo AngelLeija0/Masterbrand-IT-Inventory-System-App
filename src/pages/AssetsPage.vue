@@ -137,7 +137,15 @@ export default defineComponent({
       { name: 'description', label: 'Descripción', field: 'description', align: 'left' },
       { name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => value ? value : 'N/A' },
       { name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => value ? value : 'N/A' },
-      { name: 'location', label: 'Ubicación', field: 'location', align: 'left' },
+      {
+        name: 'location', 
+        label: 'Ubicación', 
+        field: 'location', 
+        align: 'left', 
+        sort: (a, b) => {
+          return a.localeCompare(b)
+        }
+      },
       { name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => value ? value : 'N/A' },
       { name: 'status', label: 'Estado', field: 'status', align: 'left' },
       {

@@ -2,7 +2,7 @@
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="[8, 10, 20, 30, 0]"
-    :style="{ height: isMobile ? '58vh' : '63vh' }">
+    :style="{ height: isMobile ? '68vh' : '63vh' }">
     <template v-slot:body-cell-properties="props">
       <q-td style="max-width: 700px; overflow-x: hidden;">
         {{ formatProperties(props.row?.properties) }}
@@ -10,8 +10,9 @@
     </template>
     <template v-slot:body-cell-actions="props">
       <q-td style="width: 30%;">
-        <q-btn v-if="section == 'administrators'" label="Cambiar contraseña" icon-right="lock_open" outline size="0.75rem" class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
+        <q-btn v-if="section == 'administrators'" label="Cambiar contraseña" icon-right="lock_open" outline size="0.75rem"
+          class="q-mx-xs" style="border-radius: 10px; text-transform: capitalize"
+          @click="openModifyDialog(props.row._id)" />
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
           style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
@@ -73,7 +74,8 @@
         </div>
         <div class="text-subtitle2 text-weight-regular q-pt-md">
           Escribe
-          <span class="text-red text-weight-medium">delete {{ currentData.name ? currentData.name : currentData.username ? currentData.username : 'Error' }}</span>
+          <span class="text-red text-weight-medium">delete {{ currentData.name ? currentData.name : currentData.username ?
+            currentData.username : 'Error' }}</span>
           a continuación para confirmar.
         </div>
         <div class="full-width q-pt-sm q-pb-md">
@@ -83,7 +85,8 @@
       <q-card-actions align="right">
         <q-btn label="Confirmar" size="0.85rem" color="red" dense padding="sm lg" outline
           style="border-radius: 10px; text-transform: capitalize"
-          :disabled="inputConfirmDelete !== `delete ${currentData.name ? currentData.name : currentData.username ? currentData.username : 'Error'}`" @click="deleteRecord(currentData._id)" />
+          :disabled="inputConfirmDelete !== `delete ${currentData.name ? currentData.name : currentData.username ? currentData.username : 'Error'}`"
+          @click="deleteRecord(currentData._id)" />
         <q-btn label="Cancelar" size="0.85rem" flat dense padding="sm lg"
           style="border-radius: 10px; text-transform: capitalize" @click="closeDeleteDialog(currentData._id)" />
       </q-card-actions>

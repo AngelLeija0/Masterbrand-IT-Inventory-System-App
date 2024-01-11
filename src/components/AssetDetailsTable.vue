@@ -2,12 +2,12 @@
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="rowsPerPage"
-    :style="{ height: isMobile ? '58vh' : '63vh' }">
+    :style="{ height: isMobile ? '68vh' : '63vh' }">
     <template v-slot:body-cell-image="props">
       <q-td style="width: 15%;" class="text-center">
         <q-img v-if="props.row?.image" class="q-pa-md q-ma-sm"
           :src="imageServer + '/uploads/attachments/' + props.row?.image" spinner-color="primary"
-          style="max-width: 260px; height: 100px;"
+          style="max-width: 100px; max-height: 100px;"
           @error="() => props.row.image = null"
           />
         <q-icon v-else name="image" size="90px" class="q-pa-md q-ma-sm" style="max-width: 260;" />

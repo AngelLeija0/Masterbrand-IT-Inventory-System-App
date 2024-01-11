@@ -5,14 +5,16 @@
       <div v-if="isMobile">
         <q-btn-group flat>
           <PrimaryButton flat icon="add" class="q-mx-sm" @click="activateDialogNewLocation" />
-          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
+          <DialogNewLocation ref="dialogNewLocationRef"
+            @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nueva" icon="add" class="q-mx-sm" @click="activateDialogNewLocation" />
-          <DialogNewLocation ref="dialogNewLocationRef" @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
+          <DialogNewLocation ref="dialogNewLocationRef"
+            @locationAdded="() => { getAllLocations(); emitEventUpdateNotifications() }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
@@ -21,8 +23,9 @@
       <FilterBar @getAllData="getAllLocations" @realodData="setLocations"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable section="locations" label="Ubicaciones" :columns="locationColumns" :rows="locationRows" :loading="loadingState"
-        @elementDeleted="() => { getAllLocations(); emitEventUpdateNotifications() }"></DetailsTable>
+      <DetailsTable section="locations" label="Ubicaciones" :columns="locationColumns" :rows="locationRows"
+        :loading="loadingState" @elementDeleted="() => { getAllLocations(); emitEventUpdateNotifications() }">
+      </DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -143,7 +146,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - HH:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }

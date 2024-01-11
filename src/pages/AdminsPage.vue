@@ -21,8 +21,8 @@
       <FilterBar @getAllData="getAllAdministrators" @realodData="setAdministrators"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable section="administrators" label="Administradores" :columns="administratorColumns" :rows="administratorRows" :loading="loadingState"
-        @elementDeleted="getAllAdministrators()"></DetailsTable>
+      <DetailsTable section="administrators" label="Administradores" :columns="administratorColumns"
+        :rows="administratorRows" :loading="loadingState" @elementDeleted="getAllAdministrators()"></DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -144,7 +144,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - HH:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }

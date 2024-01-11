@@ -5,7 +5,8 @@
       <div v-if="isMobile">
         <q-btn-group flat>
           <PrimaryButton flat icon="add" toolTip="Agregar producto" @click="activateDialogNewAsset" />
-          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
+          <DialogNewAsset ref="dialogNewAssetRef"
+            @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
           <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
           <DialogReport ref="dialogReport" />
         </q-btn-group>
@@ -13,7 +14,8 @@
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nuevo" icon="add" class="q-mx-sm" @click="activateDialogNewAsset" />
-          <DialogNewAsset ref="dialogNewAssetRef" @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
+          <DialogNewAsset ref="dialogNewAssetRef"
+            @reloadData="() => { getAllAssets(); emitEventUpdateNotifications() }" />
           <MoreOptionsButton :options="assetOptions" @optionClicked="handleActionOption" />
           <DialogReport ref="dialogReport" />
         </q-btn-group>
@@ -116,7 +118,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - mm:ss', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - HH:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }

@@ -70,8 +70,8 @@
         <div v-for="(image, i) in inputInfo.images?.all" :key="i" v-ripple style="cursor: pointer; position: relative;"
           @mouseenter="highlightedImageIndex = i" @mouseleave="highlightedImageIndex = -1"
           @click="setNewDefaultImge(image)">
-          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image"
-            spinner-color="primary" style="height: 120px; width: 140px" />
+          <q-img class="q-pa-md q-ma-sm" :src="imageServer + '/uploads/attachments/' + image" spinner-color="primary"
+            style="height: 120px; width: 140px" />
           <div v-if="highlightedImageIndex === i" class="image-circle-hover"></div>
         </div>
       </q-card-section>
@@ -188,7 +188,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - HH:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }
@@ -311,6 +311,7 @@ export default defineComponent({
         status: "Estado",
         name: "Nombre",
         date: "Fecha",
+        network_status: "Estado de red",
         created_at: "Creado el",
         updated_at: "Actualizado el",
       }

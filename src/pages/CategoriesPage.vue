@@ -5,14 +5,16 @@
       <div v-if="isMobile">
         <q-btn-group flat>
           <PrimaryButton flat icon="add" class="q-mx-sm" @click="activateDialogNewCategory" />
-          <DialogNewCategory ref="dialogNewCategoryRef" @categoryAdded="() => { getAllCategories(); emitEventUpdateNotifications(); }" />
+          <DialogNewCategory ref="dialogNewCategoryRef"
+            @categoryAdded="() => { getAllCategories(); emitEventUpdateNotifications(); }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
       <div v-else>
         <q-btn-group flat>
           <PrimaryButton label="Agregar Nueva" icon="add" class="q-mx-sm" @click="activateDialogNewCategory" />
-          <DialogNewCategory ref="dialogNewCategoryRef" @categoryAdded="() => { getAllCategories(); emitEventUpdateNotifications(); }" />
+          <DialogNewCategory ref="dialogNewCategoryRef"
+            @categoryAdded="() => { getAllCategories(); emitEventUpdateNotifications(); }" />
           <PrimaryButton flat icon="more_vert" class="q-mx-sm" />
         </q-btn-group>
       </div>
@@ -21,8 +23,9 @@
       <FilterBar @getAllData="getAllCategories" @realodData="setCategories"></FilterBar>
     </q-section>
     <q-section>
-      <DetailsTable section="categories" label="Categorias" :columns="assetColumns" :rows="categoryRows" :loading="loadingState"
-        @elementDeleted="() => { getAllCategories(); emitEventUpdateNotifications() }"></DetailsTable>
+      <DetailsTable section="categories" label="Categorias" :columns="assetColumns" :rows="categoryRows"
+        :loading="loadingState" @elementDeleted="() => { getAllCategories(); emitEventUpdateNotifications() }">
+      </DetailsTable>
     </q-section>
   </q-page>
 </template>
@@ -158,7 +161,7 @@ export default defineComponent({
     }
 
     function formatDate(dateToFormat) {
-      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - hh:mm', {
+      return date.formatDate(dateToFormat, 'DD/MMMM/YYYY - HH:mm', {
         months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
       })
     }

@@ -154,7 +154,7 @@ export default defineComponent({
     const inputGeneralRules = ref([
       val => !!val || '* Requerido',
       val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
-      val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      val => !/[!@#$%^&*()_+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
     ])
 
     const $q = useQuasar();

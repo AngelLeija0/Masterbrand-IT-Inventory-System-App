@@ -142,6 +142,7 @@ export default defineComponent({
         label: 'Ubicación', 
         field: 'location', 
         align: 'left', 
+        sortable: true,
         sort: (a, b) => {
           return a.localeCompare(b)
         }

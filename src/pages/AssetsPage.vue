@@ -126,7 +126,18 @@ export default defineComponent({
     const viewStore = useViewStore()
 
     const detailsColumns = ref([
-      { name: 'index', label: '#', field: 'index' },
+      { 
+        name: 'index', 
+        label: '#', 
+        field: 'index',
+        sortable: true,
+        sort: (a, b) => {
+          if (a < b) {
+            return a
+          }
+          return b
+        }
+      },
       {
         name: 'category', label: 'Categoria', field: 'category', align: 'left',
         sortable: true,
@@ -144,10 +155,14 @@ export default defineComponent({
         align: 'left', 
         sortable: true,
         sort: (a, b) => {
+          console.log({
+            a, b
+          })
           if (a.startsWith("Celda")) {
-            return a.localeCompare(b)
+            return -1
           }
-          return a
+          console.log(a.localeCompare(b))
+          return a.localeCompare(b)
         }
       },
       { name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => value ? value : 'N/A' },

@@ -144,7 +144,10 @@ export default defineComponent({
         align: 'left', 
         sortable: true,
         sort: (a, b) => {
-          return a.localeCompare(b)
+          if (a.startsWith("Celda")) {
+            return a.localeCompare(b)
+          }
+          return a
         }
       },
       { name: 'current_employee', label: 'Empleado', field: 'current_employee', align: 'left', format: (value) => value ? value : 'N/A' },

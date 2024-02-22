@@ -59,7 +59,13 @@ const routes = [
         name: 'cards-page',
         component: () => import('pages/CardsPage.vue'),
         beforeEnter: [verifyLogin]
-      }
+      },
+      {
+        path: 'toners',
+        name: 'toners-page',
+        component: () => import('pages/TonersPage.vue'),
+        beforeEnter: [verifyLogin]
+      },
     ]
   },
   {

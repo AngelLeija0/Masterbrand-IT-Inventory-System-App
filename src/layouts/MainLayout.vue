@@ -104,6 +104,7 @@
         <q-btn-group>
           <NavbarButton label="Inicio" toPage="home-page" />
           <NavbarButton label="Inventario" toPage="assets-page" />
+          <NavbarButton label="Toners" toPage="toners-page" />
           <NavbarButton label="Categorias" toPage="categories-page" />
           <NavbarButton label="Ubicaciones" toPage="locations-page" />
           <NavbarButtonDropdown label="Herramientas" />

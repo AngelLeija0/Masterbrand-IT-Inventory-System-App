@@ -10,10 +10,14 @@
             </div>
         </q-section>
         <q-section class="flex row q-pa-md">
-            <div class="col-md-6 flex">
-                <div v-for="(toner, i) in toners" :key="i+1">
+            <div class="col-12 col-md-6 row">
+                <div v-for="(toner, i) in toners" :key="i + 1" class="col-12 col-sm-6 col-md-4 col-lg-3 q-mb-sm">
                     <TonerCard :label="toner.label" :stock="toner.stock" />
                 </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <TonerChangesTable :columns="tonerColumns" :rows="tonerRows" :loading="loadingState">
+                </TonerChangesTable>
             </div>
         </q-section>
     </q-page>
@@ -25,17 +29,36 @@ import { api } from 'src/boot/axios'
 import { useDataApiStore } from "src/stores/data-api-store"
 import PageTitle from 'src/components/PageTitle.vue'
 import TonerCard from 'src/components/TonerCard.vue'
+import TonerChangesTable from 'src/components/TonerChangesTable.vue'
 
 export default defineComponent({
     name: 'TonersPage',
     components: {
         PageTitle,
         TonerCard,
+        TonerChangesTable,
     },
     setup() {
         const dataApiStore = useDataApiStore()
         const toners = ref([])
         const loadingState = ref(false)
+
+        const tonerColumns = ref([
+            {
+                name: 'index',
+                label: '#',
+                field: 'index',
+                sortable: true,
+                sort: (a, b) => {
+                    if (a < b) {
+                        return a
+                    }
+                    return b
+                }
+            },
+            { name: 'description', label: 'Descripción', field: 'description', align: 'left' },
+        ])
+        const tonerRows = ref([])
 
         getAllToners()
         function getAllToners() {
@@ -76,7 +99,9 @@ export default defineComponent({
 
         return {
             toners,
-            loadingState
+            loadingState,
+            tonerRows,
+            tonerColumns
         }
     },
     methods: {

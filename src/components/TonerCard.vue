@@ -5,6 +5,7 @@
             <div class="text-caption">{{ info.label }}</div>
         </q-card-section>
     </article>
+
 </template>
 
 <style>
@@ -33,7 +34,7 @@ export default defineComponent({
         })
 
         return {
-            info,
+            info
         }
     },
     methods: {

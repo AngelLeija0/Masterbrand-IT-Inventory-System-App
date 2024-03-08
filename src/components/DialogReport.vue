@@ -1,6 +1,6 @@
 <template>
   <q-dialog v-model="dialogState" persistent>
-    <q-card class="q-pa-md" style="width: 80vw; max-width: 80vw; max-heightht: 90vh; overflow-y: auto;">
+    <q-card class="q-pa-md" style="width: 80vw; max-width: 80vw; max-height: 90vh; overflow-y: auto;">
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="black" flat round v-close-popup @click="closeDialog" class="q-py-none" />
       </q-card-actions>

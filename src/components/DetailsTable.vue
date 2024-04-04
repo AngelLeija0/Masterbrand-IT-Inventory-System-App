@@ -10,8 +10,8 @@
     </template>
     <template v-slot:body-cell-actions="props">
       <q-td style="width: 30%;">
-        <q-btn v-if="section == 'administrators'" label="Cambiar contraseña" icon-right="lock_open" outline size="0.75rem"
-          class="q-mx-xs" style="border-radius: 10px; text-transform: capitalize"
+        <q-btn v-if="section == 'administrators'" label="Cambiar contraseña" icon-right="lock_open" outline
+          size="0.75rem" class="q-mx-xs" style="border-radius: 10px; text-transform: capitalize"
           @click="openModifyDialog(props.row._id)" />
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
           style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
@@ -74,8 +74,9 @@
         </div>
         <div class="text-subtitle2 text-weight-regular q-pt-md">
           Escribe
-          <span class="text-red text-weight-medium">delete {{ currentData.name ? currentData.name : currentData.username ?
-            currentData.username : 'Error' }}</span>
+          <span class="text-red text-weight-medium">delete {{ currentData.name ? currentData.name : currentData.username
+    ?
+    currentData.username : 'Error' }}</span>
           a continuación para confirmar.
         </div>
         <div class="full-width q-pt-sm q-pb-md">

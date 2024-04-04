@@ -84,6 +84,9 @@
                 <NavbarButton label="Inventario" icon="inventory" toPage="assets-page" />
               </q-list>
               <q-list class="q-px-lg q-py-sm">
+                <NavbarButton label="Toners" icon="inventory" toPage="toners-page" />
+              </q-list>
+              <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Categorias" icon="bookmark" toPage="categories-page" />
               </q-list>
               <q-list class="q-px-lg q-py-sm">
@@ -114,7 +117,7 @@
     <q-page-container class="bg-grey-10" style="height: 100vh;">
       <router-view @updateNotifications="handleEventUpdateNotifications"
         :class="isMobile ? 'bg-white q-mb-md q-mx-xs' : 'bg-white q-mb-md q-mx-md'"
-        style="min-height: 98%; border-radius: 15px;" />
+        style="min-height: 98%; height: 98%; border-radius: 15px;" />
     </q-page-container>
   </q-layout>
 </template>

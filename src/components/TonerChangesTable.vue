@@ -154,6 +154,9 @@ export default defineComponent({
     openDeleteDialog(id) {
       this.inputConfirmDelete = null;
       this.dialogDelete = true;
+      console.log({ data: this.records })
+      console.log({ id })
+
       const recordInfo = this.records.find((tonerChange) => tonerChange._id === id);
       this.currentData = recordInfo;
     },

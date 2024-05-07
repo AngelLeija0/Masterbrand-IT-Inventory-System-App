@@ -11,7 +11,6 @@
       </q-td>
     </template>
   </q-table>
-
   <q-dialog v-model="dialogModify" persistent>
     <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
       <q-card-actions align="right" class="q-py-none">
@@ -38,11 +37,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
-
-
 </template>
-
-
 
 <script>
 import { defineComponent, ref, watch } from "vue"
@@ -159,7 +154,7 @@ export default defineComponent({
     openDeleteDialog(id) {
       this.inputConfirmDelete = null;
       this.dialogDelete = true;
-      const recordInfo = this.records.find((category) => category._id === id);
+      const recordInfo = this.records.find((tonerChange) => tonerChange._id === id);
       this.currentData = recordInfo;
     },
     closeDeleteDialog(id) {

@@ -5,9 +5,9 @@
     <template v-slot:body-cell-actions="props">
       <q-td style="width: 30%;">
         <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row.id)" />
+          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
         <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row.id)" />
+          style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row._id)" />
       </q-td>
     </template>
   </q-table>
@@ -74,6 +74,7 @@ export default defineComponent({
     const records = ref(props.rows)
 
     watch(() => props.rows, (newValue) => {
+      if (newValue.length == 0) return
       records.value = newValue
       records.value.forEach((row, index) => {
         row.index = index + 1
@@ -92,6 +93,7 @@ export default defineComponent({
       dialogDelete,
       inputConfirmDelete,
       currentData,
+      records,
       pagination: ref({
         rowsPerPage: 0
       })
@@ -100,7 +102,6 @@ export default defineComponent({
   methods: {
     openModifyDialog(id) {
       this.dialogModify = true;
-      console.log({ id })
     },
     closeModifyDialog() {
       this.dialogModify = false;
@@ -154,9 +155,8 @@ export default defineComponent({
     openDeleteDialog(id) {
       this.inputConfirmDelete = null;
       this.dialogDelete = true;
-      console.log({ data: this.records })
-      console.log({ id })
-
+      console.log(id)
+      console.log(this.records)
       const recordInfo = this.records.find((tonerChange) => tonerChange._id === id);
       this.currentData = recordInfo;
     },

@@ -2,9 +2,8 @@ import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
 // Local: http://localhost:3000
-// Render: https://api-masterbrand-it-inventory-system.onrender.com
 
-const serverURL = "https://api-masterbrand-it-inventory-system.onrender.com"
+const serverURL = "http://localhost:3000"
 
 const api = axios.create({ baseURL: serverURL })
 

@@ -1,0 +1,1 @@
+import{d as a,_ as o,G as s,y as n,z as r,C as i,E as p,K as c}from"./index.d76d729d.js";const l=a({name:"PageTitle",props:{label:{type:String}}});function _(e,m,d,f,x,g){const t=s("q-title");return n(),r(t,{class:"text-h5 text-weight-medium"},{default:i(()=>[p(c(e.label),1)]),_:1})}var h=o(l,[["render",_]]);export{h as P};

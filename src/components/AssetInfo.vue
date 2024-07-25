@@ -5,7 +5,7 @@
         <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
           <q-img v-if="defaultImageFounded" class="q-pa-md q-mx-sm"
             :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image" spinner-color="primary"
-            style="max-width: 260px" @error="handleImageError" />
+            style="max-width: 260px; max-width: 100px;" @error="handleImageError" fit="contain"  />
           <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
           <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
             @click="isEditingImage = true" />

@@ -7,10 +7,10 @@
       <q-td style="width: 15%;" class="text-center">
         <q-img v-if="props.row?.image" class="q-pa-md q-ma-sm"
           :src="imageServer + '/uploads/attachments/' + props.row?.image" spinner-color="primary"
-          style="max-width: 100px; max-height: 100px;"
+          style="max-width: 100px; max-height: 100px;" fit="contain" 
           @error="() => props.row.image = null"
           />
-        <q-icon v-else name="image" size="90px" class="q-pa-md q-ma-sm" style="max-width: 260;" />
+        <q-icon v-else name="image" size="90px" class="q-pa-md q-ma-sm" style="max-width: 240px;"/>
       </q-td>
     </template>
     <template v-slot:body-cell-location="props">

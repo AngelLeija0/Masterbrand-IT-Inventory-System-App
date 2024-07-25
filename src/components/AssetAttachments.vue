@@ -13,7 +13,7 @@
             </q-card-actions>
             <q-card-section class="q-py-none" style="height: 200px; display: grid; align-items: center;">
               <div v-if="attachment.type === 'image'">
-                <q-img v-if="attachment.url" :src="attachment.url" style="width: 90%; height: 200px;" spinner-color="primary"
+                <q-img v-if="attachment.url" :src="attachment.url" style="width: 90%; height: 200px;" fit="contain"  spinner-color="primary"
                 @error="() => attachment.url = null" />
                 <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
               </div>

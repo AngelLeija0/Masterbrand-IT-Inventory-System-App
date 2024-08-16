@@ -8,6 +8,12 @@ node_modules
 /quasar.config.*.temporary.compiled*
 /src/boot
 
+# Axios / Api
+/src/boot/axios.js
+
+# Quasar config
+/quasar.config.js
+
 # Cordova related directories and files
 /src-cordova/node_modules
 /src-cordova/platforms
@@ -29,4 +35,3 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-

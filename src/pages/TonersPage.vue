@@ -72,7 +72,7 @@
                     </div>
                     <div>
                         <q-select v-model="tonerChangeInput.toner" clearable dense :options="tonerOptions" emit-value
-                            map-options label="Toner" class="q-mb-md" hint="requerido">
+                            map-options label="Toner" class="q-mb-md" hint="requerido" @update:model-value="getPrinters()">
                             <template v-slot:no-option>
                                 <q-item>
                                     <q-item-section class="text-grey">
@@ -440,14 +440,14 @@ export default defineComponent({
             this.tonerInput = {}
         },
         openNewTonerChangeDialog() {
-            this.getTonerAndPrinterOptions()
+            this.getPrinterOptions()
             this.dialogStateNewTonerChange = true
         },
         closeNewTonerChangeDialog() {
             this.dialogStateNewTonerChange = false
             this.tonerChangeInput = {}
         },
-        getTonerAndPrinterOptions() {
+        getPrinterOptions() {
             const mapToners = this.toners.map((toner) => {
                 return {
                     label: `${toner.name} (${toner.color})`,
@@ -455,24 +455,6 @@ export default defineComponent({
                 }
             })
             this.tonerOptions = mapToners
-            api
-                .get("./assets?category=Impresora")
-                .then((res) => {
-                    const data = res.data
-                    if (data) {
-                        const dataFiltered = data.filter(objeto => !(objeto.model.includes("Zebra")));
-                        const mapPrinters = dataFiltered.map((printer) => {
-                            return {
-                                label: `${printer.model} ${printer.location}`,
-                                value: printer
-                            }
-                        })
-                        this.printerOptions = mapPrinters
-                    }
-                })
-                .catch((err) => {
-                    console.log(err)
-                });
         },
         addTonerChange() {
             try {
@@ -595,6 +577,27 @@ export default defineComponent({
             } catch (error) {
                 console.log(error)
             }
+        },
+        getPrinters() {
+            api
+                .get("./assets?category=Impresora")
+                .then((res) => {
+                    const data = res.data
+                    if (data) {
+                        const dataFiltered = data.filter(printer => printer.model.includes(this.tonerChangeInput?.toner?.name));
+                        const mapPrinters = dataFiltered.map((printer) => {
+                            return {
+                                label: `${printer.model} ${printer.location}`,
+                                value: printer
+                            }
+                        })
+                        this.printerOptions = mapPrinters
+                        console.log(this.printerOptions)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                });
         }
     }
 });

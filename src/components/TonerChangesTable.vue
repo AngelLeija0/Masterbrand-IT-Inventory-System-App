@@ -11,6 +11,7 @@
       </q-td>
     </template>
   </q-table>
+
   <q-dialog v-model="dialogModify" persistent>
     <q-card class="q-pa-md" style="width: 700px; max-width: 80vw; max-height: 80vh">
       <q-card-actions align="right" class="q-py-none">
@@ -37,11 +38,15 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+
+  <DialogConfirmDelete label="Label" />
+
 </template>
 
 <script>
 import { defineComponent, ref, watch } from "vue"
 import { useRoute } from 'vue-router'
+import DialogConfirmDelete from './DialogConfirmDelete.vue'
 
 export default defineComponent({
   name: "TonerChangesTable",
@@ -55,6 +60,9 @@ export default defineComponent({
     loading: {
       type: Boolean,
     }
+  },
+  components: {
+    DialogConfirmDelete
   },
   setup(props) {
     const isMobile = ref(isUsingMobile());
@@ -84,7 +92,7 @@ export default defineComponent({
     const dialogModify = ref(false);
     const dialogDelete = ref(false);
     const inputConfirmDelete = ref(null);
-    const currentData = ref(null);
+    const currentData = ref({});
 
     return {
       isMobile,
@@ -101,6 +109,7 @@ export default defineComponent({
   },
   methods: {
     openModifyDialog(id) {
+      console.log({ id })
       this.dialogModify = true;
     },
     closeModifyDialog() {

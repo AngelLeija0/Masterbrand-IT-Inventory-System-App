@@ -1,9 +1,8 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
 
-// Local: http://localhost:3000
 
-const serverURL = "http://localhost:3000"
+const serverURL = "http://localhost:3000" // http://10.10.181.33:8081
 
 const api = axios.create({ baseURL: serverURL })
 

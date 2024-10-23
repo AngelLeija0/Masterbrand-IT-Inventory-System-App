@@ -101,12 +101,12 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       email: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!#$%^&*()+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       password: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
       ],
     })
 
@@ -174,7 +174,6 @@ export default defineComponent({
             if (data) {
               if (data.id) {
                 this.userStore.setUser(data)
-                console.log(this.userStore.getUser)
                 this.$router.push({ name: 'home-page' })
                 this.$q.notify({
                   type: 'positive',

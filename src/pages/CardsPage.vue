@@ -8,9 +8,9 @@
         <div class="q-pb-lg full-width">
           Generador de excel con numeros de tarjeta para gafets.
         </div>
-        <div class="flex" style="overflow: auto; max-height: 60vh">
+        <div class="flex" style="overflow: auto; max-height: 65vh; gap: 10px;">
           <div v-for="(cardBox, i) in boxesCards" :key="i + 1" style="max-width: 64vw;">
-            <q-card dark bordered class="bg-grey-12 text-black q-pa-sm">
+            <q-card dark bordered class="bg-grey-12 text-black q-pa-sm" style="border-radius: 25px;">
               <q-card-section>
                 <div class="flex justify-between">
                   <div class="text-h6">Caja {{ i + 1 }}</div>
@@ -26,17 +26,19 @@
               <q-separator dark inset />
               <q-card-section>
                 <div>No. tarjeta (En caja)</div>
-                <q-input v-model="cardBox.first_number_box" label="Numero de inicio de caja" dense outlined color="black"
-                  class="q-py-xs" />
+                <q-input v-model="cardBox.first_number_box" label="Numero de inicio de caja" dense outlined
+                  color="black" class="q-py-xs" @update:model-value="saveProgress" :rules="numberValidations"
+                  no-error-icon :error="false" :error-message="''" />
                 <q-input v-model="cardBox.last_number_box" label="Numero final de caja" dense outlined color="black"
-                  class="q-py-xs" />
+                  class="q-py-xs" @update:model-value="saveProgress" :rules="numberValidations" no-error-icon
+                  :error="false" :error-message="''" />
                 <div class="flex items-center">
                   <div style="font-size: 12px">¿Hay algun salto?</div>
                   <q-btn icon="add" size="10px" flat round @click="addJumpToBox(i)" />
                 </div>
                 <div v-for="(jump, i2) in cardBox.jumps" :key="i2 + 1">
                   <q-input v-model="cardBox.jumps[i2]" :label="'Salto ' + (i2 + 1)" dense outlined color="black"
-                    class="q-py-xs">
+                    :rules="numberValidations" no-error-icon :error="false" :error-message="''" class="q-py-xs">
                     <template v-slot:append>
                       <q-icon name="close" @click="deleteJump(i, i2)" class="cursor-pointer" />
                     </template>
@@ -44,9 +46,11 @@
                 </div>
                 <div class="q-pt-sm">No. tarjeta (En checador)</div>
                 <q-input v-model="cardBox.first_number_card_box" label="Numero de incio de caja" dense outlined
-                  color="black" class="q-py-xs" />
-                <q-input v-model="cardBox.last_number_card_box" label="Numero final de caja" dense outlined color="black"
-                  class="q-py-xs" />
+                  color="black" class="q-py-xs" @update:model-value="saveProgress" :rules="numberValidations"
+                  no-error-icon :error="false" :error-message="''" />
+                <q-input v-model="cardBox.last_number_card_box" label="Numero final de caja" dense outlined
+                  color="black" class="q-py-xs" @update:model-value="saveProgress" :rules="numberValidations"
+                  no-error-icon :error="false" :error-message="''" />
               </q-card-section>
             </q-card>
           </div>
@@ -91,7 +95,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { useQuasar } from "quasar";
 
 import ExcelJS from "exceljs/dist/exceljs.min.js";
@@ -104,8 +108,6 @@ export default defineComponent({
     PageTitle,
   },
   setup() {
-    const $q = useQuasar();
-
     const boxesCards = ref([
       {
         first_number_box: 0,
@@ -118,10 +120,23 @@ export default defineComponent({
 
     const dialogDelete = ref(false);
 
+    const numberValidations = [
+      val => !!val || '',
+      val => val.length < 20 || '',
+      val => /^\d+$/.test(val) || ''
+    ];
+
+    onMounted(() => {
+      const localStorageBoxes = window.localStorage.getItem("boxes")
+      if (localStorageBoxes){
+        boxesCards.value = JSON.parse(localStorageBoxes)
+      }
+    })
+
     return {
-      $q,
       boxesCards,
       dialogDelete,
+      numberValidations,
     };
   },
   methods: {
@@ -134,7 +149,6 @@ export default defineComponent({
           first_number_card_box: 0,
           last_number_card_box: 0,
         });
-
         this.$q.notify({
           type: "positive",
           message: "Caja agregada correctamente.",
@@ -152,6 +166,7 @@ export default defineComponent({
     deleteBox(idx) {
       try {
         this.boxesCards.splice(idx, 1)
+        this.saveProgress()
         this.$q.notify({
           type: "warning",
           message: "Caja eliminada correctamente.",
@@ -172,6 +187,9 @@ export default defineComponent({
     deleteJump(boxIdx, jumpIdx) {
       this.boxesCards[boxIdx].jumps.splice(jumpIdx, 1);
     },
+    saveProgress() {
+      window.localStorage.setItem("boxes", JSON.stringify(this.boxesCards))
+    },
     deleteAllBoxes() {
       try {
         this.dialogDelete = false;
@@ -184,6 +202,9 @@ export default defineComponent({
             last_number_card_box: 0,
           },
         ];
+        if (window.localStorage.getItem("boxes")) {
+          window.localStorage.clear("boxes")
+        }
         this.$q.notify({
           type: "warning",
           message: "Reiniciado correctamente.",

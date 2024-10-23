@@ -6,14 +6,39 @@
         <q-icon name="light_mode" size="36px" class="q-mx-sm" style="color: #ffbf3b;" />
       </div>
     </q-section>
+    <div id="flame-container"></div>
+    <div id="welcome-message"></div>
   </q-page>
 </template>
 
-<script>
-import { defineComponent, ref } from 'vue'
-import { useUserStore } from 'src/stores/user-store';
+<style>
+#flame-container {
+  position: fixed;
+  bottom: -200px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('assets/Flames.gif') no-repeat center center;
+  background-size: cover;
+  display: none;
+}
 
-import PageTitle from 'src/components/PageTitle.vue'
+#welcome-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-wrap: nowrap;
+  font-size: 4em;
+  font-weight: bold;
+  display: none;
+}
+</style>
+
+<script>
+import { defineComponent, ref, onMounted } from 'vue';
+import { useUserStore } from 'src/stores/user-store';
+import PageTitle from 'src/components/PageTitle.vue';
 
 export default defineComponent({
   name: 'IndexPage',
@@ -24,12 +49,28 @@ export default defineComponent({
     const userStore = useUserStore()
     const userName = ref(userStore.getUser.username)
 
+    onMounted(() => {
+      if (String(userName.value).toLowerCase() == "darkflamemaster") {
+        const welcomeMessageShowed = window.localStorage.getItem("welcome-message");
+        if (welcomeMessageShowed) return
+
+        const flamesContainer = document.getElementById('flame-container');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        flamesContainer.style.display = 'block';
+        welcomeMessage.style.display = 'block';
+        welcomeMessage.innerText = 'Bienvenido DarkFlameMaster';
+
+        setTimeout(() => {
+          flamesContainer.style.display = 'none';
+          welcomeMessage.style.display = 'none';
+        }, 4000);
+      }
+    })
+
     return {
       userName,
     }
   },
-  methods: {
-
-  }
 });
 </script>

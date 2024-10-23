@@ -72,7 +72,7 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       name: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       description: [
@@ -82,12 +82,12 @@ export default defineComponent({
       ],
       manufacturer: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       model: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       serial_number: [
@@ -97,7 +97,7 @@ export default defineComponent({
       ],
       purchase_from: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 20 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 20 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       purchase_date: [
@@ -112,7 +112,7 @@ export default defineComponent({
       ],
       warranty_info: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       warranty_expiration_date: [
@@ -137,23 +137,23 @@ export default defineComponent({
       ],
       status: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       category: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       ip_address: [
-        val => val.length < 30 || 'Porfavor usa un maximo de 20 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 20 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ]
     });
 
     const inputGeneralRules = ref([
       val => !!val || '* Requerido',
-      val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+      val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
       val => !/[!@#$%^&*()_+={}|:\;',<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
     ])
 

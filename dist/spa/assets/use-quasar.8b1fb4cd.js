@@ -1,1 +1,0 @@
-import{k as t,aL as o,aM as n,c,h as u,l as i,i as l,aN as d}from"./index.d76d729d.js";var m=t({name:"QCardActions",props:{...o,vertical:Boolean},setup(a,{slots:s}){const e=n(a),r=c(()=>`q-card__actions ${e.value} q-card__actions--${a.vertical===!0?"vert column":"horiz row"}`);return()=>u("div",{class:r.value},i(s.default))}});function p(){return l(d)}export{m as Q,p as u};

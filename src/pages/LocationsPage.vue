@@ -20,7 +20,7 @@
       </div>
     </q-section>
     <q-section>
-      <FilterBar @getAllData="getAllLocations" @realodData="setLocations"></FilterBar>
+      <FilterBar @getAllData="getAllLocations" @reloadData="setLocations"></FilterBar>
     </q-section>
     <q-section>
       <DetailsTable section="locations" label="Ubicaciones" :columns="locationColumns" :rows="locationRows"

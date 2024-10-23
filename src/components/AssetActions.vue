@@ -17,7 +17,7 @@
           </q-td>
         </template>
         <template v-slot:body-cell-attachments="props">
-          <q-td v-if="props.row.attachments.length > 0">
+          <q-td v-if="props.row?.attachments && props.row?.attachments?.length > 0">
             <q-btn label="Ver" icon-right="navigate_next" color="dark" outline size="0.75rem"
               style="border-radius: 10px; text-transform: capitalize;" @click="openAttachmentDialog(props.row.id)" />
           </q-td>
@@ -332,7 +332,6 @@ export default defineComponent({
         .patch(`./assets/update/delete/action/${this.idAsset}`, { idAction })
         .then((res) => {
           const data = res.data
-          console.log(data)
           if (data) {
             this.dialogDeleteAction = false
             this.inputConfirmDelete = null

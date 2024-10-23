@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="q-page">
     <q-section class="flex justify-between q-pa-md">
       <PageTitle label="Inventario" />
       <div v-if="isMobile">
@@ -24,20 +24,40 @@
     <q-section>
       <FilterBar @getAllData="getAllAssets" @reloadData="setAssets" @updateView="getView"></FilterBar>
     </q-section>
-    <q-section>
-      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState" :rowsPerPage="tableRowsPerPage"
-        @reloadData="() => { setAssets(); emitEventUpdateNotifications(); }">
+    <q-section class="asset-details-table" style="padding-bottom: 20px;">
+      <AssetDetailsTable :columns="assetColumns" :rows="assetRows" :loading="loadingState"
+        :rowsPerPage="tableRowsPerPage" @reloadData="() => { setAssets(); emitEventUpdateNotifications(); }">
       </AssetDetailsTable>
     </q-section>
   </q-page>
 </template>
+
+<style scoped>
+.q-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.q-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.asset-details-table {
+  flex: 1;
+  overflow: auto;
+  padding-bottom: 10px;
+}
+</style>
 
 <script>
 import { defineComponent, ref, watch } from 'vue'
 import { api } from "src/boot/axios"
 import { useDataApiStore } from "src/stores/data-api-store"
 import { useViewStore } from 'src/stores/view-store'
-import { date } from 'quasar'
+import { date, exportFile } from 'quasar'
 
 import PageTitle from 'src/components/PageTitle.vue'
 import PrimaryButton from 'src/components/PrimaryButton.vue'
@@ -46,6 +66,17 @@ import AssetDetailsTable from 'src/components/AssetDetailsTable.vue'
 import DialogNewAsset from 'src/components/DialogNewAsset.vue'
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue'
 import DialogReport from 'src/components/DialogReport.vue'
+
+function wrapCsvValue (val, formatFn, row) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val, row)
+    : val
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+  formatted = formatted.split('"').join('""')
+  return `"${formatted}"`
+}
 
 export default defineComponent({
   name: 'AssetsPage',
@@ -126,9 +157,9 @@ export default defineComponent({
     const viewStore = useViewStore()
 
     const detailsColumns = ref([
-      { 
-        name: 'index', 
-        label: '#', 
+      {
+        name: 'index',
+        label: '#',
         field: 'index',
         sortable: true,
         sort: (a, b) => {
@@ -149,19 +180,15 @@ export default defineComponent({
       { name: 'model', label: 'Modelo', field: 'model', align: 'left', format: (value) => value ? value : 'N/A' },
       { name: 'serial_number', label: 'Serial', field: 'serial_number', align: 'left', format: (value) => value ? value : 'N/A' },
       {
-        name: 'location', 
-        label: 'Ubicación', 
-        field: 'location', 
-        align: 'left', 
+        name: 'location',
+        label: 'Ubicación',
+        field: 'location',
+        align: 'left',
         sortable: true,
         sort: (a, b) => {
-          console.log({
-            a, b
-          })
           if (a.startsWith("Celda")) {
             return -1
           }
-          console.log(a.localeCompare(b))
           return a.localeCompare(b)
         }
       },
@@ -243,6 +270,12 @@ export default defineComponent({
         icon: "find_in_page",
         color: "",
         value: "get-report"
+      },
+      {
+        label: "Descargar Excel",
+        icon: "download",
+        color: "",
+        value: "get-excel"
       }
     ])
     const dialogReport = ref(false)
@@ -270,7 +303,7 @@ export default defineComponent({
     },
     getView() {
       const view = this.viewStore.getView
-      console.log(view)
+      
       if (view.content == true) {
         this.tableRowsPerPage = [3, 5, 10, 15, 20, 0]
         return this.assetColumns = this.contentColumns
@@ -281,21 +314,42 @@ export default defineComponent({
       }
     },
     handleActionOption(option) {
-      console.log(option)
-      switch (option) {
-        case "get-report":
-          this.activateDialogReport()
-          break;
-
-        default:
-          break;
-      }
+      if (option == "get-report") return this.activateDialogReport()
+      if (option == "get-excel") return this.downloadExcel()
     },
     activateDialogReport() {
       this.$refs.dialogReport.openDialog()
     },
     emitEventUpdateNotifications() {
       this.$emit("updateNotifications")
+    },
+    downloadExcel() {
+      const columns = this.detailsColumns
+      const rows = this.assetRows
+
+      const content = [columns.map(col => wrapCsvValue(col.label))].concat(
+        rows.map(row => columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+            ? col.field(row)
+            : row[col.field === void 0 ? col.name : col.field],
+          col.format,
+          row
+        )).join(','))
+      ).join('\r\n')
+      
+      const status = exportFile(
+        'inventario.csv',
+        content,
+        'text/csv'
+      )
+
+      if (status !== true) {
+        $q.notify({
+          message: 'Navegador rechazo la descarga...',
+          color: 'negative',
+          icon: 'warning'
+        })
+      }
     }
   }
 });

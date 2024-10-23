@@ -49,17 +49,17 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       username: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       email: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => emailRegex.test(val) || 'Ingresa un correo electrónico válido'
       ],
       password: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres'
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres'
       ],
     })
 

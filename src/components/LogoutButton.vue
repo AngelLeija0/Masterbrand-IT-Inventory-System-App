@@ -44,7 +44,6 @@ export default defineComponent({
   },
   methods: {
     logout() {
-      console.log("Saliendo ...")
     }
   },
 })

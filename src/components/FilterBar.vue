@@ -21,7 +21,7 @@
                 <div class="row no-wrap q-pa-md">
                   <div class="column">
                     <div class="text-h6 q-mb-md">Filtros</div>
-                    <q-input class="q-pb-md" dense borderless label="Buscar filtros">
+                    <q-input v-model="filterInput" class="q-pb-md" dense borderless label="Buscar filtros">
                       <template v-slot:append>
                         <q-icon name="search" color="black" />
                       </template>
@@ -90,7 +90,7 @@
             <div class="row no-wrap q-pa-md">
               <div class="column">
                 <div class="text-h6 q-mb-md">Filtros</div>
-                <q-input class="q-pb-md" dense borderless label="Buscar filtros">
+                <q-input v-model="filterInput" class="q-pb-md" dense borderless label="Buscar filtros" @update:model-value="updateFilters">
                   <template v-slot:append>
                     <q-icon name="search" color="black" />
                   </template>
@@ -293,6 +293,9 @@ export default defineComponent({
     const assetFounded = ref({})
     const camReady = ref(false)
 
+    const filterInput = ref()
+    const filterAux = ref(filterDictionary.value[actualRoute.value])
+
     return {
       isMobile,
       router,
@@ -310,9 +313,21 @@ export default defineComponent({
       labelErrorQR,
       assetFounded,
       camReady,
+      filterInput,
+      filterAux,
     };
   },
   methods: {
+    updateFilters() {
+        if (!this.filterInput) return this.filterDictionary[this.actualRoute] = this.filterAux
+        this.filterDictionary[this.actualRoute] = this.filterDictionary[this.actualRoute].filter((filter) => {
+          if (this.filterInput.length == 1 && filter.label.toLowerCase().startsWith(this.filterInput.toLowerCase())) {
+            return filter
+          }
+          const regex = new RegExp(this.filterInput.toLowerCase(), 'i')
+          return filter.label.toLowerCase().match(regex)
+        });
+    },
     updateView(view) {
       Object.keys(this.viewDictionary).map((key) => {
         if (view !== key) {
@@ -439,7 +454,6 @@ export default defineComponent({
           }
         })
         .catch((err) => {
-          console.log(err)
           this.$q.notify({
             type: "negative",
             message: "No se encontro el producto.",

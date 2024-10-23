@@ -56,7 +56,7 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       name: [
         val => !!val,
-        val => val.length < 30,
+        val => val.length < 50,
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
       ],
       description: [
@@ -76,12 +76,12 @@ export default defineComponent({
       ],
       manufacturer: [
         val => !!val,
-        val => val.length < 30,
+        val => val.length < 50,
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
       ],
       model: [
         val => !!val,
-        val => val.length < 30,
+        val => val.length < 50,
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
       ],
       serial_number: [
@@ -91,7 +91,7 @@ export default defineComponent({
       ],
       purchase_from: [
         val => !!val,
-        val => val.length < 30,
+        val => val.length < 50,
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
       ],
       purchase_date: [
@@ -106,7 +106,7 @@ export default defineComponent({
       ],
       warranty_info: [
         val => !!val,
-        val => val.length < 30,
+        val => val.length < 50,
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val)
       ],
       warranty_expiration_date: [

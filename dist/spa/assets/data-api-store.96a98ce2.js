@@ -1,1 +1,0 @@
-import{v as a}from"./index.d76d729d.js";const i=a("dataApiStore",{state:()=>({data:null}),getters:{getDataApi(t){return t.data}},actions:{setDataApi(t){this.data=t},clearDataApi(){this.data=null}}});export{i as u};

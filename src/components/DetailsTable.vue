@@ -93,6 +93,7 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  
 </template>
 
 <script>
@@ -148,8 +149,6 @@ export default defineComponent({
     const nameSection = ref(props.section)
 
     const records = ref(props.rows)
-
-    console.log(records.value)
 
     watch(
       () => props.rows,
@@ -283,22 +282,22 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       name: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       username: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
       email: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => emailRegex.test(val) || 'Ingresa un correo electrónico válido'
       ],
       password: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres'
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres'
       ],
     })
 
@@ -340,7 +339,6 @@ export default defineComponent({
     openModifyDialog(id) {
       this.dialogModify = true;
       const recordInfo = this.records.find((record) => record._id === id)
-      console.log(recordInfo)
       this.currentData = recordInfo
       if (this.isCategory) {
         if (recordInfo.properties) {

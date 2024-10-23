@@ -314,7 +314,6 @@ export default defineComponent({
     handleOptionClick(option) {
       if (option === 'delete-asset') return this.deleteAsset()
       if (option === 'view-qr') {
-        console.log("QR")
         this.openQrDialog()
       }
     },

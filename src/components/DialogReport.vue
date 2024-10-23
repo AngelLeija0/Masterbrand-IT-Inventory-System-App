@@ -39,10 +39,11 @@
             </q-stepper-navigation>
           </q-step>
 
-          <q-step :name="2" title="Especificar busqueda" icon="search" :done="reportStep > 2" :header-nav="reportStep > 2"
-            style="padding-bottom: 0;">
-            <div class="q-pb-md">Haz elegido la busqueda por <span style="font-weight: 500;">{{ reportCheckbox.inventory ?
-              'Producto' : reportCheckbox.category ? 'Categoria' : '' }}</span>.
+          <q-step :name="2" title="Especificar busqueda" icon="search" :done="reportStep > 2"
+            :header-nav="reportStep > 2" style="padding-bottom: 0;">
+            <div class="q-pb-md">Haz elegido la busqueda por <span style="font-weight: 500;">{{ reportCheckbox.inventory
+    ?
+    'Producto' : reportCheckbox.category ? 'Categoria' : '' }}</span>.
               Selecciona un producto en especifico para buscar su stock.
             </div>
             <q-select filled v-model="inputSpecificSearch" use-input dense input-debounce="0"
@@ -95,7 +96,6 @@
 </template>
 
 <script>
-import { stringify } from "postcss"
 import { defineComponent, ref } from "vue"
 import { api } from "src/boot/axios"
 
@@ -165,7 +165,6 @@ export default defineComponent({
           }
         })
         .catch((err) => {
-          console.log(err)
         })
     },
     updateReportCheckboxs(checkboxActive) {
@@ -202,10 +201,8 @@ export default defineComponent({
           }
         })
         .catch((err) => {
-          console.log(err)
         })
     }
   },
 });
 </script>
-

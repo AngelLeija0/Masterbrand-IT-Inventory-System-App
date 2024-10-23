@@ -1,16 +1,10 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header v-if="route.name === 'admins-page'" class="bg-grey-10">
-      <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
-        <img src="../assets/masterbrand-logo.webp" style="max-height: 30px;" />
-        <LogoutButton class="q-mr-lg" :label="getNameUserStore()" @click="logout()" />
-      </q-toolbar>
-    </q-header>
-    <q-header v-else class="bg-grey-10">
+    <q-header class="bg-grey-10">
       <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
         <img src="../assets/masterbrand-logo.webp" style="max-height: 30px; max-width: 70%" />
         <div v-if="!isMobile">
-          <q-btn :icon="quantityNotifications ? 'notifications' : 'notifications_none'" round class="q-mx-md"
+          <q-btn :icon="quantityNotifications ? 'notifications' : 'notifications_none'" round class="q-mx-md" flat
             style="border-radius: 20px;" @click="getAllNotifications()">
             <q-badge v-if="quantityNotifications" color="red" floating>
               {{ quantityNotifications }}
@@ -80,19 +74,22 @@
               <q-list class="q-px-lg q-py-sm">
                 <NavbarButton label="Inicio" icon="home" toPage="home-page" />
               </q-list>
-              <q-list class="q-px-lg q-py-sm">
+              <q-list v-if="typeUser != 'superadmin'" class="q-px-lg q-py-sm">
                 <NavbarButton label="Inventario" icon="inventory" toPage="assets-page" />
               </q-list>
-              <q-list class="q-px-lg q-py-sm">
+              <q-list v-if="typeUser != 'superadmin'" class="q-px-lg q-py-sm">
                 <NavbarButton label="Toners" icon="inventory" toPage="toners-page" />
               </q-list>
-              <q-list class="q-px-lg q-py-sm">
+              <q-list v-if="typeUser == 'superadmin'" class="q-px-lg q-py-sm">
                 <NavbarButton label="Categorias" icon="bookmark" toPage="categories-page" />
               </q-list>
-              <q-list class="q-px-lg q-py-sm">
+              <q-list v-if="typeUser == 'superadmin'" class="q-px-lg q-py-sm">
                 <NavbarButton label="Ubicaciones" icon="place" toPage="locations-page" />
               </q-list>
-              <q-list class="q-px-lg q-py-sm">
+              <q-list v-if="typeUser != 'superadmin'" class="q-px-lg q-py-sm">
+                <NavbarButton label="Archivos" icon="place" toPage="files-page" />
+              </q-list>
+              <q-list v-if="typeUser != 'superadmin'" class="q-px-lg q-py-sm">
                 <NavbarButtonDropdown label="Herramientas" icon="hardware" flat />
               </q-list>
               <q-list class="q-px-lg q-py-sm flex justify-center" style="margin-top: 42vh;">
@@ -104,13 +101,14 @@
         </div>
       </q-toolbar>
       <q-toolbar v-if="!isMobile" class="justify-center q-px-md" inset>
-        <q-btn-group>
+        <q-btn-group flat>
           <NavbarButton label="Inicio" toPage="home-page" />
-          <NavbarButton label="Inventario" toPage="assets-page" />
-          <NavbarButton label="Toners" toPage="toners-page" />
-          <NavbarButton label="Categorias" toPage="categories-page" />
-          <NavbarButton label="Ubicaciones" toPage="locations-page" />
-          <NavbarButtonDropdown label="Herramientas" />
+          <NavbarButton v-if="typeUser != 'superadmin'" label="Inventario" toPage="assets-page" />
+          <NavbarButton v-if="typeUser != 'superadmin'" label="Toners" toPage="toners-page" />
+          <NavbarButton v-if="typeUser != 'superadmin'" label="Archivos" toPage="files-page" />
+          <NavbarButton v-if="typeUser == 'superadmin'" label="Categorias" toPage="categories-page" />
+          <NavbarButton v-if="typeUser == 'superadmin'" label="Ubicaciones" toPage="locations-page" />
+          <NavbarButtonDropdown v-if="typeUser != 'superadmin'" label="Herramientas" />
         </q-btn-group>
       </q-toolbar>
     </q-header>
@@ -123,7 +121,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { date } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { useUserStore } from "../stores/user-store"
@@ -146,6 +144,7 @@ export default defineComponent({
     const route = useRoute()
 
     const userStore = useUserStore()
+    const typeUser = userStore.getUser.type
 
     const isMobile = ref(isUsingMobile())
 
@@ -189,6 +188,10 @@ export default defineComponent({
         })
     }
 
+    onMounted(() => {
+      window.localStorage.setItem("welcome-message", true)
+    })
+
     return {
       isMobile,
       menuState,
@@ -199,6 +202,7 @@ export default defineComponent({
       notifications,
       quantityNotifications,
       notificationStore,
+      typeUser,
     }
   },
   methods: {
@@ -232,6 +236,7 @@ export default defineComponent({
         timeout: 500,
         onDismiss: () => this.router.push({ name: 'login-page' })
       })
+      window.localStorage.clear("welcome-message")
     },
     defineImportanceColor(importance) {
       if (importance === "high") {

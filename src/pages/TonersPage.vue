@@ -12,14 +12,15 @@
             </div>
         </q-section>
         <q-section class="flex row q-px-md q-pt-md">
-            <div class="col-12 col-md-5 row" style="height: 70vh; overflow-y: auto;">
+            <div class="col-12 col-md-4 row" style="height: 70vh; overflow-y: auto;">
                 <div v-for="(toner, i) in toners" :key="i + 1" class="col-12 col-sm-6 col-md-6 col-lg-4 q-mb-sm">
                     <TonerCard :label="toner.name" :color="toner.color" :colorCode="defineTonerColor(toner.color)"
                         :stock="toner.stock" @click="openTonerDialog(toner)" />
                 </div>
             </div>
-            <div class="col-12 col-md-7">
-                <TonerChangesTable :columns="tonerColumns" :rows="tonerRows" :loading="loadingState" @reloadData="()=>{}">
+            <div class="col-12 col-md-8">
+                <TonerChangesTable :columns="tonerColumns" :rows="tonerRows" :loading="loadingState"
+                    @reloadData="() => { getAllTonerChanges(); getAllToners(); }">
                 </TonerChangesTable>
             </div>
         </q-section>
@@ -72,7 +73,8 @@
                     </div>
                     <div>
                         <q-select v-model="tonerChangeInput.toner" clearable dense :options="tonerOptions" emit-value
-                            map-options label="Toner" class="q-mb-md" hint="requerido" @update:model-value="getPrinters()">
+                            map-options label="Toner" class="q-mb-md" hint="requerido"
+                            @update:model-value="getPrinters()">
                             <template v-slot:no-option>
                                 <q-item>
                                     <q-item-section class="text-grey">
@@ -111,12 +113,12 @@
                 </q-card-actions>
                 <q-card-section class="q-pt-none q-pb-sm flex items-end" style="border-bottom: 1px solid #e9e9e9">
                     <div class="text-h5 text-weight-medium">{{ currentToner.name }}</div>
-                    <div class="text-subtitle2 text-weight-medium q-px-sm text-capitalize"
-                        :style="{ color: defineTonerColor(currentToner.color) }">({{ currentToner.color }})</div>
+                    <div class="text-white text-weight-medium q-px-md q-py-xs q-mx-sm text-capitalize"
+                        :style="{ backgroundColor: currentToner.color.toLowerCase() == 'negro' ? '#252525' : defineTonerColor(currentToner.color), borderRadius: '20px', fontSize: '0.65rem' }">{{ currentToner.color }}</div>
                 </q-card-section>
                 <q-card-section class="q-mb-lg">
                     <div class="q-pb-md">
-                        <h5 class="text-subtitle1 q-ma-none text-weight-regular">Reporte</h5>
+                        <h5 class="text-subtitle1 q-ma-none text-weight-medium">Reporte</h5>
                     </div>
                     <div>
                         <div class="flex justify-between items-center q-py-sm"
@@ -160,7 +162,7 @@
                     </div>
                 </q-card-section>
                 <q-card-actions align="right">
-                    <q-btn label="Modificar stock" size="0.85rem" color="primary" dense outline padding="sm lg"
+                    <q-btn label="Modificar stock" size="0.85rem" color="secondary" dense outline padding="sm lg"
                         @click="openTonerStockDialog" style="border-radius: 10px; text-transform: capitalize" />
                     <q-btn label="Borrar" size="0.85rem" color="red" dense outline padding="sm lg"
                         @click="dialogDelete = true" style="border-radius: 10px; text-transform: capitalize" />
@@ -199,6 +201,8 @@
             </q-card>
         </q-dialog>
 
+        <DialogTonerReport ref="dialogTonerReport" />
+
     </q-page>
 </template>
 
@@ -215,6 +219,7 @@ import TonerChangesTable from 'src/components/TonerChangesTable.vue'
 import PrimaryButton from 'src/components/PrimaryButton.vue';
 import MoreOptionsButton from 'src/components/MoreOptionsButton.vue';
 import DialogConfirmDelete from 'src/components/DialogConfirmDelete.vue';
+import DialogTonerReport from 'src/components/DialogTonerReport.vue';
 
 export default defineComponent({
     name: 'TonersPage',
@@ -225,6 +230,7 @@ export default defineComponent({
         PrimaryButton,
         MoreOptionsButton,
         DialogConfirmDelete,
+        DialogTonerReport,
     },
     setup() {
         const $q = useQuasar();
@@ -235,16 +241,18 @@ export default defineComponent({
 
         const moreOptions = ref([
             {
-                label: "Consulta existencias",
-                icon: "find_in_page",
+                label: "Reporte",
+                icon: "analytics",
                 color: "",
                 value: "get-report"
-            }
+            },
+            {
+                label: "Descargar Excel",
+                icon: "download",
+                color: "",
+                value: "get-excel"
+            },
         ])
-
-        const colors = {
-            black: "Negro"
-        }
 
         const tonerColumns = ref([
             {
@@ -290,13 +298,7 @@ export default defineComponent({
                     .get("./toners")
                     .then((res) => {
                         const data = res.data
-                        if (data.length > 0) {
-                            setToners(data)
-                        }
-                        else if (data.length == 0) {
-                            dataApiStore.clearDataApi()
-                            loadingState.value = false
-                        }
+                        toners.value = data
                     })
                     .catch((err) => {
                         console.log(err)
@@ -306,11 +308,11 @@ export default defineComponent({
             }
         }
 
-        function setToners(data = null) {
+        function setTonerChanges(data = null) {
             if (data !== null) {
                 dataApiStore.setDataApi(data)
-                toners.value = data
             }
+            tonerRows.value = dataApiStore.getDataApi
             loadingState.value = false
         }
 
@@ -340,6 +342,7 @@ export default defineComponent({
             toners,
             getAllToners,
             getAllTonerChanges,
+            setTonerChanges,
             loadingState,
             tonerRows,
             tonerColumns,
@@ -378,13 +381,14 @@ export default defineComponent({
             if (color.toLowerCase() === "amarillo") {
                 return "#fdd835"
             }
-            return "#757575"
+            return "#dcdcdc"
         },
         openTonerStockDialog() {
             this.dialogStateTonerStock = true
         },
         closeTonerStockDialog() {
             this.dialogStateTonerStock = false
+
         },
         modifyTonerStock() {
             const typeTransaction = this.tonerInput.type
@@ -392,7 +396,6 @@ export default defineComponent({
                 this.currentToner.stock = Number(this.currentToner.stock) + Number(this.tonerInput.stock)
                 this.currentToner.incomingStock.quantity = this.tonerInput.stock
                 this.currentToner.incomingStock.date = new Date()
-                console.log(this.currentToner)
             }
             else if (typeTransaction == "Salida") {
                 this.currentToner.stock = Number(this.currentToner.stock) - Number(this.tonerInput.stock)
@@ -548,7 +551,6 @@ export default defineComponent({
                 api
                     .delete(`./toners/delete/${this.currentToner._id}`)
                     .then((res) => {
-                        console.log(res.data)
                         if (res.status === 200) {
                             this.$q.notify({
                                 type: "warning",
@@ -558,6 +560,7 @@ export default defineComponent({
                             this.getAllToners()
                             this.closeTonerDialog()
                             this.dialogDelete = false;
+                            this.currentToner = {}
                         } else {
                             this.$q.notify({
                                 type: "negative",
@@ -579,25 +582,30 @@ export default defineComponent({
             }
         },
         getPrinters() {
-            api
-                .get("./assets?category=Impresora")
-                .then((res) => {
-                    const data = res.data
-                    if (data) {
-                        const dataFiltered = data.filter(printer => printer.model.includes(this.tonerChangeInput?.toner?.name));
-                        const mapPrinters = dataFiltered.map((printer) => {
-                            return {
-                                label: `${printer.model} ${printer.location}`,
-                                value: printer
-                            }
-                        })
-                        this.printerOptions = mapPrinters
-                        console.log(this.printerOptions)
-                    }
-                })
-                .catch((err) => {
-                    console.log(err)
-                });
+            api.get("./assets?category=Impresora").then((res) => {
+                const data = res.data
+                if (data) {
+                    const dataFiltered = data.filter(printer => printer?.model.includes(this.tonerChangeInput?.toner?.name) || printer?.description.includes(this.tonerChangeInput?.toner?.name));
+                    const mapPrinters = dataFiltered.map((printer) => {
+                        return {
+                            label: printer.description ? printer.description : `${printer.model} ${printer.location}`,
+                            value: printer
+                        }
+                    })
+                    this.printerOptions = mapPrinters
+                }
+            }).catch((err) => {
+                console.log(err)
+            });
+        },
+        handleActionOption(option) {
+            if (option == "get-report") {
+                this.$refs.dialogTonerReport.openDialog()
+            }
+            else if (option == "get-excel") {
+
+            }
+            return { message: "Option not found" }
         }
     }
 });

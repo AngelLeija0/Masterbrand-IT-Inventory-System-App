@@ -1,13 +1,15 @@
 <template>
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
-    table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
+    table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos" :rows-per-page-options="[8, 10, 20, 30, 0]"
     rows-per-page-label="Cantidad de registros" :style="{ height: isMobile ? '68vh' : '70vh' }">
     <template v-slot:body-cell-actions="props">
-      <q-td style="width: 30%;">
-        <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row._id)" />
-        <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem" class="q-mx-xs"
-          style="border-radius: 10px; text-transform: capitalize" @click="openDeleteDialog(props.row._id)" />
+      <q-td style="min-width: 9rem">
+        <!--
+          <q-btn label="Editar" icon-right="edit" color="secondary" outline size="0.75rem" class="q-mx-xs"
+          style="border-radius: 10px; text-transform: capitalize" @click="openModifyDialog(props.row)" />
+        -->
+        <q-btn label="Borrar" icon-right="delete" color="red" outline size="0.75rem"
+          style="border-radius: 10px; text-transform: capitalize;" @click="openDeleteDialog(props.row)" />
       </q-td>
     </template>
   </q-table>
@@ -17,17 +19,19 @@
       <q-card-actions align="right" class="q-py-none">
         <q-btn icon="close" color="black" flat round @click="closeModifyDialog(currentData._id)" class="q-py-none" />
       </q-card-actions>
-      <q-card-section class="q-pt-none q-pb-sm" style="border-bottom: 1px solid #e9e9e9">
-        <div class="text-h6">{{ pageLabel }}</div>
+      <q-card-section class="q-pt-none q-pb-sm flex items-end" style="border-bottom: 1px solid #e9e9e9">
+        <div class="text-h5 text-weight-medium">{{ currentData.toner }}</div>
+        <div class="text-white text-weight-medium q-px-md q-py-xs q-mx-sm text-capitalize"
+          :style="{ backgroundColor: currentData.color.toLowerCase() == 'negro' ? '#252525' : defineTonerColor(currentData.color), borderRadius: '20px', fontSize: '0.65rem' }">
+          {{ currentData.color }}</div>
       </q-card-section>
       <q-card-section>
-        <q-input v-model="currentData.name" label="Nombre" @change="validateForm" :rules="inputRulesDictionary.name" />
-        <div class="q-pt-lg q-pb-md">Propiedades</div>
-        <div class="row flex justify-between">
-          <div class="q-ma-sm col-md-5 col-11" v-for="(property, i) in checkBoxProperties" :key="i">
-            <q-checkbox v-model="property.value" :label="property.label" dense />
-          </div>
-        </div>
+        <q-input clearable dense v-model="currentData.toner" label="Toner" class="q-mb-md" hint="requerido"
+          :rules="inputRulesDictionary.name" @update:model-value="validateForm" />
+        <q-input clearable dense v-model="currentData.color" label="Color" class="q-mb-md" hint="requerido"
+          :rules="inputRulesDictionary.name" @update:model-value="validateForm" />
+        <q-input clearable dense v-model="currentData.printer" label="Impresora" class="q-mb-md" hint="requerido"
+          :rules="inputRulesDictionary.name" @update:model-value="validateForm" />
       </q-card-section>
       <q-card-actions align="right">
         <q-btn label="Guardar" size="0.85rem" color="secondary" dense padding="sm lg" outline
@@ -39,13 +43,13 @@
     </q-card>
   </q-dialog>
 
-  <DialogConfirmDelete label="Label" />
-
+  <DialogConfirmDelete ref="dialogConfirmDeleteRef" :label="currentData.toner" @deleteConfirm="deleteRecord(currentData._id)" />
 </template>
 
 <script>
 import { defineComponent, ref, watch } from "vue"
 import { useRoute } from 'vue-router'
+import { api, serverURL } from "src/boot/axios"
 import DialogConfirmDelete from './DialogConfirmDelete.vue'
 
 export default defineComponent({
@@ -69,23 +73,23 @@ export default defineComponent({
 
     function isUsingMobile() {
       const validation1 = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const validation2 = window.innerWidth < 768
+      const validation2 = window.innerWidth < 768;
       const finalValidation = validation1 || validation2;
       return finalValidation;
     }
 
     window.addEventListener("resize", () => {
-      isMobile.value = isUsingMobile()
+      isMobile.value = isUsingMobile();
     })
 
-    const route = useRoute()
-    const records = ref(props.rows)
+    const route = useRoute();
+    const records = ref(props.rows);
 
     watch(() => props.rows, (newValue) => {
       if (newValue.length == 0) return
-      records.value = newValue
+      records.value = newValue;
       records.value.forEach((row, index) => {
-        row.index = index + 1
+        row.index = index + 1;
       })
     })
 
@@ -93,6 +97,28 @@ export default defineComponent({
     const dialogDelete = ref(false);
     const inputConfirmDelete = ref(null);
     const currentData = ref({});
+
+    const inputRulesDictionary = ref({
+      name: [
+        val => !!val || '* Requerido',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      username: [
+        val => !!val || '* Requerido',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
+        val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
+      ],
+      email: [
+        val => !!val || '* Requerido',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
+        val => emailRegex.test(val) || 'Ingresa un correo electrónico válido'
+      ],
+      password: [
+        val => !!val || '* Requerido',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres'
+      ],
+    })
 
     return {
       isMobile,
@@ -102,15 +128,16 @@ export default defineComponent({
       inputConfirmDelete,
       currentData,
       records,
+      inputRulesDictionary,
       pagination: ref({
         rowsPerPage: 0
       })
     }
   },
   methods: {
-    openModifyDialog(id) {
-      console.log({ id })
+    openModifyDialog(toner) {
       this.dialogModify = true;
+      this.currentData = toner
     },
     closeModifyDialog() {
       this.dialogModify = false;
@@ -144,6 +171,7 @@ export default defineComponent({
             });
             this.dialogModify = false;
             this.currentData = null;
+            this.emitEventUpdateNotifications()
           } else {
             this.$q.notify({
               type: "negative",
@@ -153,7 +181,6 @@ export default defineComponent({
           }
         })
         .catch((err) => {
-          console.log(err);
           this.$q.notify({
             type: "negative",
             message: "Ha ocurrido un error.",
@@ -161,13 +188,10 @@ export default defineComponent({
           });
         });
     },
-    openDeleteDialog(id) {
-      this.inputConfirmDelete = null;
-      this.dialogDelete = true;
-      console.log(id)
-      console.log(this.records)
-      const recordInfo = this.records.find((tonerChange) => tonerChange._id === id);
-      this.currentData = recordInfo;
+    openDeleteDialog(toner) {
+      this.$refs.dialogConfirmDeleteRef.openDialog();
+      this.currentData = toner;
+
     },
     closeDeleteDialog(id) {
       this.dialogDelete = false;
@@ -175,7 +199,10 @@ export default defineComponent({
     },
     deleteRecord(id) {
       api
-        .delete(`./${this.nameSection}/delete/${id}`)
+        .post(`./toner-changes/delete/${id}`, {
+          printerId: this.currentData.printer_id,
+          tonerId: this.currentData.toner_id
+        })
         .then((res) => {
           if (res.status === 200) {
             this.$q.notify({
@@ -183,9 +210,10 @@ export default defineComponent({
               message: "Borrado correctamente.",
               timeout: 2000,
             });
-            this.dialogDelete = false;
-            this.currentData = null;
-            this.$emit("elementDeleted");
+            this.$refs.dialogConfirmDeleteRef.closeDialog();
+            this.emitEventUpdateNotifications()
+            this.currentData = {};
+            this.$emit("reloadData")
           } else {
             this.$q.notify({
               type: "negative",
@@ -202,6 +230,48 @@ export default defineComponent({
             timeout: 2000,
           });
         });
+    },
+    validateForm() {
+      if (this.currentData) {
+        const results = []
+        Object.keys(this.currentData).map((key) => {
+          if (this.inputRulesDictionary[key]) {
+            const rules = this.inputRulesDictionary[key]
+            for (const rule of rules) {
+              const errorMessage = rule(this.currentData[key])
+              if (errorMessage !== true) {
+                results.push(false)
+              } else {
+                results.push(true)
+              }
+            }
+          }
+        })
+
+        if (results.includes(false)) {
+          return false
+        }
+        else {
+          return true
+        }
+      } else {
+        return false
+      }
+    },
+    defineTonerColor(color) {
+      if (color.toLowerCase() === "cyan") {
+        return "#00acc1"
+      }
+      if (color.toLowerCase() === "magenta") {
+        return "#e91e63"
+      }
+      if (color.toLowerCase() === "amarillo") {
+        return "#fdd835"
+      }
+      return "#dcdcdc"
+    },
+    emitEventUpdateNotifications() {
+      this.$emit("updateNotifications")
     },
   }
 });

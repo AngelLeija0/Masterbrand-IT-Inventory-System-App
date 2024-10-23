@@ -20,7 +20,7 @@
       </div>
     </q-section>
     <q-section>
-      <FilterBar @getAllData="getAllCategories" @realodData="setCategories"></FilterBar>
+      <FilterBar @getAllData="getAllCategories" @reloadData="setCategories"></FilterBar>
     </q-section>
     <q-section>
       <DetailsTable section="categories" label="Categorias" :columns="assetColumns" :rows="categoryRows"
@@ -153,6 +153,7 @@ export default defineComponent({
     }
 
     function setCategories(data = null) {
+      console.log(data)
       if (data !== null) {
         dataApiStore.setDataApi(data)
       }

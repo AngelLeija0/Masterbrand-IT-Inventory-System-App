@@ -165,7 +165,7 @@ export default defineComponent({
     const inputRulesDictionary = ref({
       name: [
         val => !!val || '* Requerido',
-        val => val.length < 30 || 'Porfavor usa un maximo de 30 caracteres',
+        val => val.length < 50 || 'Porfavor usa un maximo de 30 caracteres',
         val => !/[!@#$%^&*()_+={}|:\;',.<>?~`]/gi.test(val) || 'No se permiten caracteres especiales'
       ],
     })

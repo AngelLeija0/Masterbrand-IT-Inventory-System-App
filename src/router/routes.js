@@ -6,7 +6,7 @@ function verifyLogin (to, from, next) {
     return next({ name: 'login-page' })
   }
 
-  if (userStore.getUser.type === "superadmin" && to.path !== "/admins"){
+  if (userStore.getUser.type === "superadmin" && to.path == "/"){
     return next({ name: 'admins-page' })
   }
 
@@ -25,7 +25,7 @@ const routes = [
         beforeEnter: [verifyLogin]
       },
       {
-        path: '/admins',
+        path: 'admins',
         name: 'admins-page',
         component: () => import('pages/AdminsPage.vue'),
         beforeEnter: [verifyLogin]
@@ -64,6 +64,12 @@ const routes = [
         path: 'toners',
         name: 'toners-page',
         component: () => import('pages/TonersPage.vue'),
+        beforeEnter: [verifyLogin]
+      },
+      {
+        path: 'archivos',
+        name: 'files-page',
+        component: () => import('pages/FilesPage.vue'),
         beforeEnter: [verifyLogin]
       },
     ]

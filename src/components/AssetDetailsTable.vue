@@ -2,7 +2,7 @@
   <q-table flat bordered :rows="rows" :columns="columns" :loading="loading" loading-label="Cargando" row-key="name"
     table-header-style="font-weight: 100;" class="q-pt-md" no-data-label="No se encontraron datos"
     rows-per-page-label="Cantidad de registros" :rows-per-page-options="rowsPerPage"
-    :style="{ height: isMobile ? '68vh' : '63vh' }">
+    style="height: 100%;">
     <template v-slot:body-cell-image="props">
       <q-td style="width: 15%;" class="text-center">
         <q-img v-if="props.row?.image" class="q-pa-md q-ma-sm"
@@ -34,6 +34,14 @@
           &nbsp;
           Sin definir
         </div>
+      </q-td>
+    </template>
+    <template v-slot:body-cell-model="props">
+      <q-td>
+        <div v-if="props.row.model">
+          {{ props.row.manufacturer }} {{ props.row.model }}
+        </div>
+        <div v-else> N/A </div>
       </q-td>
     </template>
     <template v-slot:body-cell-actions="props">

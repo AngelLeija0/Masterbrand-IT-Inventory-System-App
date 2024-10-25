@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-header class="bg-grey-10">
       <q-toolbar class="q-ma-sm q-mx-md flex justify-between">
-        <img src="../assets/masterbrand-logo.webp" style="max-height: 30px; max-width: 70%" />
+        <img src="https://i.ibb.co/2y10qjb/masterbrand-logo-b0e623c8.webp" style="max-height: 30px; max-width: 70%" />
         <div v-if="!isMobile">
           <q-btn :icon="quantityNotifications ? 'notifications' : 'notifications_none'" round class="q-mx-md" flat
             style="border-radius: 20px;" @click="getAllNotifications()">

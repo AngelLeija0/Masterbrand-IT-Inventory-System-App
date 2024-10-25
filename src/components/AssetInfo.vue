@@ -2,13 +2,13 @@
   <div class="row">
     <div class="col-12">
       <div class="row">
-        <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start">
+        <div class="col-md-6 col-sm-6 col-12 flex justify-center text-center q-pa-md items-start" style="position: relative;">
+          <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
+            @click="isEditingImage = true" style="position: absolute; top: 10px; right: 20px; z-index: 100;" />
           <q-img v-if="defaultImageFounded" class="q-pa-md q-mx-sm"
             :src="imageServer + '/uploads/attachments/' + inputInfo.images?.default_image" spinner-color="primary"
-            style="max-width: 260px; max-width: 100px;" @error="handleImageError" fit="contain"  />
+            style="max-height: 180px;" @error="handleImageError" fit="contain" />
           <q-icon v-else name="image" size="180px" class="q-pa-md q-mx-sm" style="max-width: 260;" />
-          <q-btn icon="edit" flat round size="12px" :color="isEditingImage ? 'primary' : 'black'"
-            @click="isEditingImage = true" />
         </div>
         <div class="col-md-6 col-sm-6 col-12 bg-grey-2 q-pa-md" style="border-radius: 10px;">
           <div class="text-h6">Estado</div>
@@ -76,8 +76,8 @@
         </div>
       </q-card-section>
       <q-card-actions align="right" class="q-px-md q-pt-lg">
-        <q-file size="0.75rem" label-color="dark" outlined rounded dense label="Subir nueva imagen" accept=".jpg, image/*"
-          v-model="inputNewImage" @update:model-value="uploadNewImage()">
+        <q-file size="0.75rem" label-color="dark" outlined rounded dense label="Subir nueva imagen"
+          accept=".jpg, image/*" v-model="inputNewImage" @update:model-value="uploadNewImage()">
           <template v-slot:prepend>
             <q-icon name="cloud_upload" color="dark" class="q-px-xs" />
           </template>
@@ -381,9 +381,3 @@ export default defineComponent({
   transform: translate(-50%, -50%);
 }
 </style>
-
-
-
-
-
-
